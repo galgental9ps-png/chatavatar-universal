@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "meine-organisation",
+  "updatedAt": "2026-11-15",
+  "organization": {
+    "name": "Ihre Organisation – bitte ersetzen",
+    "shortName": "INFO",
+    "website": "https://example.org/",
+    "greeting": "Willkommen! Wobei kann ich Ihnen helfen?",
+    "fallback": "Dazu liegt noch keine geprüfte Antwort vor. Bitte kontaktieren Sie uns direkt."
+  },
+  "avatar": { "name": "Ihre Heldin", "subtitle": "Ihre Wegweiserin", "color": "#165dde" },
+  "categories": [{ "id": "service", "label": "Service", "icon": "◷" }],
+  "suggested": ["kontakt"],
+  "entries": [{
+    "id": "kontakt", "category": "service",
+    "question": "Wie erreiche ich Sie?",
+    "answer": "Hier die tatsächlichen öffentlichen Kontaktangaben eintragen und anschließend die Antwort aktivieren.",
+    "keywords": ["Kontakt", "Telefon", "Adresse"], "suggestions": [], "links": [],
+    "sourceUrl": "https://example.org/", "verifiedAt": "", "reviewAfter": "",
+    "validFrom": "", "validUntil": "", "enabled": false, "priority": 90
+  }]
+}
+

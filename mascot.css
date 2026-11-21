@@ -1,0 +1,9 @@
+.jimmy-frame{display:block;width:100%;height:100%;background-repeat:no-repeat;background-size:400% 400%;transform-origin:50% 94%;pointer-events:none;user-select:none;image-rendering:auto;backface-visibility:hidden;will-change:background-position}
+[data-state=idle]>.jimmy-frame,[data-state=idle]>.sprite>.jimmy-frame{animation:jimmy-breathe 4.4s ease-in-out infinite}
+[data-state=held]>.jimmy-frame,[data-state=held]>.sprite>.jimmy-frame{transform-origin:50% 20%;animation:jimmy-held .8s ease-in-out infinite alternate}
+[data-state=land]>.sprite>.jimmy-frame{animation:jimmy-land .2s ease-out both}
+[data-paused=true] .jimmy-frame{animation-play-state:paused!important}
+@keyframes jimmy-breathe{50%{transform:translateY(-1px)}}
+@keyframes jimmy-held{from{transform:rotate(-3deg)}to{transform:rotate(3deg)}}
+@keyframes jimmy-land{from{transform:scaleY(.96)}to{transform:scaleY(1)}}
+@media(prefers-reduced-motion:reduce){.jimmy-frame{animation:none!important}}

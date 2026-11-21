@@ -1,0 +1,2590 @@
+{
+  "schemaVersion": 1,
+  "id": "jimmys-funpark",
+  "updatedAt": "2026-11-22",
+  "organization": {
+    "name": "Jimmy’s Fun Park",
+    "shortName": "JP",
+    "website": "https://www.jimmys-funpark.de/",
+    "greeting": "Hi, ich bin Jimmy, dein digitaler Parkbegleiter! Möchtest du deinen Besuch planen, einen Geburtstag feiern oder die Attraktionen entdecken?",
+    "fallback": "Dazu habe ich noch keine geprüfte Antwort. Suche nach Öffnungszeiten, Preisen, Geburtstag, Socken oder Anfahrt – oder frage das Park-Team direkt."
+  },
+  "avatar": {
+    "name": "Jimmy",
+    "subtitle": "Dein Parkbegleiter · Demo",
+    "color": "#087b71"
+  },
+  "categories": [
+    {
+      "id": "park",
+      "label": "Der Park",
+      "icon": "⌂"
+    },
+    {
+      "id": "besuch",
+      "label": "Besuch planen",
+      "icon": "◷"
+    },
+    {
+      "id": "preise",
+      "label": "Preise & Tickets",
+      "icon": "€"
+    },
+    {
+      "id": "geburtstag",
+      "label": "Geburtstag",
+      "icon": "✦"
+    },
+    {
+      "id": "partyextras",
+      "label": "Party-Extras",
+      "icon": "◇"
+    },
+    {
+      "id": "spielen",
+      "label": "Attraktionen",
+      "icon": "◈"
+    },
+    {
+      "id": "essen",
+      "label": "Essen & Trinken",
+      "icon": "☕"
+    },
+    {
+      "id": "gruppen",
+      "label": "Kitas & Schulen",
+      "icon": "☀"
+    },
+    {
+      "id": "anfahrt",
+      "label": "Anfahrt & Kontakt",
+      "icon": "⌖"
+    },
+    {
+      "id": "extras",
+      "label": "Gutscheine & mehr",
+      "icon": "+"
+    }
+  ],
+  "suggested": [
+    "zeiten",
+    "preise",
+    "geburtstag",
+    "attraktionen",
+    "socken",
+    "adresse"
+  ],
+  "entries": [
+    {
+      "id": "start",
+      "category": "park",
+      "question": "Was ist Jimmy’s Fun Park?",
+      "answer": "Ein Indoor-Spielpark in Dasing zwischen Augsburg und München: über 3.500 m² und mehr als 20 Attraktionen für Familien.",
+      "keywords": [
+        "Indoor",
+        "Spielplatz",
+        "Dasing",
+        "Ausflug"
+      ],
+      "suggestions": [
+        "attraktionen",
+        "zeiten",
+        "preise"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 100
+    },
+    {
+      "id": "portrait",
+      "category": "park",
+      "question": "Seit wann gibt es den Park?",
+      "answer": "Jimmy’s Fun Park wurde 2003 gegründet. Eltern und Kinder können dort gemeinsam spielen.",
+      "keywords": [
+        "Geschichte",
+        "Familie",
+        "Gründung"
+      ],
+      "suggestions": [
+        "eltern",
+        "attraktionen"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/portrait.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/portrait.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "barrierefrei",
+      "category": "park",
+      "question": "Ist der Park barrierefrei?",
+      "answer": "Der Park beschreibt sich als barrierefrei. Besondere Anforderungen klärt ihr am besten vorab mit dem Team.",
+      "keywords": [
+        "Rollstuhl",
+        "Barrierefreiheit",
+        "Behinderung"
+      ],
+      "suggestions": [
+        "kontakt",
+        "ermaessigung"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/portrait.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/portrait.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "maskottchen",
+      "category": "park",
+      "question": "Kann man Jimmy den Affen treffen?",
+      "answer": "Das Maskottchen Jimmy besucht den Park regelmäßig, gibt Autogramme und lässt sich fotografieren. Einen Besuchstermin bitte beim Team erfragen.",
+      "keywords": [
+        "Affe",
+        "Jimmy",
+        "Maskottchen",
+        "Autogramm"
+      ],
+      "suggestions": [
+        "kontakt",
+        "attraktionen"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/jimmy.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/jimmy.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "plan",
+      "category": "park",
+      "question": "Wo finde ich den Parkplan?",
+      "answer": "Auf der offiziellen Seite gibt es einen druckbaren Parkplan und einen virtuellen 3D-Rundgang.",
+      "keywords": [
+        "Lageplan",
+        "PDF",
+        "Orientierung",
+        "Karte"
+      ],
+      "suggestions": [
+        "rundgang",
+        "attraktionen"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/plan-rundgang.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/plan-rundgang.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "rundgang",
+      "category": "park",
+      "question": "Kann ich den Park vorher virtuell ansehen?",
+      "answer": "Ja, der 3D-Rundgang ist auf der Seite „Plan und Rundgang“ eingebunden.",
+      "keywords": [
+        "virtuell",
+        "3D",
+        "Matterport",
+        "Rundgang"
+      ],
+      "suggestions": [
+        "plan",
+        "reservieren"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/plan-rundgang.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/plan-rundgang.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "zeiten",
+      "category": "besuch",
+      "question": "Wie sind die Öffnungszeiten von Jimmy’s Fun Park?",
+      "answer": "An Schultagen: Mo, Mi, Do und Fr 14:30–19 Uhr; Dienstag Ruhetag. Sa, So, bayerische Ferien und Feiertage: 10–19 Uhr. Sondertage auf der Park-Webseite prüfen.",
+      "keywords": [
+        "Öffnungszeiten",
+        "oeffnungszeiten",
+        "offen",
+        "Uhrzeit",
+        "Besuch",
+        "wann"
+      ],
+      "suggestions": [
+        "ferien",
+        "geschlossen",
+        "reservieren"
+      ],
+      "links": [
+        {
+          "label": "Öffnungszeiten prüfen",
+          "url": "https://www.jimmys-funpark.de/oeffnungszeiten.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/oeffnungszeiten.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 100
+    },
+    {
+      "id": "dienstag",
+      "category": "besuch",
+      "question": "Ist dienstags geschlossen?",
+      "answer": "Dienstag ist an Schultagen Ruhetag. In bayerischen Ferien und an Feiertagen nennt der Park 10–19 Uhr.",
+      "keywords": [
+        "Dienstag",
+        "Ruhetag",
+        "Schultag"
+      ],
+      "suggestions": [
+        "ferien",
+        "geschlossen"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/oeffnungszeiten.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/oeffnungszeiten.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "ferien",
+      "category": "besuch",
+      "question": "Wie sind die Ferien-Öffnungszeiten?",
+      "answer": "In bayerischen Ferien: 10–19 Uhr. Für Weihnachten nennt die Seite 27.–30.12.2026 und 02.–10.01.2027; für Fasching 06.–14.02.2027.",
+      "keywords": [
+        "Ferien",
+        "Weihnachtsferien",
+        "Faschingsferien",
+        "Feiertage"
+      ],
+      "suggestions": [
+        "geschlossen",
+        "reservieren"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/oeffnungszeiten.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/oeffnungszeiten.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "2027-02-14",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "geschlossen",
+      "category": "besuch",
+      "question": "An welchen Tagen bleibt der Park geschlossen?",
+      "answer": "Als Schließtage stehen 23.–26. Dezember, 31. Dezember und 1. Januar auf der offiziellen Seite. Aktuelle Änderungen dort prüfen.",
+      "keywords": [
+        "Weihnachten",
+        "Silvester",
+        "Neujahr",
+        "Schließtage"
+      ],
+      "suggestions": [
+        "ferien",
+        "geburtstagskind"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/oeffnungszeiten.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/oeffnungszeiten.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "wetter",
+      "category": "besuch",
+      "question": "Kann man auch bei Regen kommen?",
+      "answer": "Ja, der Indoor-Park ist für wetterunabhängige Besuche gedacht. Es gelten die veröffentlichten Öffnungszeiten.",
+      "keywords": [
+        "Regen",
+        "Wetter",
+        "Winter",
+        "drinnen"
+      ],
+      "suggestions": [
+        "zeiten",
+        "attraktionen"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/portrait.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/portrait.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "reservieren",
+      "category": "besuch",
+      "question": "Müssen wir vor dem Besuch reservieren?",
+      "answer": "Eine Reservierung ist freiwillig; spontane Besuche sind möglich. Tickets lassen sich online vormerken und werden vor Ort bezahlt.",
+      "keywords": [
+        "Reservierung",
+        "buchen",
+        "Tickets",
+        "spontan",
+        "Eintritt"
+      ],
+      "suggestions": [
+        "preise",
+        "geburtstag",
+        "kontakt"
+      ],
+      "links": [
+        {
+          "label": "Besuch reservieren",
+          "url": "https://www.jimmys-funpark.de/rs/"
+        },
+        {
+          "label": "Geburtstag planen",
+          "url": "https://www.jimmys-funpark.de/geburtstag.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/rs/",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 95
+    },
+    {
+      "id": "auslastung",
+      "category": "besuch",
+      "question": "Sind für unseren Termin noch Plätze frei?",
+      "answer": "Ich habe keinen Zugriff auf freie Plätze oder eure Buchung. Prüft die Reservierungsseite oder fragt direkt beim Park nach.",
+      "keywords": [
+        "voll",
+        "frei",
+        "Verfügbarkeit",
+        "Plätze",
+        "Buchungsstatus"
+      ],
+      "suggestions": [
+        "reservieren",
+        "kontakt"
+      ],
+      "links": [
+        {
+          "label": "Reservierung öffnen",
+          "url": "https://www.jimmys-funpark.de/rs/"
+        },
+        {
+          "label": "Park kontaktieren",
+          "url": "https://www.jimmys-funpark.de/kontakt.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/rs/",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "socken",
+      "category": "besuch",
+      "question": "Welche Socken oder Schuhe brauchen wir?",
+      "answer": "Zum Spielen ABS-Socken mitbringen. Sportschuhe und Barfußspielen sind laut FAQ nicht erlaubt; dort werden auch Turnschläppchen genannt.",
+      "keywords": [
+        "ABS",
+        "Antirutschsocken",
+        "Socken",
+        "Schuhe",
+        "barfuß",
+        "Turnschuhe"
+      ],
+      "suggestions": [
+        "socken-kaufen",
+        "kleidung",
+        "essen-mitbringen"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/faq.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/faq.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 90
+    },
+    {
+      "id": "socken-kaufen",
+      "category": "besuch",
+      "question": "Kann man ABS-Socken im Park kaufen?",
+      "answer": "Ja. Die Startseite nennt ABS-Socken für 4,95 € und ABS-Sneaker-Socken für 3,95 € pro Paar.",
+      "keywords": [
+        "Socken kaufen",
+        "Sneaker",
+        "vergessen"
+      ],
+      "suggestions": [
+        "socken",
+        "preise"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "kleidung",
+      "category": "besuch",
+      "question": "Was sollten Kinder zum Spielen anziehen?",
+      "answer": "Die FAQ empfiehlt T-Shirt, lange bequeme Hose, mehrere Kleidungsschichten und Wechselkleidung.",
+      "keywords": [
+        "anziehen",
+        "Kleidung",
+        "Wechselsachen",
+        "Hose"
+      ],
+      "suggestions": [
+        "socken",
+        "essen-mitbringen"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/faq.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/faq.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "kinderwagen",
+      "category": "besuch",
+      "question": "Dürfen Kinderwagen mit hinein?",
+      "answer": "Ja, Kinderwagen dürfen laut Park-FAQ mitgebracht werden.",
+      "keywords": [
+        "Kinderwagen",
+        "Buggy",
+        "Baby"
+      ],
+      "suggestions": [
+        "kleinkinder",
+        "barrierefrei"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/faq.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/faq.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "aufsicht",
+      "category": "besuch",
+      "question": "Wer beaufsichtigt die Kinder?",
+      "answer": "Die Aufsichtspflicht bleibt bei den Eltern. Der Parkbesuch ersetzt keine Kinderbetreuung.",
+      "keywords": [
+        "Aufsicht",
+        "Betreuung",
+        "alleine",
+        "Eltern"
+      ],
+      "suggestions": [
+        "eltern",
+        "kontakt"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/attraktionen.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/attraktionen.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "preise",
+      "category": "preise",
+      "question": "Was kostet der Eintritt?",
+      "answer": "Tagespreise: 0–1 Jahre frei; Kinder 2–17 Jahre 17,50 € inklusive 2 Fahrchips; Erwachsene 13,50 €; Rentner ab 65 Jahren 12 €.",
+      "keywords": [
+        "Eintritt",
+        "Preise",
+        "Kosten",
+        "Kinder",
+        "Erwachsene",
+        "Baby",
+        "Rentner"
+      ],
+      "suggestions": [
+        "abendpreis",
+        "ermaessigung",
+        "jahreskarte"
+      ],
+      "links": [
+        {
+          "label": "Aktuelle Eintrittspreise",
+          "url": "https://www.jimmys-funpark.de/preise.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/preise.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 100
+    },
+    {
+      "id": "abendpreis",
+      "category": "preise",
+      "question": "Gibt es ab 17 Uhr einen günstigeren Eintritt?",
+      "answer": "Ab 17 Uhr: Kinder 11 €, Erwachsene 8 €, Rentner ab 65 Jahren 7 €, Menschen mit Behinderung 4,75 €.",
+      "keywords": [
+        "17 Uhr",
+        "Abendtarif",
+        "später",
+        "Feierabend"
+      ],
+      "suggestions": [
+        "preise",
+        "zeiten"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/preise.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/preise.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "ermaessigung",
+      "category": "preise",
+      "question": "Welcher Eintritt gilt bei einer Behinderung?",
+      "answer": "Die Preisseite nennt 9,50 €, ab 17 Uhr 4,75 €. Schwerbehindertenausweis und Personalausweis oder einen vergleichbaren Nachweis vorlegen.",
+      "keywords": [
+        "Behinderung",
+        "Schwerbehindertenausweis",
+        "Ermäßigung",
+        "Ausweis"
+      ],
+      "suggestions": [
+        "barrierefrei",
+        "preise"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/preise.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/preise.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "geburtstagskind",
+      "category": "preise",
+      "question": "Hat das Geburtstagskind freien Eintritt?",
+      "answer": "Für Geburtstagskinder von 2–17 Jahren nennt der Park freien Eintritt am Geburtstag mit Ausweis. Für Ruhetage und bestimmte Feiertage gelten Ersatztermine laut Preisseite.",
+      "keywords": [
+        "Geburtstag frei",
+        "Geburtstagskind",
+        "Ausweis",
+        "kostenlos"
+      ],
+      "suggestions": [
+        "geburtstag",
+        "geburtstag-ersatz"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/preise.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/preise.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "geburtstag-ersatz",
+      "category": "preise",
+      "question": "Was gilt bei Geburtstag an einem Schließtag?",
+      "answer": "Die Preisseite nennt Ersatztermine für Weihnachten, Silvester/Neujahr, Ostern und den Dienstags-Ruhetag. Den konkreten Termin dort nachlesen und einen Ausweis mitbringen.",
+      "keywords": [
+        "Geburtstag Schließtag",
+        "Ersatztag",
+        "Dienstag Geburtstag"
+      ],
+      "suggestions": [
+        "geburtstagskind",
+        "geschlossen"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/preise.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/preise.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "jahreskarte",
+      "category": "preise",
+      "question": "Gibt es Jahreskarten?",
+      "answer": "Genannt werden Jahreskarten für Kinder von 2–17 Jahren zu 79 € und Erwachsene zu 59 €. Bestellung und Bedingungen stehen im verlinkten Ticketshop.",
+      "keywords": [
+        "Jahreskarte",
+        "Jahresticket",
+        "Dauerkarte",
+        "79",
+        "59"
+      ],
+      "suggestions": [
+        "gutscheine",
+        "preise"
+      ],
+      "links": [
+        {
+          "label": "Jahreskarten ansehen",
+          "url": "https://jimmys-funpark.ticketbro.com/"
+        },
+        {
+          "label": "Preisseite",
+          "url": "https://www.jimmys-funpark.de/preise.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/preise.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "gruppe-eintritt",
+      "category": "preise",
+      "question": "Was kostet der reguläre Gruppeneintritt?",
+      "answer": "Kindergärten, Schulklassen und Vereine: 15 € pro Kind; je 10 Kinder ein Betreuer frei. Das Ausflugspaket mit Essen ist ein separates Angebot.",
+      "keywords": [
+        "Gruppenpreis",
+        "Verein",
+        "Schulklasse",
+        "15 Euro"
+      ],
+      "suggestions": [
+        "kiga",
+        "kiga-paket",
+        "ausflug-kontakt"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/preise.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/preise.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "bezahlen",
+      "category": "preise",
+      "question": "Wie bezahlen wir den Eintritt?",
+      "answer": "An der Eingangskasse sind laut FAQ Bargeld sowie gängige EC- und Kreditkarten möglich.",
+      "keywords": [
+        "Bargeld",
+        "EC",
+        "Kreditkarte",
+        "Kartenzahlung",
+        "bezahlen"
+      ],
+      "suggestions": [
+        "restaurant-zahlung",
+        "reservieren"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/faq.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/faq.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "geburtstag",
+      "category": "geburtstag",
+      "question": "Möchtest du bei Jimmy’s Geburtstag feiern?",
+      "answer": "Es gibt Fun Party, Mega Party und Deluxe Party. Paket, Datum und Sitzplatz wählt ihr über die offizielle Geburtstagsseite aus.",
+      "keywords": [
+        "Kindergeburtstag",
+        "Party",
+        "feiern",
+        "buchen"
+      ],
+      "suggestions": [
+        "party-preise",
+        "party-fun",
+        "sitzplatz"
+      ],
+      "links": [
+        {
+          "label": "Geburtstagsparty auswählen",
+          "url": "https://www.jimmys-funpark.de/geburtstag.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/geburtstag.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 100
+    },
+    {
+      "id": "party-preise",
+      "category": "geburtstag",
+      "question": "Was kosten die Geburtstagspakete?",
+      "answer": "Fun Party: 23,90 €, Mega Party: 26,90 €, Deluxe Party: 29,90 € pro Kind. Sitzplätze und Extras können zusätzlich kosten.",
+      "keywords": [
+        "Party Preis",
+        "Paketvergleich",
+        "Fun Mega Deluxe"
+      ],
+      "suggestions": [
+        "party-fun",
+        "party-mega",
+        "party-deluxe"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/geburtstag.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/geburtstag.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "party-fun",
+      "category": "geburtstag",
+      "question": "Was gehört zur Fun Party?",
+      "answer": "Tages-Eintritt, Tisch ab 4 Stunden, 2,5 Stunden Getränke, Kindergericht, 2 Fahrchips und Torte oder Muffin/Donut. Die vollständigen Leistungen stehen auf der Buchungsseite.",
+      "keywords": [
+        "Fun Party",
+        "Basispaket",
+        "23,90"
+      ],
+      "suggestions": [
+        "party-mega",
+        "party-mindestzahl",
+        "torten"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/geburtstag.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/geburtstag.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "party-mega",
+      "category": "geburtstag",
+      "question": "Was unterscheidet die Mega Party?",
+      "answer": "Mega bietet unter anderem 3 Stunden Getränke, 3 Fahrchips, Pizza zur Auswahl und Eis oder Slush. Preis und sämtliche Leistungen auf der Partyseite prüfen.",
+      "keywords": [
+        "Mega Party",
+        "26,90",
+        "Pizza",
+        "Slush"
+      ],
+      "suggestions": [
+        "party-deluxe",
+        "party-fun"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/geburtstag.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/geburtstag.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "party-deluxe",
+      "category": "geburtstag",
+      "question": "Was bietet die Deluxe Party?",
+      "answer": "Deluxe nennt unter anderem 3,5 Stunden Getränke, zusätzliche Essenswahl, Heliumballon und Extras für zwei Erwachsene. Den kompletten Leistungsumfang zeigt die Partyseite.",
+      "keywords": [
+        "Deluxe Party",
+        "29,90",
+        "Ballon",
+        "Eltern"
+      ],
+      "suggestions": [
+        "party-preise",
+        "ballons"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/geburtstag.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/geburtstag.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "party-mindestzahl",
+      "category": "geburtstag",
+      "question": "Wie viele Kinder braucht eine Geburtstagsparty?",
+      "answer": "Die Pakete sind ab 6 Kindern einschließlich Geburtstagskind vorgesehen. Bei weniger Kindern werden mindestens 5 Kinder berechnet.",
+      "keywords": [
+        "Mindestanzahl",
+        "6 Kinder",
+        "5 Kinder",
+        "kleine Gruppe"
+      ],
+      "suggestions": [
+        "party-geburtstagskind",
+        "party-begleitung"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/geburtstag.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/geburtstag.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "party-geburtstagskind",
+      "category": "geburtstag",
+      "question": "Feiert das Geburtstagskind bei der Party kostenlos?",
+      "answer": "Ja. Bei zwei Geburtstagskindern feiert laut Parkregel eines kostenlos.",
+      "keywords": [
+        "Zwillinge",
+        "Geschwister",
+        "Geburtstagskind Party"
+      ],
+      "suggestions": [
+        "party-mindestzahl",
+        "geburtstagskind"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/faq.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/faq.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "party-begleitung",
+      "category": "geburtstag",
+      "question": "Was zahlen erwachsene Geburtstagsbegleiter?",
+      "answer": "Die FAQ nennt 13,50 € je Begleitperson. Die Paketseite sieht ab 10 Kindern eine freie Begleitperson vor.",
+      "keywords": [
+        "Begleitperson",
+        "Erwachsene Party",
+        "10 Kinder"
+      ],
+      "suggestions": [
+        "party-mindestzahl",
+        "preise"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/geburtstag.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/geburtstag.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "party-bezahlen",
+      "category": "geburtstag",
+      "question": "Brauchen wir eine Anzahlung für die Party?",
+      "answer": "Laut FAQ ist keine Anzahlung nötig. Bezahlt wird zu Partybeginn an der Eingangskasse.",
+      "keywords": [
+        "Anzahlung",
+        "Party bezahlen",
+        "Vorkasse"
+      ],
+      "suggestions": [
+        "bezahlen",
+        "party-aendern"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/faq.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/faq.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "party-aendern",
+      "category": "geburtstag",
+      "question": "Was tun, wenn sich die Gästezahl ändert?",
+      "answer": "Eine geänderte Kinder- oder Erwachsenenanzahl bitte telefonisch oder per E-Mail an den Park melden.",
+      "keywords": [
+        "Gästezahl",
+        "mehr Kinder",
+        "weniger Kinder",
+        "umbuchen"
+      ],
+      "suggestions": [
+        "kontakt",
+        "party-storno"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/faq.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/faq.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "party-storno",
+      "category": "geburtstag",
+      "question": "Wie können wir eine Party absagen oder verschieben?",
+      "answer": "Die Parkseite verlangt Absagen per E-Mail und nennt mögliche Torten- und Nichterscheinenskosten. Für Verschiebungen ist eine Bestätigung des Parks erforderlich. Bedingungen vorab nachlesen.",
+      "keywords": [
+        "Stornierung",
+        "absagen",
+        "verschieben",
+        "Ausfallgebühr"
+      ],
+      "suggestions": [
+        "kontakt",
+        "party-aendern"
+      ],
+      "links": [
+        {
+          "label": "Stornobedingungen lesen",
+          "url": "https://www.jimmys-funpark.de/geburtstag.php"
+        },
+        {
+          "label": "Park kontaktieren",
+          "url": "https://www.jimmys-funpark.de/kontakt.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/geburtstag.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "party-kuchen",
+      "category": "geburtstag",
+      "question": "Dürfen wir einen eigenen Kuchen mitbringen?",
+      "answer": "Bei gebuchter Geburtstagsparty erlaubt die FAQ eigenen Kuchen oder Muffins für die Kinder.",
+      "keywords": [
+        "Kuchen mitbringen",
+        "Muffins",
+        "eigene Torte"
+      ],
+      "suggestions": [
+        "torten",
+        "essen-mitbringen"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/faq.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/faq.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "party-essen",
+      "category": "geburtstag",
+      "question": "Müssen wir das Partyessen vorher festlegen?",
+      "answer": "Nein, die Auswahl und Essenszeit können laut FAQ vor Ort entschieden werden. Die verfügbaren Gerichte hängen vom gebuchten Paket ab.",
+      "keywords": [
+        "Essenszeit",
+        "Gerichte",
+        "vorbestellen",
+        "Menü"
+      ],
+      "suggestions": [
+        "party-fun",
+        "party-mega",
+        "party-deluxe"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/faq.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/faq.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "party-nachher",
+      "category": "geburtstag",
+      "question": "Dürfen wir nach der Party noch spielen?",
+      "answer": "Die FAQ erlaubt den weiteren Aufenthalt bis zur Schließung. Wie lange der Tisch nutzbar ist, hängt vom Sitzplatz ab.",
+      "keywords": [
+        "Party Ende",
+        "länger bleiben",
+        "Partydauer"
+      ],
+      "suggestions": [
+        "sitzplatz",
+        "zeiten"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/faq.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/faq.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "vip",
+      "category": "geburtstag",
+      "question": "Kann man den ganzen Park privat mieten?",
+      "answer": "VIP-Miete: werktags außerhalb von Ferien und Feiertagen 9–14 Uhr, dienstags auch nachmittags. 150 € je Stunde, mindestens 3 Stunden; Eintritte beziehungsweise Partypaket zusätzlich.",
+      "keywords": [
+        "VIP",
+        "privat",
+        "Park mieten",
+        "exklusiv"
+      ],
+      "suggestions": [
+        "kontakt",
+        "geburtstag"
+      ],
+      "links": [
+        {
+          "label": "VIP-Angebot ansehen",
+          "url": "https://www.jimmys-funpark.de/geburtstag.php"
+        },
+        {
+          "label": "Verfügbarkeit anfragen",
+          "url": "https://www.jimmys-funpark.de/kontakt.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/geburtstag.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "sitzplatz",
+      "category": "partyextras",
+      "question": "Welche Geburtstagssitzplätze gibt es?",
+      "answer": "Zur Wahl stehen Gastro-Bereiche, Piratenland, Mini-Bowling und Geburtstagsboxen. Den gewünschten Platz bei der Buchung auswählen.",
+      "keywords": [
+        "Sitzplatz",
+        "Tisch",
+        "Platz",
+        "Geburtstagsbox"
+      ],
+      "suggestions": [
+        "piraten",
+        "bowling-party",
+        "boxen"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/sitzplatz.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/sitzplatz.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "piraten",
+      "category": "partyextras",
+      "question": "Kann man im Piratenboot feiern?",
+      "answer": "Im Piratenland gibt es Beiboote und Tische auf dem Piratenschiff. Aufpreise: Beiboot 19 €, Schiffstisch 14 €, Einzeltisch 9 €.",
+      "keywords": [
+        "Piratenland",
+        "Piratenschiff",
+        "Boot",
+        "Piratenparty"
+      ],
+      "suggestions": [
+        "piraten-zeiten",
+        "geburtstag"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/piratenland.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/piratenland.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "piraten-zeiten",
+      "category": "partyextras",
+      "question": "Welche Partyzeiten gelten im Piratenland?",
+      "answer": "An Wochenenden und Feiertagen nennt der Park die Sitzplatzblöcke 10–14 Uhr oder 15–19 Uhr.",
+      "keywords": [
+        "Piraten Uhrzeit",
+        "Zeitblock",
+        "Tischzeit"
+      ],
+      "suggestions": [
+        "piraten",
+        "sitzplatz"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/piratenland.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/piratenland.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "boxen",
+      "category": "partyextras",
+      "question": "Was sind die Geburtstagsboxen?",
+      "answer": "Löwenbox und Giraffenbox bieten jeweils bis zu 12 Personen Platz. Die Parkseite nennt 20 € Aufpreis je Box.",
+      "keywords": [
+        "Löwenbox",
+        "Giraffenbox",
+        "Box",
+        "12 Personen"
+      ],
+      "suggestions": [
+        "sitzplatz",
+        "geburtstag"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/boxen.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/boxen.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "themen",
+      "category": "partyextras",
+      "question": "Gibt es Motto-Geburtstage?",
+      "answer": "Ja, zum Beispiel Dinos, Einhorn, Fußball, Piraten oder Minecraft. Themen-Deko kostet pauschal 15,50 € bis 10 Kinder; danach 0,50 € je weiterem Kind.",
+      "keywords": [
+        "Mottoparty",
+        "Themenparty",
+        "Stitch",
+        "Pokemon",
+        "Dino",
+        "Einhorn",
+        "Minecraft"
+      ],
+      "suggestions": [
+        "torten-motto",
+        "geburtstag"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/themenpartys.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/themenpartys.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "torten",
+      "category": "partyextras",
+      "question": "Welche Geburtstagstorte ist vorgesehen?",
+      "answer": "Die Torten-Seite nennt Jimmy-Marmorkuchen mit Schokoglasur; Käsekuchen ist ohne Aufpreis möglich. Alternativ werden Muffin oder Donut je Kind angeboten.",
+      "keywords": [
+        "Torte",
+        "Kuchen",
+        "Marmorkuchen",
+        "Käsekuchen",
+        "Muffin"
+      ],
+      "suggestions": [
+        "torten-vegan",
+        "torten-motto",
+        "party-kuchen"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/torten.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/torten.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "torten-vegan",
+      "category": "partyextras",
+      "question": "Gibt es vegane Geburtstagstorten?",
+      "answer": "Für vegane Jimmy- und Motto-Torten nennt die Torten-Seite 10 € Aufpreis. Zutaten und besondere Ernährungswünsche bitte direkt abstimmen.",
+      "keywords": [
+        "vegane Torte",
+        "vegan",
+        "Torten Aufpreis"
+      ],
+      "suggestions": [
+        "allergene",
+        "torten"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/torten.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/torten.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "torten-motto",
+      "category": "partyextras",
+      "question": "Kann die Torte ein Wunschmotiv bekommen?",
+      "answer": "Die Website bietet Motto-Torten für 13 € Aufpreis und individuelle Wunschtorten auf Anfrage an.",
+      "keywords": [
+        "Motivtorte",
+        "Wunschmotiv",
+        "Wunschtorte",
+        "13 Euro"
+      ],
+      "suggestions": [
+        "themen",
+        "kontakt"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/torten.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/torten.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "ballons",
+      "category": "partyextras",
+      "question": "Kann man Geburtstagsballons dazu bestellen?",
+      "answer": "Ja, die Park-Webseite zeigt Geburtstagsballons mit verschiedenen Motiven. Auswahl und aktuellen Preis bitte bei der Partybuchung prüfen.",
+      "keywords": [
+        "Ballon",
+        "Helium",
+        "Deko",
+        "Luftballon"
+      ],
+      "suggestions": [
+        "geburtstag",
+        "themen"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/ballons.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/ballons.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "sweets",
+      "category": "partyextras",
+      "question": "Gibt es Süßigkeiten für die Geburtstagsgäste?",
+      "answer": "Zur Party lassen sich Süßigkeitenbecher in verschiedenen Sorten auswählen. Die Seite nennt 4,90 € je Becher.",
+      "keywords": [
+        "Süßigkeiten",
+        "Mitgebsel",
+        "Becher",
+        "Veggie Mix"
+      ],
+      "suggestions": [
+        "geburtstag",
+        "allergene"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/sweets.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/sweets.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "einladungen",
+      "category": "partyextras",
+      "question": "Wo gibt es Geburtstagseinladungen zum Ausdrucken?",
+      "answer": "Die Park-Webseite bietet eine bunte Einladung, eine Ausmalversion und eine Postkartenvariante zum Herunterladen.",
+      "keywords": [
+        "Einladung",
+        "Einladungskarte",
+        "PDF",
+        "ausdrucken",
+        "ausmalen"
+      ],
+      "suggestions": [
+        "geburtstag",
+        "socken"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/einladungen.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/einladungen.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "attraktionen",
+      "category": "spielen",
+      "question": "Was können wir im Park spielen?",
+      "answer": "Zur Auswahl gehören Kletter-Vulkan, Kids-Ninja-Area, Mini-Bowling, Tiefseilgarten, Bumpercars, Donut-Glider, Fun-Shooter, Magic Wheel, Beamerspiel, Torwände, Spider-Tower, Trampolin, Airhockey, Bongo-Bahn, T-Wall, Wasserscooter, Kartbahn, Bagger, Multiplay-Anlage, Soft-Kletterwand und Carrera-Rennbahn.",
+      "keywords": [
+        "Attraktionen",
+        "Multiball",
+        "Bumpercars",
+        "Kartbahn",
+        "Wasserscooter",
+        "Rutschen",
+        "Bagger",
+        "Trampolin",
+        "Fun Shooter",
+        "Spidertower",
+        "Carrera"
+      ],
+      "suggestions": [
+        "kleinkinder",
+        "ninja",
+        "bowling"
+      ],
+      "links": [
+        {
+          "label": "Attraktionen entdecken",
+          "url": "https://www.jimmys-funpark.de/attraktionen.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/attraktionen.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 100
+    },
+    {
+      "id": "kleinkinder",
+      "category": "spielen",
+      "question": "Gibt es einen Bereich für kleine Kinder?",
+      "answer": "Ja, das Kleinkinder-Paradies richtet sich an Kinder von 0–6 Jahren und hat ein Unterwasser-Thema.",
+      "keywords": [
+        "Kleinkinder",
+        "Baby",
+        "0 bis 6",
+        "Unterwasser",
+        "Kleinkind"
+      ],
+      "suggestions": [
+        "krabbel",
+        "preise"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/attraktionen.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/attraktionen.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "ninja",
+      "category": "spielen",
+      "question": "Was ist die Kids-Ninja-Area?",
+      "answer": "Zwei Hindernisstrecken mit Zeitmessung ermöglichen kleine Wettläufe.",
+      "keywords": [
+        "Ninja",
+        "Hindernisse",
+        "Zeitmessung",
+        "Parcours"
+      ],
+      "suggestions": [
+        "attraktionen",
+        "eltern"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/attraktionen.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/attraktionen.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "vulkan",
+      "category": "spielen",
+      "question": "Wie hoch ist der Kletter-Vulkan?",
+      "answer": "Die Beschreibung nennt 6 Meter Kletterhöhe und eine 9 Meter lange Röhrenrutsche.",
+      "keywords": [
+        "Klettervulkan",
+        "Vulkan",
+        "Röhrenrutsche"
+      ],
+      "suggestions": [
+        "attraktionen",
+        "aufsicht"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/attraktionen.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/attraktionen.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "trampolin",
+      "category": "spielen",
+      "question": "Welche Regeln nennt die Seite fürs Trampolin?",
+      "answer": "Pro Sprungfeld nur eine Person; die Website nennt maximal 100 kg. Zusätzlich die Regeln am Gerät beachten.",
+      "keywords": [
+        "Trampolin Regeln",
+        "100 kg",
+        "Sprungfeld"
+      ],
+      "suggestions": [
+        "aufsicht",
+        "socken"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/attraktionen.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/attraktionen.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "eltern",
+      "category": "spielen",
+      "question": "Dürfen Erwachsene auch mitspielen?",
+      "answer": "Ja, laut Attraktionsseite dürfen Erwachsene die Spielgeräte ebenfalls benutzen.",
+      "keywords": [
+        "Erwachsene mitspielen",
+        "Eltern",
+        "Großeltern"
+      ],
+      "suggestions": [
+        "aufsicht",
+        "preise",
+        "restaurant"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/attraktionen.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/attraktionen.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "bowling",
+      "category": "spielen",
+      "question": "Kann man auch ohne Geburtstag bowlen?",
+      "answer": "Ja, bei freier Bahn: 7,50 € je halber Stunde. Verfügbarkeit und Buchung telefonisch klären.",
+      "keywords": [
+        "Bowling",
+        "Minibowling",
+        "Kegeln",
+        "7,50"
+      ],
+      "suggestions": [
+        "bowling-party",
+        "kontakt"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/minibowling.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/minibowling.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "bowling-party",
+      "category": "partyextras",
+      "question": "Was kostet Bowling als Party-Zusatz?",
+      "answer": "Bis 8 Kinder: 19,50 € Aufpreis für eine Bahn für 2 Stunden und den zugehörigen Tisch für 4 Stunden. Ab 9 Kindern zwei Bahnen: 39 €.",
+      "keywords": [
+        "Bowling Geburtstag",
+        "Bowling Party",
+        "19,50",
+        "39"
+      ],
+      "suggestions": [
+        "bowling-socken",
+        "geburtstag"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/minibowling.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/minibowling.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "bowling-socken",
+      "category": "spielen",
+      "question": "Brauchen wir Bowlingschuhe?",
+      "answer": "Nein. Beim Mini-Bowling wird mit Socken beziehungsweise ABS-Socken gespielt. Es gibt insgesamt drei Bahnen.",
+      "keywords": [
+        "Bowlingschuhe",
+        "Bowling Socken",
+        "Bahnen"
+      ],
+      "suggestions": [
+        "bowling",
+        "socken"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/minibowling.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/minibowling.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "restaurant",
+      "category": "essen",
+      "question": "Gibt es Essen und Getränke im Park?",
+      "answer": "Ja, es gibt ein Restaurant, Kuchen und Kaffee. In der warmen Jahreszeit steht auch ein Biergarten zur Verfügung.",
+      "keywords": [
+        "Restaurant",
+        "Essen",
+        "Trinken",
+        "Bistro",
+        "Kaffee",
+        "Biergarten"
+      ],
+      "suggestions": [
+        "kueche",
+        "restaurant-zahlung",
+        "allergene"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/restaurant.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/restaurant.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "kueche",
+      "category": "essen",
+      "question": "Bis wann ist die Küche geöffnet?",
+      "answer": "Die Restaurantseite nennt Küchenschluss um 18:30 Uhr und Frühstück bis 12 Uhr. Frühstück setzt eine passende Parköffnungszeit voraus.",
+      "keywords": [
+        "Küche",
+        "Frühstück",
+        "18:30",
+        "12 Uhr"
+      ],
+      "suggestions": [
+        "restaurant",
+        "zeiten"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/restaurant.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/restaurant.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "restaurant-zahlung",
+      "category": "essen",
+      "question": "Wie bezahlen wir im Restaurant?",
+      "answer": "Die offiziellen Restaurant- und FAQ-Seiten nennen Kartenzahlung sowie die Jimmy-Guthabenkarte. Guthaben lässt sich an der Eingangskasse aufladen.",
+      "keywords": [
+        "Restaurant bezahlen",
+        "Guthabenkarte",
+        "bonvito",
+        "EC",
+        "Kreditkarte"
+      ],
+      "suggestions": [
+        "gutscheine",
+        "bezahlen"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/restaurant.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/restaurant.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "allergene",
+      "category": "essen",
+      "question": "Wo klären wir Allergien und Unverträglichkeiten?",
+      "answer": "Eine Allergenliste ist laut Restaurantseite vor Ort erhältlich. Besondere Anforderungen bitte vor dem Essen mit dem Team besprechen.",
+      "keywords": [
+        "Allergie",
+        "Allergen",
+        "glutenfrei",
+        "laktose",
+        "vegan",
+        "Unverträglichkeit"
+      ],
+      "suggestions": [
+        "kontakt",
+        "essen-mitbringen"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/restaurant.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/restaurant.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "essen-mitbringen",
+      "category": "essen",
+      "question": "Dürfen eigene Speisen oder Getränke mit?",
+      "answer": "Grundsätzlich nein. Die FAQ nennt Ausnahmen für Babynahrung und allergiebedingte Speisen. Besondere Bedürfnisse vorher mit dem Park abstimmen.",
+      "keywords": [
+        "mitbringen",
+        "Speisen",
+        "Getränke",
+        "Babynahrung",
+        "Allergie Essen"
+      ],
+      "suggestions": [
+        "party-kuchen",
+        "allergene"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/faq.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/faq.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "kiga",
+      "category": "gruppen",
+      "question": "Gibt es Angebote für Kitas, Schulen und Vereine?",
+      "answer": "Ja: regulärer Gruppeneintritt sowie besondere Ausflugspakete für Kindergärten und Grundschulen. Angebote und Buswünsche direkt anfragen.",
+      "keywords": [
+        "Kindergarten",
+        "Kita",
+        "Schule",
+        "Ausflug",
+        "Verein",
+        "Gruppen"
+      ],
+      "suggestions": [
+        "gruppe-eintritt",
+        "kiga-paket",
+        "kiga-bus"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/kiga.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/kiga.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 90
+    },
+    {
+      "id": "kiga-paket",
+      "category": "gruppen",
+      "question": "Was enthält das Ausflugspaket ohne Bus?",
+      "answer": "Angebot 1: Eintritt, Pommes mit Ketchup und 4 Stunden Saftschorle; 18,50 € je Kind. Es ist ein Paket und kein reiner Eintrittspreis.",
+      "keywords": [
+        "18,50",
+        "Schulausflug",
+        "Kindergarten Paket",
+        "ohne Bus"
+      ],
+      "suggestions": [
+        "kiga-bus",
+        "kiga-betreuer"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/kiga.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/kiga.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "kiga-bus",
+      "category": "gruppen",
+      "question": "Gibt es Ausflüge mit Busfahrt?",
+      "answer": "Angebot 2 enthält zusätzlich Hin- und Rückfahrt. Den Gesamtpreis für eure Gruppe müsst ihr individuell anfragen.",
+      "keywords": [
+        "Bus",
+        "Busfahrt",
+        "Transport",
+        "abholen",
+        "Angebot 2"
+      ],
+      "suggestions": [
+        "ausflug-kontakt",
+        "kiga-betreuer"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/kiga.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/kiga.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "kiga-betreuer",
+      "category": "gruppen",
+      "question": "Welche Vorteile bekommen Gruppenbetreuer?",
+      "answer": "Je 10 bezahlte Kinder erhält ein Betreuer freien Eintritt; bei Angebot 2 auch freie Busfahrt. Weitere Paketleistungen stehen auf der Angebotsseite.",
+      "keywords": [
+        "Betreuer",
+        "Lehrer",
+        "Erzieher",
+        "Begleitung frei"
+      ],
+      "suggestions": [
+        "kiga",
+        "ausflug-kontakt"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/kiga.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/kiga.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "ausflug-kontakt",
+      "category": "gruppen",
+      "question": "Wohin schicken wir eine Ausflugsanfrage?",
+      "answer": "Für Kindergarten-, Schul- und Vereinsausflüge: ausflug@jimmys-funpark.de. Telefonisch erreicht ihr den Park unter 08205 969492.",
+      "keywords": [
+        "ausflug@",
+        "Gruppenanfrage",
+        "Schulanfrage"
+      ],
+      "suggestions": [
+        "kiga",
+        "kontakt"
+      ],
+      "links": [
+        {
+          "label": "Ausflugs-E-Mail öffnen",
+          "url": "mailto:ausflug@jimmys-funpark.de"
+        },
+        {
+          "label": "Angebotsseite",
+          "url": "https://www.jimmys-funpark.de/kiga.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/kontakt.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "adresse",
+      "category": "anfahrt",
+      "question": "Wo liegt Jimmy’s Fun Park?",
+      "answer": "Laimeringer Straße 1, 86453 Dasing – direkt an der A8-Ausfahrt Dasing zwischen Augsburg und München.",
+      "keywords": [
+        "Adresse",
+        "Anfahrt",
+        "Dasing",
+        "Augsburg",
+        "München",
+        "Standort"
+      ],
+      "suggestions": [
+        "parken",
+        "oeffentlich",
+        "kontakt"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/kontakt.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/kontakt.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 95
+    },
+    {
+      "id": "parken",
+      "category": "anfahrt",
+      "question": "Gibt es Parkplätze?",
+      "answer": "Die Preisseite nennt kostenlose Parkplätze am Park.",
+      "keywords": [
+        "Parken",
+        "Parkplatz",
+        "kostenlos parken",
+        "Auto"
+      ],
+      "suggestions": [
+        "adresse",
+        "laden"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/preise.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/preise.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "laden",
+      "category": "anfahrt",
+      "question": "Gibt es Lademöglichkeiten für Elektroautos?",
+      "answer": "Auf dem Parkplatz nennt die Startseite sechs Electra-Ladeplätze. Verfügbarkeit und Ladekosten werden dort nicht live abgefragt.",
+      "keywords": [
+        "Elektroauto",
+        "E-Auto",
+        "Ladesäule",
+        "Electra"
+      ],
+      "suggestions": [
+        "adresse",
+        "parken"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "oeffentlich",
+      "category": "anfahrt",
+      "question": "Wie kommen wir mit öffentlichen Verkehrsmitteln hin?",
+      "answer": "Die Kontaktseite nennt Bahnhof Dasing (RB 13), etwa 20 Minuten Fußweg sowie Busse 204, 206 und X732 nach Dasing, Brackenhof beziehungsweise Brackenhof Lindl. Aktuelle Fahrpläne prüfen.",
+      "keywords": [
+        "Bahn",
+        "Bus",
+        "ÖPNV",
+        "Bahnhof",
+        "RB13",
+        "204",
+        "206",
+        "X732"
+      ],
+      "suggestions": [
+        "adresse",
+        "zeiten"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/kontakt.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/kontakt.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "kontakt",
+      "category": "anfahrt",
+      "question": "Wie erreiche ich das Team?",
+      "answer": "Telefon: 08205 969492. Allgemeine E-Mail: info@jimmys-funpark.de. Adresse: Laimeringer Straße 1, 86453 Dasing.",
+      "keywords": [
+        "Kontakt",
+        "Telefon",
+        "E-Mail",
+        "anrufen",
+        "Team",
+        "Frage"
+      ],
+      "suggestions": [
+        "telefonzeiten",
+        "ausflug-kontakt"
+      ],
+      "links": [
+        {
+          "label": "Park anrufen",
+          "url": "tel:+498205969492"
+        },
+        {
+          "label": "E-Mail öffnen",
+          "url": "mailto:info@jimmys-funpark.de"
+        },
+        {
+          "label": "Kontaktseite",
+          "url": "https://www.jimmys-funpark.de/kontakt.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/kontakt.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 90
+    },
+    {
+      "id": "telefonzeiten",
+      "category": "anfahrt",
+      "question": "Wann ist der Park telefonisch erreichbar?",
+      "answer": "Mo, Mi–Fr 9:30–19 Uhr; Di auch am Ruhetag 9:30–17 Uhr; Sa, So, Ferien und Feiertage 10–19 Uhr. Telefonzeiten sind keine zusätzlichen Spielzeiten.",
+      "keywords": [
+        "Telefonzeiten",
+        "Erreichbarkeit",
+        "Büro",
+        "Dienstag anrufen"
+      ],
+      "suggestions": [
+        "kontakt",
+        "zeiten"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/kontakt.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/kontakt.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "gutscheine",
+      "category": "extras",
+      "question": "Wo kann ich Gutscheine kaufen?",
+      "answer": "Die offizielle Webseite verlinkt einen Gutscheinshop. Aktuelle Beträge, Einlösung und Bedingungen bitte dort prüfen.",
+      "keywords": [
+        "Gutschein",
+        "Geschenk",
+        "Weihnachten",
+        "Guthaben"
+      ],
+      "suggestions": [
+        "jahreskarte",
+        "restaurant-zahlung"
+      ],
+      "links": [
+        {
+          "label": "Zum verlinkten Gutscheinshop",
+          "url": "https://www.jimmys-funpark.de/gutscheine.php"
+        },
+        {
+          "label": "Park-Webseite",
+          "url": "https://www.jimmys-funpark.de/"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 75
+    },
+    {
+      "id": "krabbel",
+      "category": "extras",
+      "question": "Gibt es einen Krabbel-Vormittag?",
+      "answer": "Die Startseite kündigt den 15.01.2027, 9–13 Uhr, für Kinder von 0–6 Jahren mit Begleitung an. Reguläre Eintrittspreise; Anmeldung erbeten.",
+      "keywords": [
+        "Krabbelvormittag",
+        "Krabbel-Vormittag",
+        "15.01.2027",
+        "Kleinkind Event"
+      ],
+      "suggestions": [
+        "krabbel-anmeldung",
+        "kleinkinder"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "2027-01-15",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "krabbel-anmeldung",
+      "category": "extras",
+      "question": "Wie melden wir uns zum Krabbel-Vormittag an?",
+      "answer": "Bitte den Park direkt kontaktieren: Die Startseite nennt 15.01.2027, das verlinkte Formular zeigte bei der Recherche noch 16.10.2026. Termin und Anmeldung deshalb bestätigen lassen.",
+      "keywords": [
+        "Krabbel Anmeldung",
+        "Krabbel buchen",
+        "abweichendes Datum"
+      ],
+      "suggestions": [
+        "kontakt",
+        "krabbel"
+      ],
+      "links": [
+        {
+          "label": "Termin beim Team klären",
+          "url": "https://www.jimmys-funpark.de/kontakt.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "2027-01-15",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "vermietung",
+      "category": "extras",
+      "question": "Kann man eine Hüpfburg für ein eigenes Fest mieten?",
+      "answer": "Ja, vermietet werden mehrere Hüpfburgen, eine Riesen-Torwand und ein Riesendart-Spiel zur Selbstabholung. Verfügbarkeit bitte anfragen.",
+      "keywords": [
+        "Hüpfburg",
+        "mieten",
+        "Vermietung",
+        "Fest",
+        "Event"
+      ],
+      "suggestions": [
+        "mietpreise",
+        "kaution",
+        "abholung"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/vermietung.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/vermietung.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-12-22",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "mietpreise",
+      "category": "extras",
+      "question": "Was kosten die Mietgeräte?",
+      "answer": "Tagesmieten: Piraten-Hüpfburg und Schnappy je 210 €; Einhorn- und Fußball-Hüpfburg je 190 €; Riesen-Torwand 150 €; Riesendart 90 €. Aktuellen Umfang auf der Mietseite prüfen.",
+      "keywords": [
+        "Mietpreise",
+        "Hüpfburg Preis",
+        "Riesendart",
+        "Torwand",
+        "Schnappy"
+      ],
+      "suggestions": [
+        "kaution",
+        "abholung"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/vermietung.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/vermietung.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "kaution",
+      "category": "extras",
+      "question": "Wie hoch ist die Mietkaution?",
+      "answer": "Genannt werden 200 € für Hüpfburgen und 100 € für Riesendart, jeweils bar bei Abholung. Für das gewünschte Gerät direkt bestätigen lassen.",
+      "keywords": [
+        "Kaution",
+        "Sicherheit",
+        "Miete bar"
+      ],
+      "suggestions": [
+        "vermietung",
+        "kontakt"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/vermietung.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/vermietung.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    },
+    {
+      "id": "abholung",
+      "category": "extras",
+      "question": "Wie werden Mietgeräte abgeholt und zurückgegeben?",
+      "answer": "Für Hüpfburgen und Torwand wird ein Auto mit Anhängerkupplung benötigt. Unter der Woche: Abholung nach Absprache zwischen 9–20 Uhr; am Wochenende 9 oder 10:15 Uhr. Rückgabe abstimmen.",
+      "keywords": [
+        "Abholung",
+        "Anhänger",
+        "Anhängerkupplung",
+        "Rückgabe"
+      ],
+      "suggestions": [
+        "vermietung",
+        "kontakt"
+      ],
+      "links": [
+        {
+          "label": "Auf der Park-Webseite ansehen",
+          "url": "https://www.jimmys-funpark.de/vermietung.php"
+        }
+      ],
+      "sourceUrl": "https://www.jimmys-funpark.de/vermietung.php",
+      "verifiedAt": "2026-11-22",
+      "reviewAfter": "2026-11-29",
+      "validFrom": "",
+      "validUntil": "",
+      "enabled": true,
+      "priority": 50
+    }
+  ]
+}
