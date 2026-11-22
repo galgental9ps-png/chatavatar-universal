@@ -32,3 +32,16 @@ test('Released avatars accelerate downwards and stop on the floor without passin
   assert.equal(state.y,10);assert.equal(state.velocity,0);assert.ok(state.landed);
 });
 
+test('A hop has anticipation, a bounded arc, descent and a grounded landing', () => {
+  assert.deepEqual(M.jumpAtTime(0,60),{lift:0,progress:0,frame:0,finished:false});
+  assert.equal(M.jumpAtTime(100,60).lift,0);
+  assert.equal(M.jumpAtTime(300,60).frame,1);
+  assert.equal(M.jumpAtTime(460,60).lift,60);
+  assert.equal(M.jumpAtTime(650,60).frame,2);
+  assert.equal(M.jumpAtTime(800,60).frame,3);
+  assert.equal(M.jumpAtTime(1000,60).finished,true);
+  let last=0;
+  for(let ms=0;ms<=1100;ms+=5){const s=M.jumpAtTime(ms,60);assert.ok(s.lift>=0&&s.lift<=60);assert.ok(s.progress>=last&&s.progress<=1);last=s.progress;}
+  assert.equal(M.jumpAtTime(460,0).lift,0);
+});
+

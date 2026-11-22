@@ -4,7 +4,7 @@
   if (window.JimmyChatAvatar) return;
   const script = document.currentScript;
   const BASE = new URL('.', script.src).href;
-  const VERSION = 'jimmy-2';
+  const VERSION = 'jimmy-3';
   const deps = new Map();
   function loadScript(url) {
     if (!deps.has(url)) deps.set(url, new Promise((resolve, reject) => { const s = document.createElement('script'); s.src = url; s.onload = resolve; s.onerror = () => reject(Error('Datei konnte nicht geladen werden: ' + url)); document.head.append(s); }));
@@ -13,14 +13,15 @@
   const engineReady = Promise.all([
     window.JimmyKnowledge ? Promise.resolve() : loadScript(BASE + 'knowledge-core.js'),
     window.JimmyMotion ? Promise.resolve() : loadScript(BASE + 'motion-core.js?v=' + VERSION),
-    window.JimmyMascot ? Promise.resolve() : loadScript(BASE + 'mascot.js?v=' + VERSION)
+    window.JimmyMascot ? Promise.resolve() : loadScript(BASE + 'mascot.js?v=' + VERSION),
+    window.JimmyPersonality ? Promise.resolve() : loadScript(BASE + 'personality-core.js?v=' + VERSION)
   ]);
   function el(tag, cls, text) { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
   class Mascot {
     constructor(options = {}) {
-      this.options = options; this.x = Math.max(8, innerWidth - 210); this.y = 10; this.state = 'idle'; this.facing = 1; this.opened = false; this.paused = false; this.voice = false; this.hidden = false; this.destroyed = false; this.category = ''; this.timers = new Set(); this.frame = 0; this.walkDistance = 0; this.velocity = 0; this.fallVelocity = 0; this.nextWalk = performance.now() + 4500; this.nextHop = performance.now() + 65000; this.last = 0; this.stateUntil = Infinity;
+      this.options = options; this.x = Math.max(8, innerWidth - 210); this.y = 10; this.state = 'idle'; this.facing = 1; this.opened = false; this.paused = false; this.voice = false; this.hidden = false; this.destroyed = false; this.category = ''; this.timers = new Set(); this.frame = 0; this.walkDistance = 0; this.velocity = 0; this.fallVelocity = 0; this.nextWalk = performance.now() + 4500; this.nextHop = performance.now() + 12000 + Math.random() * 5000; this.nextQuip = performance.now() + 9500; this.nextGesture = performance.now() + 9000 + Math.random() * 5000; this.jumpElapsed = 0; this.last = 0; this.stateUntil = Infinity;
       this.motion = matchMedia('(prefers-reduced-motion: reduce)');
-      this.onMotion = () => { this.paused = this.motion.matches; this.setState('idle'); this.render(); };
+      this.onMotion = () => { this.paused = this.motion.matches; this.settleJump(); this.hideTip(); this.setState('idle'); this.render(); };
       this.motion.addEventListener('change', this.onMotion); this.paused = this.motion.matches;
       this.host = el('div'); this.host.id = options.id || 'jimmy-widget'; this.shadow = this.host.attachShadow({ mode: 'open' });
       for (const file of ['avatar.css', 'mascot.css']) { const css = el('link'); css.rel = 'stylesheet'; css.href = BASE + file + '?v=' + VERSION; this.shadow.append(css); }
@@ -39,10 +40,12 @@
       this.tick = this.tick.bind(this); this.raf = requestAnimationFrame(this.tick);
     }
     later(fn, delay) { const id = setTimeout(() => { this.timers.delete(id); if (!this.destroyed) fn(); }, delay); this.timers.add(id); return id; }
+    cancelLater(id) { if (id == null) return; clearTimeout(id); this.timers.delete(id); }
     async init() {
       try {
         await engineReady; if (this.destroyed) return;
         await window.JimmyMascot.preload(); if (this.destroyed) return;
+        this.quips = window.JimmyPersonality.createDeck();
         this.visual = window.JimmyMascot.create(); this.sprite.replaceChildren(this.visual); this.drawFrame();
         const K = window.JimmyKnowledge; let data = this.options.knowledge;
         if (!data) {
@@ -57,7 +60,7 @@
           }
         }
         if (this.destroyed) return;
-        this.setKnowledge(data); this.later(() => this.showTip(), 1800); return this;
+        this.setKnowledge(data); this.greetingTimer = this.later(() => this.showTip(), 1800); return this;
       } catch (err) {
         if (this.destroyed) return;
         this.character.hidden = true; this.tip.hidden = true;
@@ -81,7 +84,7 @@
         if (!this.drag || e.pointerId !== this.drag.pointer) return;
         const dx = e.clientX - this.drag.startX, dy = e.clientY - this.drag.startY;
         if (Math.hypot(dx, dy) > 6) this.drag.moved = true;
-        if (this.drag.moved) { this.setState('held'); this.tip.hidden = true; this.x = this.drag.x + dx; this.y = this.drag.y - dy; this.position(); }
+        if (this.drag.moved) { this.setState('held'); this.hideTip(); this.x = this.drag.x + dx; this.y = this.drag.y - dy; this.position(); }
       });
       const release = e => {
         if (!this.drag || e.pointerId !== this.drag.pointer) return;
@@ -108,12 +111,33 @@
       this.tip.style.left = Math.max(10, Math.min(innerWidth - (innerWidth <= 540 ? 220 : 246), this.x - 25)) + 'px';
       this.tip.style.bottom = Math.min(innerHeight - 110, this.y + size - 12) + 'px';
     }
+    settleJump() {
+      if (this.state !== 'jump') return;
+      this.y = window.JimmyMotion.dimensions(innerWidth).ground;
+      this.jumpElapsed = 0; this.velocity = 0; this.fallVelocity = 0; this.position();
+    }
+    hop() {
+      if (!this.pack || this.destroyed || document.hidden || this.paused || this.motion.matches || this.opened || this.hidden || this.drag || ['jump', 'fall', 'held'].includes(this.state) || this.y > 11) return false;
+      const M = window.JimmyMotion, size = M.dimensions(innerWidth), max = Math.max(0, innerWidth - size.width);
+      this.jumpHeight = Math.min(size.height * .34, Math.max(0, innerHeight - size.height - size.ground - 6));
+      if (this.jumpHeight < 8) return false;
+      this.jumpFromX = this.x;
+      let target = M.clamp(this.x + this.facing * size.width * .38, 0, max);
+      if (Math.abs(target - this.x) < 12) target = M.clamp(this.x - this.facing * size.width * .38, 0, max);
+      this.jumpTargetX = target;
+      if (target !== this.x) this.facing = target < this.x ? -1 : 1;
+      this.jumpElapsed = 0; this.velocity = 0; this.fallVelocity = 0;
+      this.cancelLater(this.greetingTimer);
+      this.showQuip('jump', { animate: false, replace: true });
+      this.setState('jump'); return true;
+    }
     walkTo(target) {
       if (!this.pack || this.paused || this.hidden || this.drag || this.y > 11) return false;
       const M = window.JimmyMotion, size = M.dimensions(innerWidth);
       this.targetX = M.clamp(Number(target) || 0, 0, Math.max(0, innerWidth - size.width));
       if (Math.abs(this.targetX - this.x) < 20) return false;
-      this.opened = false; this.panel.hidden = true; this.character.setAttribute('aria-expanded', 'false'); this.tip.hidden = true;
+      this.opened = false; this.panel.hidden = true; this.character.setAttribute('aria-expanded', 'false');
+      if (this.tipKind !== 'quip') this.hideTip();
       this.facing = this.targetX < this.x ? -1 : 1; this.velocity = 0; this.walkDistance = 0; this.turnUntil = performance.now() + 140;
       this.setState('walk'); return true;
     }
@@ -122,7 +146,20 @@
       const dt = Math.min(.05, this.last ? (now - this.last) / 1000 : 0); this.last = now;
       if (!document.hidden && !this.paused && !this.opened && !this.hidden && !this.drag && this.pack && !this.character.matches(':focus-visible')) {
         const M = window.JimmyMotion, size = M.dimensions(innerWidth);
-        if (this.y > size.ground || this.state === 'fall') {
+        if (now >= this.nextQuip && this.tip.hidden && ['idle', 'walk'].includes(this.state)) this.showQuip(this.state === 'walk' ? 'walk' : 'idle');
+        if (this.state === 'jump') {
+          this.jumpElapsed += dt * 1000;
+          this.jumpHeight = Math.min(this.jumpHeight, Math.max(0, innerHeight - size.height - size.ground - 6));
+          const jump = M.jumpAtTime(this.jumpElapsed, this.jumpHeight);
+          this.x = M.clamp(this.jumpFromX + (this.jumpTargetX - this.jumpFromX) * jump.progress, 0, Math.max(0, innerWidth - size.width));
+          this.y = size.ground + jump.lift; this.frame = jump.frame;
+          if (jump.finished) {
+            this.y = size.ground; this.setState('idle');
+            this.nextHop = now + 16000 + Math.random() * 12000;
+            this.nextWalk = now + 900 + Math.random() * 1500;
+          }
+          this.position();
+        } else if (this.y > size.ground || this.state === 'fall') {
           const fall = M.fallStep({ y: this.y, velocity: this.fallVelocity }, dt, size.ground);
           this.y = fall.y; this.fallVelocity = fall.velocity;
           if (fall.landed) this.setState('land');
@@ -134,11 +171,17 @@
             this.x = next.x; this.velocity = next.velocity; this.walkDistance = next.distance;
             this.frame = M.frameAtDistance(this.walkDistance, size.stride);
             if (next.arrived) {
-              this.x = this.targetX; this.velocity = 0; this.setState('idle'); this.nextWalk = now + 4500 + Math.random() * 4500;
+              this.x = this.targetX; this.velocity = 0; this.setState('idle'); this.nextWalk = now + 2500 + Math.random() * 3500;
               this.tipCount = (this.tipCount || 0) + 1; if (this.tipCount % 3 === 0) this.showTip();
             }
             this.position();
           }
+        } else if (this.state === 'idle' && now >= this.nextHop) {
+          if (!this.hop()) this.nextHop = now + 5000;
+        } else if (this.state === 'idle' && this.tip.hidden && now >= this.nextGesture) {
+          const gestures = ['wave', 'think', 'celebrate', 'rest'];
+          this.setState(gestures[Math.floor(Math.random() * gestures.length)]);
+          this.nextGesture = now + 9000 + Math.random() * 8000;
         } else if (now > this.nextWalk && this.state === 'idle') {
           const max = Math.max(0, innerWidth - size.width - 8);
           const distance = Math.min(max, 140 + Math.random() * 250);
@@ -151,15 +194,32 @@
       this.raf = requestAnimationFrame(this.tick);
     }
     showTip() {
-      if (!this.pack || this.opened || this.hidden || this.drag || this.paused) return;
+      if (!this.pack || this.destroyed || document.hidden || this.opened || this.hidden || this.drag || this.paused || this.state !== 'idle' || !this.tip.hidden) return false;
       const ids = this.pack.suggested, id = ids[(this.tipIndex || 0) % Math.max(1, ids.length)]; this.tipIndex = (this.tipIndex || 0) + 1;
       const e = this.pack.entries.find(e => e.id === id && window.JimmyKnowledge.active(e)); if (!e) return;
-      this.tipEntry = e.id; this.tip.replaceChildren(el('div', '', e.question), el('span', '', 'Anklicken · Ich helfe Ihnen →')); this.tip.hidden = false; this.setState('wave'); this.position();
-      this.later(() => { this.tip.hidden = true; if (!this.opened && !this.drag) this.setState('idle'); }, 9000);
+      this.showBubble(e.question, 'Anklicken · Ich helfe euch', { entry: e.id, kind: 'knowledge', duration: 8500 });
+      this.setState('wave'); return true;
     }
-    open() { if (!this.pack) return; this.hidden = false; this.character.hidden = false; this.launcher.hidden = true; this.opened = true; this.tip.hidden = true; this.panel.hidden = false; this.character.setAttribute('aria-expanded', 'true'); this.setState('wave'); this.render(); this.panel.querySelector('.close')?.focus({ preventScroll: true }); }
+    hideTip() { this.cancelLater(this.bubbleTimer); this.bubbleTimer = null; this.tip.hidden = true; this.tipEntry = ''; this.tipKind = ''; }
+    showBubble(text, caption, { entry = '', kind = 'quip', duration = 6500 } = {}) {
+      this.hideTip(); this.tipEntry = entry; this.tipKind = kind;
+      this.tip.replaceChildren(el('div', '', text), el('span', '', caption));
+      this.tip.hidden = false; this.position();
+      this.bubbleTimer = this.later(() => this.hideTip(), duration);
+    }
+    showQuip(kind = 'idle', { animate = true, replace = false, userInitiated = false } = {}) {
+      if (!this.quips || !this.pack || this.destroyed || document.hidden || this.opened || this.hidden || this.drag || (this.paused && !userInitiated) || (!this.tip.hidden && !replace)) return false;
+      this.cancelLater(this.greetingTimer);
+      const line = this.quips.next(kind);
+      this.showBubble(line, 'Anklicken · Fragen an Jimmy');
+      this.nextQuip = performance.now() + 18000 + Math.random() * 10000;
+      if (animate && !this.paused && !this.motion.matches && this.state === 'idle') this.setState('talk');
+      if (this.voice) this.speak(line);
+      return true;
+    }
+    open() { if (!this.pack) return; this.settleJump(); this.hideTip(); this.hidden = false; this.character.hidden = false; this.launcher.hidden = true; this.opened = true; this.panel.hidden = false; this.character.setAttribute('aria-expanded', 'true'); this.setState('wave'); this.render(); this.panel.querySelector('.close')?.focus({ preventScroll: true }); }
     close() { this.opened = false; this.panel.hidden = true; this.character.setAttribute('aria-expanded', 'false'); this.nextWalk = performance.now() + 5000; this.setState('idle'); this.character.focus({ preventScroll: true }); }
-    minimize() { this.opened = false; this.hidden = true; this.panel.hidden = true; this.tip.hidden = true; this.character.hidden = true; this.launcher.hidden = false; this.character.setAttribute('aria-expanded', 'false'); this.launcher.focus(); }
+    minimize() { this.settleJump(); this.hideTip(); this.opened = false; this.hidden = true; this.panel.hidden = true; this.character.hidden = true; this.launcher.hidden = false; this.character.setAttribute('aria-expanded', 'false'); this.launcher.focus(); }
     buttonFor(entry) {
       const b = el('button', 'choice'); b.type = 'button'; b.append(el('span', '', entry.question)); b.onclick = () => this.answer(entry.id); return b;
     }
@@ -195,7 +255,7 @@
       }
       const foot = el('footer', 'foot'); foot.append(el('span', '', '✦ Hinterlegtes Parkwissen · Demo'));
       const voice = el('button', '', this.voice ? 'Ton an' : 'Vorlesen'); voice.setAttribute('aria-label', 'Vorlesen ' + (this.voice ? 'ausschalten' : 'einschalten')); voice.setAttribute('aria-pressed', String(this.voice)); voice.disabled = !('speechSynthesis' in window); voice.onclick = () => { this.voice = !this.voice; if (!this.voice && 'speechSynthesis' in window) speechSynthesis.cancel(); if (this.voice && current) this.speak(current.answer); this.render(); };
-      const pause = el('button', '', this.paused ? 'Weiterlaufen' : 'Pause'); pause.setAttribute('aria-pressed', String(this.paused)); pause.onclick = () => { this.paused = !this.paused; this.setState('idle'); this.nextWalk = performance.now() + 3000; this.render(); }; foot.append(voice, pause); this.panel.append(head, body, foot);
+      const pause = el('button', '', this.paused ? 'Weiterlaufen' : 'Pause'); pause.setAttribute('aria-pressed', String(this.paused)); pause.onclick = () => { this.paused = !this.paused; this.settleJump(); this.hideTip(); this.setState('idle'); this.nextWalk = performance.now() + 3000; this.nextHop = performance.now() + 12000; this.render(); }; foot.append(voice, pause); this.panel.append(head, body, foot);
     }
     destroy() { this.destroyed = true; cancelAnimationFrame(this.raf); this.timers.forEach(clearTimeout); document.removeEventListener('keydown', this.onKey); window.removeEventListener('resize', this.onResize); document.removeEventListener('visibilitychange', this.onVisibility); this.motion.removeEventListener('change', this.onMotion); if (this.voice && 'speechSynthesis' in window) speechSynthesis.cancel(); this.host.remove(); }
   }

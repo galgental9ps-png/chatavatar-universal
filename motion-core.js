@@ -27,6 +27,15 @@
     const nextY = Math.max(ground, y - nextVelocity * dt);
     return { y: nextY, velocity: nextY === ground ? 0 : nextVelocity, landed: nextY === ground };
   }
-  return { dimensions, clamp, frameAtDistance, walkStep, fallStep };
+  function jumpAtTime(milliseconds, height = 64) {
+    const time = Math.max(0, milliseconds);
+    if (time < 140) return { lift: 0, progress: 0, frame: 0, finished: false };
+    if (time < 780) {
+      const progress = (time - 140) / 640;
+      return { lift: 4 * Math.max(0, height) * progress * (1 - progress), progress, frame: progress < .5 ? 1 : 2, finished: false };
+    }
+    return { lift: 0, progress: 1, frame: 3, finished: time >= 960 };
+  }
+  return { dimensions, clamp, frameAtDistance, walkStep, fallStep, jumpAtTime };
 });
 

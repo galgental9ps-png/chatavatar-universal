@@ -13,12 +13,25 @@
   function answer(id) { instance.open(); if (id) instance.answer(id); }
   document.querySelectorAll('[data-answer]').forEach(b => b.onclick = () => answer(b.dataset.answer));
   $('start-avatar').onclick = () => answer();
-  $('walk-demo').onclick = () => {
-    if (instance.paused) { instance.paused = false; instance.setState('idle'); }
+  function prepareDemo(moving = true) {
+    if (moving && instance.motion.matches) {
+      $('toast').textContent = 'Bewegungen sind in den Geräteeinstellungen reduziert. Jimmy bleibt deshalb ruhig.';
+      $('toast').hidden = false;
+      clearTimeout(toastTimer); toastTimer = setTimeout(() => { $('toast').hidden = true; }, 5000);
+      return false;
+    }
+    if (moving && instance.paused) { instance.paused = false; instance.setState('idle'); }
+    instance.opened = false; instance.panel.hidden = true; instance.character.setAttribute('aria-expanded', 'false');
     if (instance.hidden) { instance.hidden = false; instance.character.hidden = false; instance.launcher.hidden = true; }
+    return true;
+  }
+  $('walk-demo').onclick = () => {
+    if (!prepareDemo()) return;
     const max = Math.max(0, innerWidth - (innerWidth <= 540 ? 152 : 192) - 8);
     instance.walkTo(instance.x > max / 2 ? 8 : max);
   };
+  $('hop-demo').onclick = () => { if (prepareDemo()) instance.hop(); };
+  $('quip-demo').onclick = () => { if (prepareDemo(false)) instance.showQuip('idle', { replace: true, userInitiated: true }); };
   function draw() {
     const results = K.search(pack, $('knowledge-search').value, { category: $('knowledge-category').value, limit: 1500 });
     $('question-grid').replaceChildren();

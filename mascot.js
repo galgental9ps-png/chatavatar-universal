@@ -1,11 +1,11 @@
-/* Jimmy: detailed painted sprites and a eight complete walking frames with a consistent shoulder perspective. */
+/* Jimmy: complete painted action frames; gentle arm swing, fixed shoulder perspective. */
 (function () {
   'use strict';
   const source = document.currentScript;
   const base = new URL('.', source.src).href;
   const images = {
     poses: base + 'assets/jimmy-poses-v1.webp',
-    walk: base + 'assets/jimmy-walk-v2.webp'
+    walk: base + 'assets/jimmy-walk-v3.webp'
   };
   let loaded;
   const poses = { idle: 0, wave: 1, talk: 2, point: 3, think: 13, held: 14, rest: 15, celebrate: 12, fall: 10, land: 11 };

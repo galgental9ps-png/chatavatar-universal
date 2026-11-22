@@ -1,6 +1,6 @@
 # Jimmy · Chatavatar für Jimmy’s Fun Park
 
-Ein animierter Affe für eine Webseite: Er läuft am Seitenrand, winkt, lässt sich ziehen und beantwortet anklickbare Fragen über Jimmy’s Fun Park in Dasing. Die Anwendung basiert auf [Pinselio](https://github.com/galgental9ps-png/atelier-chatavatar), mit eigener Figur, eigenem Parkwissen und getrennter JavaScript-Schnittstelle.
+Ein animierter Affe für eine Webseite: Er läuft am Seitenrand, hüpft, winkt, lässt sich ziehen und beantwortet anklickbare Fragen über Jimmy’s Fun Park in Dasing. Die Anwendung basiert auf [Pinselio](https://github.com/galgental9ps-png/atelier-chatavatar), mit eigener Figur, eigenem Parkwissen und getrennter JavaScript-Schnittstelle.
 
 Eigenständiges Demo-Konzept, kein bereits beauftragter offizieller Park-Assistent. Recherche: **22.11.2026**, ausschließlich öffentliche Primärseiten des Parks. Quellen und Prüftermine stehen an jeder Antwort; Besonderheiten sind in [docs/QUELLEN.md](docs/QUELLEN.md) dokumentiert.
 
@@ -37,6 +37,14 @@ Hinterlegt sind Besuchszeiten und Ausnahmen, Eintritt und Jahreskarten, Geburtst
 
 Keine Live-Abfrage von Buchungen, Auslastung, freien Terminen oder Preisen. Die Links öffnen offizielle Informations- und Buchungsseiten; Jimmy nimmt selbst keine Buchung vor. Preis- und Zeitangaben haben kurze Prüffristen. Befristete Ankündigungen werden nach ihrem Gültigkeitsende nicht mehr vorgeschlagen.
 
+## Bewegung und Affensprüche
+
+Jimmy verwendet vollständige Actionframes. Die acht Laufbilder in `assets/jimmy-walk-v3.webp` zeigen einen leichten Armschwung bei gleichbleibender Schulterperspektive. Es werden keine einzelnen Körperteile zusammengesetzt. Die vorhandenen vier Sprungbilder zeigen Ausholen, Aufstieg, Abstieg und Landung. Kleine seitliche Hüpfer bleiben innerhalb des sichtbaren Fensters; bei wenig Platz werden sie begrenzt oder ausgelassen.
+
+Zwischendurch wechselt Jimmy zwischen Winken, Grübeln, Jubeln und Ausruhen. `personality-core.js` enthält 60 kurze Sprüche: 32 für Pausen, 16 fürs Laufen und 12 fürs Springen. Jeder Vorrat wird durchgemischt und vollständig verwendet, bevor Sprüche wiederholt werden. Die Sprüche enthalten keine neuen Parkauskünfte. Während einer geöffneten Antwort, beim Ziehen, bei Pause und auf ausgeblendeten Seiten werden keine automatischen Sprüche gestartet. Vorlesen bleibt freiwillig. Reduzierte Bewegung verhindert automatische Hüpfer.
+
+Auf der Produktseite lassen sich Laufen, Springen und ein Affenspruch einzeln ausprobieren.
+
 ## Wissensstudio
 
 1. `admin.html` öffnen. Über **GitHub-Zugang** zunächst den aktuellen Repository-Stand laden.
@@ -63,7 +71,7 @@ node tools/build-site.cjs
 
 ## Eigene Schnittstelle
 
-`JimmyChatAvatar.instance` ist die Standardinstanz. Sie bietet `open()`, `close()`, `minimize()`, `answer(id)`, `walkTo(x)`, `setKnowledge(pack)` und `destroy()`. Vor Zugriff auf die Antworten `await JimmyChatAvatar.instance.ready` verwenden. Beispiel: `JimmyChatAvatar.instance.answer('zeiten')`.
+`JimmyChatAvatar.instance` ist die Standardinstanz. Sie bietet `open()`, `close()`, `minimize()`, `answer(id)`, `walkTo(x)`, `hop()`, `showQuip()`, `setKnowledge(pack)` und `destroy()`. Vor Zugriff auf die Antworten `await JimmyChatAvatar.instance.ready` verwenden. Beispiel: `JimmyChatAvatar.instance.answer('zeiten')`.
 
 Eigene Instanz: Script mit `data-manual="true"` laden und `JimmyChatAvatar.create(...)` verwenden. Eigene Wissensquelle über `data-knowledge="https://…/firma.json"` angeben. Bei anderer Domain muss diese Quelle CORS erlauben. DOM-Ereignisse heißen `jimmy:ready`, `jimmy:answer` und `jimmy:error`.
 
