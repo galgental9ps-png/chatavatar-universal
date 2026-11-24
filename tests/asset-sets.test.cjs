@@ -3,7 +3,7 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const Assets=require('../asset-sets.js'),Motion=require('../motion-core.js'),P=require('../personality-core.js');
 
 test('A single active selection resolves complete sets while preserving the monkey set',()=>{
-  assert.equal(Assets.activeId,'ice-skater');assert.equal(Assets.active.name,'Lumi');assert.equal(Assets.get('jimmy').motion.kind,'walk');
+  assert.equal(Assets.active,Assets.get(Assets.activeId));assert.equal(Assets.get('ice-skater').name,'Lumi');assert.equal(Assets.get('jimmy').motion.kind,'walk');
   assert.throws(()=>Assets.get('missing'),/Unbekanntes/);
   for(const asset of Object.values(Assets.sets)){
     assert.ok(Object.isFrozen(asset));assert.equal(asset.environment,'none');
@@ -45,7 +45,7 @@ test('Each pirouette view renders one opaque complete illustration without rotat
   const calls=[];
   function canvas(){return {style:{},dataset:{},width:0,height:0,setAttribute(){},getContext(){return {clearRect(){},drawImage(...args){calls.push({args,alpha:this.globalAlpha});},globalAlpha:1};}};}
   class Image{constructor(){this.width=this.height=this.naturalWidth=this.naturalHeight=400;}set src(value){this.url=value;queueMicrotask(()=>this.onload());}}
-  const window={UniversalAvatarAssets:Assets,devicePixelRatio:1};
+  const window={UniversalAvatarAssets:{...Assets,active:Assets.get('ice-skater')},devicePixelRatio:1};
   vm.runInNewContext(fs.readFileSync(require.resolve('../mascot.js'),'utf8'),{window,document:{currentScript:{src:'https://example.test/mascot.js'},createElement:canvas},Image,URL,setTimeout,clearTimeout});
   await window.JimmyMascot.preload();const element=window.JimmyMascot.create();
   for(let i=0;i<16;i++){
