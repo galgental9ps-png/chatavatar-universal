@@ -10,7 +10,8 @@
     const desired = viewportWidth <= 540 ? profile.mobile || 152 : profile.desktop || 192;
     const size = Math.max(72,Math.min(desired,viewportWidth-16,viewportHeight-24));
     return { width: size, height: size, ground: 10, stride: size * (profile.stride || .43), speed: size * (profile.speed || .44), acceleration: profile.acceleration || 3.2, frames: profile.frames || 8,
-      tempo: profile.tempo || 1, performanceSpeed: size * (profile.performanceSpeed || profile.speed || .44) };
+      tempo: profile.tempo || 1, jumpTempo: profile.jumpTempo || profile.tempo || 1, spinTempo: profile.spinTempo || profile.tempo || 1,
+      performanceSpeed: size * (profile.performanceSpeed || profile.speed || .44) };
   }
   function frameAtDistance(distance, stride, frames = 8) {
     return Math.floor(((Math.max(0, distance) / Math.max(1, stride)) % 1) * frames) % frames;

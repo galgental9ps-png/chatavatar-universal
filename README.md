@@ -2,7 +2,9 @@
 
 Aktiv ist **Lumi, die Eiskunstläuferin**: eine ruhiger abgespielte Kür mit tiefem Anlauf, einfachem und doppeltem Drehsprung, weichen Landungen, Überkreuzschritten, tiefem Ausfallschritt, Spirale und aufrechten Pirouetten. Alle Bewegungen verwenden den gemeinsamen Master-Atlas mit 64 vollständigen Posen. Auf üblichen Desktop-Fenstern dauert die Kür etwa 35–55 Sekunden; breite Fenster verlängern den Anlauf statt das Fahrtempo. Es wird keine Eisfläche eingeblendet. Jimmy bleibt als vollständiges zweites Asset-Set erhalten.
 
-Die bewegte Figur ist auf dem Desktop 192 Pixel, mobil 160 Pixel breit. Die Vorschau verwendet 256 bzw. 240 Pixel und zeichnet direkt in der tatsächlichen Bildschirmauflösung. Dadurch entfällt das nachträgliche Strecken eines zu kleinen Canvas. Das Ausgangsbild enthält 192 × 192 Pixel pro Pose; größere Canvas-Bitmaps erzeugen keine zusätzlichen Bilddetails.
+Die bewegte Figur ist auf dem Desktop 192 Pixel, mobil 160 Pixel breit. Die Vorschau verwendet 256 bzw. 240 Pixel und zeichnet direkt in der tatsächlichen Bildschirmauflösung. Dadurch entfällt das nachträgliche Strecken eines zu kleinen Canvas. Der restaurierte Master `assets/lumi-master-v2.webp` erhält alle 64 vollständigen Posen und hat klarere Gesichtsdetails und Konturen. Er wird verlustfrei mit Transparenz gespeichert; der ursprüngliche Master bleibt erhalten.
+
+Der Anlauf verwendet die acht Quellposen einmal je Bewegungszyklus. Überkreuzschritte liegen im verbindenden Gleitabschnitt. Vor jedem Sprung schließt Lumi ihre Haltung ohne eine zweite schnelle Anlauffolge. `jumpTempo: .86` spielt den Sprung etwa 24 % kürzer als die vorige Fassung mit `.65`; `spinTempo: .76` beschleunigt die eigentliche Pirouette behutsam. Gleiten, Begrüßung und Landung behalten ihr ruhigeres Tempo.
 
 Die Auswahl steht zentral in `asset-sets.js`: `const ACTIVE_ASSET_SET = 'ice-skater';`. Für Jimmy genügt der Wert `'jimmy'`. Bei einem späteren Wechsel braucht nur diese Auswahl geändert und veröffentlicht zu werden. Die Bilddateien, Bewegungen, Namen und Sprüche folgen der Auswahl. Details und Dateiliste: [docs/ASSET-SETS.md](docs/ASSET-SETS.md).
 

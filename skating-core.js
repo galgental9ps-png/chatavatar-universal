@@ -15,13 +15,14 @@
     const max = Math.max(0, viewportWidth - size.width), margin = Math.min(12, max / 2);
     const left = margin, right = max - margin;
     const tempo = clamp(size.tempo || 1, .25, 2), topSpeed = Math.max(1, size.performanceSpeed || size.width * 1.2);
+    const jumpTempo=clamp(size.jumpTempo||tempo,.25,2),spinTempo=clamp(size.spinTempo||tempo,.25,2);
     let x = clamp(startX, left, right), direction = facing < 0 ? -1 : 1, time = 0;
     const travelDirection=x > (left + right) / 2 ? -1 : 1;
     const blocks = [];
     const add = block => { block.start = time; time += block.duration; block.end = time; blocks.push(block); };
     const pass = (phases, target) => {
       const to = clamp(target, left, right);
-      const paced = phases.map(item => ({ ...item, duration: item.duration / tempo }));
+      const paced = phases.map(item => ({ ...item, duration: item.duration / (item.name==='jump'?jumpTempo:tempo) }));
       // A quintic glide reaches 1.875 times its average speed. Give wide screens
       // a longer approach instead of speeding up the whole routine or stretching a jump.
       const minimum = 1875 * Math.abs(to - x) / topSpeed;
@@ -34,7 +35,7 @@
       add({ kind: 'pass', from: x, to, facing: direction, duration: offset, phases: steps }); x = to;
     };
     const turn = (spinDuration, turns, reverse = true, entry = 400, exit = 450) => {
-      entry /= tempo; spinDuration /= tempo; exit /= tempo;
+      entry /= tempo; spinDuration /= spinTempo; exit /= tempo;
       add({ kind: 'turn', from: x, to: x, fromFacing: direction, toFacing: reverse ? -direction : direction,
         entry, spinDuration, exit, turns, duration: entry + spinDuration + exit });
       if (reverse) direction = -direction;
@@ -48,12 +49,12 @@
       pass([phase('speed', 1200), phase('jump', 1470, { turns: 1 }), phase('landing', 500)],
         x + direction * Math.min(right - left, size.width * 3.3));
     } else {
-      pass([phase('gather', 250), phase('speed', 1050), phase('footwork', 800), phase('speed', 550),
+      pass([phase('speed', 1900),
         phase('jump', 1470, { turns: 1 }), phase('landing', 350)], edge());
       turn(1500, 2);
       pass([phase('spiral', 2300), phase('footwork', 1100), phase('glide', 300)], edge());
       turn(1000, 1, true, 350, 400);
-      pass([phase('speed', 1000), phase('footwork', 650), phase('jump', 1550, { turns: 2 }), phase('landing', 400)], edge());
+      pass([phase('speed', 1500), phase('jump', 1550, { turns: 2 }), phase('landing', 400)], edge());
       turn(1750, 2);
       pass([phase('glide', 1000)], x + direction * Math.min(size.width * 1.3, (right - left) * .35));
       add({ kind: 'bow', from: x, to: x, facing: direction, duration: 1050 / tempo });
@@ -79,13 +80,25 @@
     const distance = Math.abs(block.to - block.from) * eased;
     const base = { x: block.from + (block.to - block.from) * eased, facing: block.facing, lift: 0,
       velocity: Math.abs(block.to - block.from) * 30 * progress ** 2 * (1 - progress) ** 2 / (block.duration / 1000) };
-    const item = block.phases.find(item => elapsed < item.start + item.duration) || block.phases.at(-1);
+    const itemIndex=block.phases.findIndex(item=>elapsed<item.start+item.duration);
+    const item=block.phases[itemIndex<0?block.phases.length-1:itemIndex];
     const p = clamp((elapsed - item.start) / item.duration, 0, 1);
     const strideFrame = wrap(distance / Math.max(1, plan.size * 1.3) * 16);
     let frame;
     switch (item.name) {
       case 'gather': frame = { sheet: 'jumpBridge', index: Math.min(2, Math.floor(p * 3)), phase: 'gather' }; break;
-      case 'speed': frame = { sheet: 'speed', index: strideFrame, phase: 'speed' }; break;
+      case 'speed': {
+        let index=strideFrame;
+        if(block.phases[itemIndex+1]?.name==='jump'){
+          const settle=Math.min(450,item.duration*.25),start=item.start+item.duration-settle;
+          if(elapsed>=start){
+            const startDistance=Math.abs(block.to-block.from)*smooth(start/block.duration);
+            const from=wrap(startDistance/Math.max(1,plan.size*1.3)*16);
+            index=Math.floor(from+(15-from)*smooth((elapsed-start)/settle));
+          }
+        }
+        frame={sheet:'speed',index,phase:'speed'};break;
+      }
       case 'footwork': frame = { sheet: 'footwork', index: Math.min(15, Math.floor(p * 16)), phase: p > .45 && p < .8 ? 'lunge' : 'crossovers' }; break;
       case 'jump': frame = jumpAt(p, Math.min(plan.maxLift,plan.jumpHeight * (item.turns > 1 ? 1.08 : 1)), item.turns); break;
       case 'landing': frame = { sheet: 'jumpBridge', index: 15, phase: 'landing-exit' }; break;

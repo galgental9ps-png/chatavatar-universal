@@ -19,8 +19,8 @@
       id:'ice-skater',name:'Lumi',role:'Eiskunstläuferin',subtitle:'Deine anmutige Begleiterin',
       introduction:'Die Eiskunstläuferin zeigt ihre kleine Kür: sanfter Anlauf, Drehsprünge, ruhige Pirouetten und elegante Gleitfiguren. Bei Fragen zum Park hilft sie euch gerne.',
       renderer:'canvas',environment:'none',poses,
-      master:{file:'assets/lumi-master-v1.webp',columns:8,rows:8,frames:{"poses":[0,1,2,3,0,5,6,7,24,29,30,44,6,5,5,7],"glide":[8,9,10,11,12,13,14,15,8,9,10,11,12,13,14,15],"speed":[16,17,18,19,20,21,22,23,16,17,18,19,20,21,22,23],"jump":[24,25,26,27,32,33,34,35,36,37,38,39,41,42,43,44],"spin":[32,32,33,33,34,34,35,35,36,36,37,37,38,38,39,39],"spiral":[48,49,50,51,52,53,52,51,52,53,52,51,53,54,55,48],"flow":[3,42,41,41,40,40,39,32,40,40,41,41,42,42,43,47],"footwork":[56,57,58,59,60,61,62,63,56,57,58,59,60,61,62,63],"jumpBridge":[24,25,26,27,28,29,30,31,40,41,42,43,44,45,46,47]}},
-      motion:{kind:'ice',desktop:192,mobile:160,stride:1.3,speed:.72,performanceSpeed:1.2,tempo:.65,acceleration:2.4,frames:16,spinDuration:4600,stopDuration:900},
+      master:{file:'assets/lumi-master-v2.webp',width:1254,height:1254,columns:8,rows:8,frames:{"poses":[0,1,2,3,0,5,6,7,24,29,30,44,6,5,5,7],"glide":[8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15],"speed":[16,16,17,17,18,18,19,19,20,20,21,21,22,22,23,23],"jump":[24,25,26,27,32,33,34,35,36,37,38,39,41,42,43,44],"spin":[32,32,33,33,34,34,35,35,36,36,37,37,38,38,39,39],"spiral":[48,49,50,51,52,53,52,51,52,53,52,51,53,54,55,48],"flow":[3,42,41,41,40,40,39,32,40,40,41,41,42,42,43,47],"footwork":[56,56,57,57,58,58,59,59,60,60,61,61,62,62,63,63],"jumpBridge":[24,25,26,27,28,29,30,31,40,41,42,43,44,45,46,47]}},
+      motion:{kind:'ice',desktop:192,mobile:160,stride:1.3,speed:.72,performanceSpeed:1.2,tempo:.65,jumpTempo:.86,spinTempo:.76,acceleration:2.4,frames:16,spinDuration:4100,stopDuration:900},
       sheets:{
         poses:{file:'assets/ice-skater-poses-v1.webp',columns:4,rows:4,height:.88,reference:0},
         glide:{file:'assets/ice-skater-glide-v1.webp',columns:4,rows:4,height:.88,reference:0},
@@ -83,9 +83,10 @@
     const ice=asset.motion.kind==='ice',elapsed=Math.max(0,details.elapsed||0)*(ice?asset.motion.tempo||1:1);
     if(ice&&details.selection&&Object.hasOwn(asset.sheets,details.selection.sheet))return {sheet:details.selection.sheet,index:wrap(details.selection.index,16)};
     if(ice&&state==='spin'){
-      if(elapsed<.2)return {sheet:'spin',index:0};
-      if(elapsed<2.35)return {sheet:'spin',index:wrap((elapsed-.2)*32/2.15,16)};
-      return elapsed<2.45?{sheet:'spin',index:0}:{sheet:'poses',index:elapsed<2.65?12:0};
+      const spinElapsed=Math.max(0,details.elapsed||0)*(asset.motion.spinTempo||asset.motion.tempo||1);
+      if(spinElapsed<.2)return {sheet:'spin',index:0};
+      if(spinElapsed<2.35)return {sheet:'spin',index:wrap((spinElapsed-.2)*32/2.15,16)};
+      return spinElapsed<2.45?{sheet:'spin',index:0}:{sheet:'poses',index:spinElapsed<2.65?12:0};
     }
     if(ice&&state==='skate-stop')return elapsed<.26?{sheet:'glide',index:elapsed<.13?15:0}:{sheet:'poses',index:0};
     if(state==='walk'){

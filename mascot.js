@@ -113,7 +113,7 @@
       })));
         loaded=asset.master?new Promise((resolve,reject)=>{
           const image=new Image(),url=base+asset.master.file,timeout=setTimeout(()=>reject(Error('Master-Atlas nicht verfügbar.')),8000);
-          image.onload=()=>{clearTimeout(timeout);if(image.naturalWidth!==1536||image.naturalHeight!==1536){reject(Error('Ungültiges Master-Raster.'));return;}masterImage=image;resolve();};
+          image.onload=()=>{clearTimeout(timeout);if(image.naturalWidth!==(asset.master.width||1536)||image.naturalHeight!==(asset.master.height||1536)){reject(Error('Ungültiges Master-Raster.'));return;}masterImage=image;resolve();};
           image.onerror=()=>{clearTimeout(timeout);reject(Error('Master-Atlas nicht verfügbar.'));};
           if(/^https?:/.test(url))image.crossOrigin='anonymous';image.src=url;
         }).catch(legacy):legacy();

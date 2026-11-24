@@ -35,9 +35,32 @@ test('Wide screens lengthen the approach without speeding up the travel or stret
       assert.ok(Math.abs(block.to-block.from)*1875/block.duration<=size.performanceSpeed+.001);
       for(const item of block.phases)if(item.name==='jump')jumpDurations.push(item.duration);
     }
-    assert.deepEqual(jumpDurations,[1470/asset.motion.tempo,1550/asset.motion.tempo]);
+    assert.deepEqual(jumpDurations,[1470/asset.motion.jumpTempo,1550/asset.motion.jumpTempo]);
     assert.ok(choreography.blocks.filter(b=>b.kind==='turn').every(b=>b.entry>=350/asset.motion.tempo&&b.exit>=400/asset.motion.tempo));
   }
+});
+
+test('Each jump has one calm approach and a single crouch, with livelier air turns independent from ground tempo',()=>{
+ for(const width of [390,1200,1920]){
+   const choreography=plan('routine',width);
+   for(const block of choreography.blocks){
+     if(block.kind!=='pass')continue;
+     const jump=block.phases.findIndex(item=>item.name==='jump');if(jump<0)continue;
+     assert.equal(jump,1,'No extra footwork, second run-up or repeated crouch before takeoff.');
+     const approach=block.phases[0],samples=[];
+     for(let t=approach.duration-440;t<approach.duration;t+=10){
+       const move=Skating.atTime(choreography,block.start+t);assert.equal(move.sheet,'speed');samples.push(move.index);
+     }
+     assert.ok(samples.every((frame,i)=>!i||frame>=samples[i-1]),'The final approach closes the stance without another gait loop.');
+     assert.equal(asset.master.frames.speed[samples.at(-1)],23);
+     const duration=block.phases[jump].duration,old=duration*asset.motion.jumpTempo/asset.motion.tempo;
+     assert.ok(duration<old*.8&&duration>old*.7,'The jump is about a quarter shorter than the previous slow version.');
+     const atContact=Skating.atTime(choreography,block.start+block.phases[jump].start+duration*(.82+1e-8));
+     assert.equal(atContact.lift,0);assert.equal(atContact.phase,'landing');
+   }
+   const turns=choreography.blocks.filter(block=>block.kind==='turn');
+   assert.ok(turns.every(block=>block.spinDuration<block.spinDuration*asset.motion.spinTempo/asset.motion.tempo));
+ }
 });
 
 test('Passes keep position and velocity continuous across trick changes and turns change facing only on a stationary back view',()=>{
