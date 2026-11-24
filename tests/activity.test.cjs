@@ -249,3 +249,11 @@ test('Skelly invites visitors to party during a dance without interrupting its m
  assert.ok(Assets.get('shuffle-skeleton').personality.party.includes(avatar.tip.children[0].textContent));
  avatar.open();avatar.nextQuip=0;advance(1000);assert.equal(avatar.tip.hidden,true);assert.equal(avatar.program,null);
 });
+
+test('Rave-Opa alternates his two techno routines and changes back to Skelly without a stale extra figure',async()=>{
+ const {avatar,advance,media}=await mascot('rave-grandpa');avatar.nextRoutine=0;advance(20);
+ assert.equal(avatar.displayName(),'Rave-Opa');assert.equal(avatar.program.mode,'routine');assert.equal(avatar.size().bpm,144);
+ advance(avatar.program.duration+40);avatar.nextRoutine=0;advance(20);assert.equal(avatar.program.mode,'freestyle');
+ avatar.open();assert.equal(avatar.program,null);await avatar.setAsset('shuffle-skeleton');assert.equal(avatar.displayName(),'Skelly');assert.equal(avatar.size().bpm,120);
+ avatar.opened=false;await avatar.setAsset('rave-grandpa');media.matches=true;avatar.onMotion();assert.equal(avatar.perform(),false);
+});

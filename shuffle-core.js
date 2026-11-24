@@ -10,9 +10,10 @@
   function createPlan({mode='routine',startX=0,viewportWidth,size,targetX}){
     if(!['routine','freestyle','running-man','t-step','slides','spin','kicks','heeltoe','charleston','hands'].includes(mode))throw Error('Unbekannte Shuffle-Folge.');
     const max=Math.max(0,viewportWidth-size.width),x0=clamp(startX,0,max),blocks=[];
+    const beat=60000/clamp(size.bpm||120,100,170);
     let x=x0,time=0;
     const add=(sheet,beats,{to=x,cycles=beats/2,atlas}={})=>{
-      const duration=beats*500,next=clamp(to,0,max);
+      const duration=beats*beat,next=clamp(to,0,max);
       blocks.push({sheet,atlas,cycles,from:x,to:next,start:time,end:time+duration,duration});
       time+=duration;x=next;
     };
@@ -23,7 +24,15 @@
     const drift=()=>x+side()*Math.min(size.width*.28,max*.16);
     const spin=(beats=2,open=false)=>add('spin',beats,{cycles:beats/2,atlas:open?'moves':'encore'});
     groove();
-    if(mode==='routine'){
+    if(mode==='routine'&&size.power){
+      running(8,drift());
+      add('heeltoe',4,{cycles:2,atlas:'moves'});spin(4);
+      add('tstep',4,{to:x+side()*travel(),cycles:2});
+      add('kicks',4,{cycles:2,atlas:'encore'});
+      add('hands',4,{cycles:2,atlas:'moves'});
+      running(8,drift());
+      add('slide',4,{to:x+side()*travel(),cycles:2});spin(4,true);
+    }else if(mode==='routine'){
       // Keep the first published sequence, its source poses and timing intact.
       add('running',8,{cycles:4});
       add('tstep',4,{to:x+side()*travel(),cycles:2});

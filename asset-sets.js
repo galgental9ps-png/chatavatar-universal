@@ -5,7 +5,7 @@
   else root.UniversalAvatarAssets=api;
 })(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
-  const ACTIVE_ASSET_SET = 'shuffle-skeleton';
+  const ACTIVE_ASSET_SET = 'rave-grandpa';
   const poses={idle:0,wave:1,talk:2,point:3,think:13,held:14,rest:15,celebrate:12,fall:10,land:11};
   const sets={
     jimmy:{
@@ -202,6 +202,33 @@
       spin:['Einmal rundherum – die Brille bleibt oben!','Auch mein Rücken kann tanzen.','Eine ganze Drehung voller guter Laune.'],
       routine:['Komm, wir machen zusammen ein bisschen Stimmung!','Bereit? Wipp mit den Füßen, ich shuffle schon mal los!','Erst die Füße, dann wackelt das ganze Grinsen.','Mein Knochenkonzert beginnt mit einem T-Step.','Ein kleiner Move von dir macht die Party komplett!','Hände hoch für eine Portion gute Laune!'],
       party:['Feier mit! Ein kleines Kopfnicken zählt schon.','Dein Fuß wippt? Ich wusste, der Beat findet dich!','Hände hoch, Schultern locker – wir haben Spaß!','Zeig mir deinen Lieblingsmove. Ich mache einen Knochen-Mix dazu!','Ein Schritt nach links, ein Grinsen nach rechts!','Unsere Tanzfläche hat noch Platz für dich.','Komm dazu – jeder tanzt hier auf seine Art.','Du brauchst keine perfekten Schritte, nur Lust auf den Beat.','Drei, zwei, eins: Zeit für deinen kleinen Freudentanz!','Schick mir ein Luft-High-Five!','Ich zähle den Takt, du bringst dein Lächeln mit.','Einmal mit den Schultern wippen? Das klingt nach einem Anfang!','Deine gute Laune ist heute mein Lieblingsbeat.','Eine kleine Tanzpause macht den Bildschirmtag bunter.','Noch eine Runde? Meine Sneaker sind bereit!','Wer mit den Zehen wackelt, ist schon dabei.']
+    }
+  };
+  sets['rave-grandpa']={
+    id:'rave-grandpa',name:'Rave-Opa',role:'Hard-Techno-Opa',subtitle:'Ernster Blick. Großer Groove.',
+    introduction:'Weißer Schnurrbart, schwarze Brille und riesige Sneaker: Der Rave-Opa tanzt schnellen Melbourne Shuffle, Heel-Toe, Charleston, kräftige Techno-Arm-Moves und ganze Drehungen. Sein Blick bleibt dabei herrlich ernst.',
+    renderer:'canvas',environment:'none',poses,
+    master:{columns:4,rows:8,required:true,normalize:true,
+      actors:[{id:'rave-opa',name:'Rave-Opa',file:'assets/rave-opa-shuffle-v1.png',width:887,height:1774,heightRatio:.84,reference:0}],
+      frames:skeletonFrames,
+      variants:{encore:{columns:4,rows:8,normalize:true,
+        actors:[{id:'rave-opa',name:'Rave-Opa',file:'assets/rave-opa-tricks-v1.png',width:887,height:1774,heightRatio:.84,reference:24}],
+        frames:sets['shuffle-skeleton'].master.variants.encore.frames},
+        running:{columns:2,rows:4,normalize:true,
+          actors:[{id:'rave-opa',name:'Rave-Opa',file:'assets/rave-opa-running-v1.png',width:887,height:1774,heightRatio:.84,reference:2,mirrorCells:[5]}],
+          frames:{running:doubled(0)}},
+        moves:{columns:4,rows:8,normalize:true,
+          actors:[{id:'rave-opa',name:'Rave-Opa',file:'assets/rave-opa-moves-v1.png',width:887,height:1774,heightRatio:.84,reference:0}],
+          frames:sets['shuffle-skeleton'].master.variants.moves.frames}}},
+    motion:{kind:'shuffle',desktop:192,mobile:160,stride:1.1,speed:.74,acceleration:2.6,frames:16,bpm:144,power:true},
+    sheets:Object.fromEntries(Object.keys(sets['shuffle-skeleton'].sheets).map(sheet=>[sheet,{file:'assets/rave-opa-shuffle-v1.png',columns:4,rows:8}])),
+    personality:{
+      idle:['Der Schnurrbart sitzt. Der Beat darf kommen.','Meine Sneaker haben heute Ausgang.','Ich habe den Groove schon vor dem Frühstück gefunden.','Ernster Blick, sehr gute Laune.','In dieser Weste steckt ordentlich Rhythmus.','Meine Brille bleibt auf. Ich möchte jeden Beat sehen.','Ein guter Takt wird mit den Jahren besser.','Heute steht Fußarbeit auf dem Stundenplan.'],
+      walk:['Kleine Schritte, schwere Bässe.','Ein Heel-Toe nach links. Das läuft.','Die Sneaker übernehmen kurz die Führung.','Ein Schritt zur Seite, der Groove kommt mit.','Der Boden hat heute Tanzdienst.','Ich schiebe eine kleine Shuffle-Runde ein.'],
+      jump:['Knie hoch, Sneaker vor – ganz mein Takt.','Ein kleiner Kick für die große Stimmung.','Da steckt noch ein Schritt in meinen Schuhen.','Meine Fußarbeit grüßt dich!'],
+      spin:['Eine ganze Drehung. Der Schnurrbart fährt mit.','Auch der Rücken meiner Weste kann tanzen.','Einmal rundherum, dann wieder in den Beat.','Die Brille hält. Weiter geht’s.'],
+      routine:['Der Rave-Opa bittet zur Fußarbeit!','Orange Jacke, ernster Blick – jetzt wird getanzt.','Ein guter Beat kennt meinen Namen.','Bereit für meine kleine Techno-Runde?','Ich beginne mit Running Man. Du darfst schon mal mitwippen.','Meine Sneaker haben noch einiges vor.'],
+      party:['Komm dazu! Ein kleines Kopfnicken reicht für den Anfang.','Hände hoch für die gute Laune!','Zeig mir deinen Lieblingsmove. Ich passe auf den Takt auf.','Wer mit dem Fuß wippt, gehört schon zur Runde.','Ein Luft-High-Five vom Rave-Opa!','Schultern locker, die Sneaker erledigen den Rest.','Dein Lächeln passt hervorragend zu diesem Beat.','Eine kleine Tanzpause macht den Abend bunter.','Noch eine Runde? Meine Weste ist warmgetanzt.','Tanz auf deine Art. Ich bringe den Schnurrbart-Groove mit.','Drei, zwei, eins – dein kleiner Freudentanz!','Eine Portion gute Laune geht immer noch.']
     }
   };
   function freeze(value){if(value&&typeof value==='object'){Object.values(value).forEach(freeze);Object.freeze(value);}return value;}

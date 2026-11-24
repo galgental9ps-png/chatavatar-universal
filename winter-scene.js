@@ -11,7 +11,7 @@
     {src:'Glacial%20Arpeggios.mp3',title:'Glacial Arpeggios'},
     {src:'Hoffnungsvoll.mp3',title:'Hoffnungsvoll'}
   ];
-  const trackFor=id=>window.DemoAvatarThemes?.get(id)?.track??(id==='shuffle-skeleton'?2:0);
+  const trackFor=id=>window.DemoAvatarThemes?.get(id)?.track??(['shuffle-skeleton','rave-grandpa'].includes(id)?2:0);
   let index=trackFor(window.UniversalAvatarAssets?.activeId||document.documentElement?.dataset.avatarTheme),mayAutoStart=true,starting=false,userPaused=false,resumeOnVisible=false,failed=false,playRequest=0;
   const unavailable=new Set();
   audio.src=tracks[index].src;

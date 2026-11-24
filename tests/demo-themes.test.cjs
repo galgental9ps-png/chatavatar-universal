@@ -5,10 +5,10 @@ test('Every available avatar has its own complete scene and music choice',()=>{
  assert.deepEqual(Object.keys(Themes.themes).sort(),Object.keys(Assets.sets).sort());const files=new Set();
  for(const [id,t] of Object.entries(Themes.themes)){
    assert.ok(Object.isFrozen(t)&&Object.isFrozen(t.scene));assert.equal(Themes.get(id),t);
-   assert.equal(t.track,id==='shuffle-skeleton'?2:0);assert.equal(t.headline.length,2);assert.ok(t.scene.alt.length>40);
+   assert.equal(t.track,['shuffle-skeleton','rave-grandpa'].includes(id)?2:0);assert.equal(t.headline.length,2);assert.ok(t.scene.alt.length>40);
    const bytes=fs.readFileSync(path.join(__dirname,'..',t.scene.file));assert.equal(bytes.readUInt32BE(16),2172);assert.equal(bytes.readUInt32BE(20),724);files.add(t.scene.file);
  }
- assert.equal(files.size,5);assert.equal(Themes.get('missing').id,'ice-pair-fine');
+ assert.equal(files.size,6);assert.equal(Themes.get('missing').id,'ice-pair-fine');
 });
 test('Theme changes replace the page identity, accessible scene and browser color together',()=>{
  const nodes=new Map();

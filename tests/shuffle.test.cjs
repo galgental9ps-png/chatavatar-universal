@@ -5,7 +5,7 @@ const asset=Assets.get('shuffle-skeleton');
 const planFor=(mode='routine',width=1200,height=800)=>Shuffle.createPlan({mode,startX:width-210,viewportWidth:width,size:Motion.dimensions(width,asset.motion,height)});
 
 test('The child-friendly skeleton has four independent whole-body atlases and no paired canvas',()=>{
-  assert.equal(Assets.activeId,asset.id);assert.equal(asset.motion.duet,undefined);
+  assert.equal(Assets.get(asset.id),asset);assert.equal(asset.motion.duet,undefined);
   for(const atlas of [asset.master,...Object.values(asset.master.variants)]){
     assert.equal(atlas.actors.length,1);
     const actor=atlas.actors[0],png=fs.readFileSync(path.join(__dirname,'..',actor.file));

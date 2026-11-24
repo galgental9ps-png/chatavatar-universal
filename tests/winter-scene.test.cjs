@@ -94,6 +94,12 @@ test('Changing the avatar selects its music while preserving a deliberate pause'
  buttons[1].emit('click');await flush();assert.equal(audio.paused,false);
 });
 
+test('Rave-Opa selects the third uploaded song on entry and after an ice-skater switch',async()=>{
+ const {audio,document,track}=await music({blocked:false,asset:'rave-grandpa'});assert.equal(track.textContent,'Hoffnungsvoll');
+ document.emit('jimmy:asset-change',{detail:{id:'ice-skater'}});await flush();assert.equal(audio.src,'Bittersweet%20Beauty.mp3');
+ document.emit('jimmy:asset-change',{detail:{id:'rave-grandpa'}});await flush();assert.equal(audio.src,'Hoffnungsvoll.mp3');assert.equal(audio.paused,false);
+});
+
 test('The published site includes all three actual MP3s and the demo-only winter files',()=>{
  execFileSync(process.execPath,['tools/build-site.cjs'],{cwd:root});
  for(const name of ['Bittersweet Beauty.mp3','Glacial Arpeggios.mp3','Hoffnungsvoll.mp3','winter-scene.css','winter-scene.js'])assert.ok(fs.statSync(path.join(root,'_site',name)).size>0);

@@ -6,6 +6,10 @@
 })(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
   const themes={
+    'rave-grandpa':{id:'rave-grandpa',color:'#0b0c0e',track:2,
+      headline:['Alter Hase.','Harter Beat.'],eyebrow:'DEIN RAVE-OPA IST BEREIT',stage:'ERNSTER BLICK. SCHNELLE SNEAKER.',symbol:'✦',
+      scene:{file:'assets/rave-opa-warehouse-v1.png',alt:'Minimalistische dunkle Techno-Warehouse-Halle mit rechteckigen Betonträgern, orangefarbenen und limettengrünen Lichtlinien und freier Tanzfläche bis zum Rand.',
+        eyebrow:'EIN TAKT. JEDE MENGE FUSSARBEIT.',title:['Willkommen im','Warehouse.'],intro:'Dunkler Beton. Warmes Neon. Platz für deinen nächsten Move.',caption:'Der Rave-Opa bittet zum Mitfeiern.'}},
     'shuffle-skeleton':{id:'shuffle-skeleton',color:'#07090c',track:2,
       headline:['Kleine Knochen.','Großer Beat.'],eyebrow:'DEIN KLEINER PARTYBEGLEITER',stage:'KNOCHENLOCKER. VOLLER GROOVE.',symbol:'♪',
       scene:{file:'assets/skelly-neon-bunker-v1.png',alt:'Minimalistischer schwarzer Techno-Bunker mit Gewölben, feinen cyan- und magentafarbenen Neonlinien und durchgehender Tanzfläche.',

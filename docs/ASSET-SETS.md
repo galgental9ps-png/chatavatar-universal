@@ -3,11 +3,12 @@
 Die Standardfigur wird in **`asset-sets.js`** ausgewählt:
 
 ```js
-const ACTIVE_ASSET_SET = 'shuffle-skeleton';
+const ACTIVE_ASSET_SET = 'rave-grandpa';
 ```
 
 | Kennung | Figur | Bewegung |
 | --- | --- | --- |
+| `rave-grandpa` | Rave-Opa, Hard-Techno-Opa | Zwei schnelle Techno-Folgen mit Running Man, Arm-Moves, Heel-Toe, Charleston und ganzen Drehungen |
 | `shuffle-skeleton` | Skelly, freundliches Cartoon-Skelett | Melbourne Shuffle mit Running Man, T-Steps, Slides, ganzen Spins und Kicks |
 | `ice-pair-fine` | Lina & Elio, feines Eiskunstlauf-Paar | Feine Paarkür mit kleinen Sprüngen; zweite Folge mit stationären Solopirouetten, Umkreisen und synchronem Abschluss |
 | `ice-pair` | Aurora & Noel, Eiskunstlauf-Paar | Gemeinsamer Paartanz, getrennte synchrone Pirouetten, Sprung aufeinander zu und gemeinsamer Abschluss |
@@ -23,6 +24,10 @@ Die Eiskunstläuferin ist eine transparente Figur. Es wird keine Eisfläche oder
 „Figur auswählen“ zeigt alle vollständigen Sets aus dem Katalog und tauscht die Figur direkt aus. Vorschau, Name, Sprüche und passende Bewegungsbuttons wechseln gemeinsam. Wissen, aktuelle Antwort sowie Pause-, Sichtbarkeits- und Vorleseeinstellungen bleiben erhalten. Ein laufender Sprung wird beim Wechsel am Boden beendet. Während die neue Bilddatei lädt, bleibt die bisherige Figur aktiv; bei einem Ladefehler kann der Wechsel erneut versucht werden.
 
 Die neue Schnittstelle ist `await JimmyChatAvatar.instance.setAsset('jimmy')` bzw. `await JimmyChatAvatar.instance.setAsset('ice-skater')`. Der Renderer stellt mit `JimmyMascot.forAsset(id)` pro Figur einen eigenen zwischengespeicherten Bildsatz bereit. Wiederholte Wechsel nutzen bereits geladene Bilder. Das Ereignis `jimmy:asset-change` meldet den erfolgreichen Austausch an die Vorschau. `ACTIVE_ASSET_SET` bleibt die veröffentlichte Voreinstellung; eine Besucherauswahl verändert diese Datei nicht.
+
+## Rave-Opa
+
+Vier eigene transparente Action-PNGs enthalten 104 vollständige Posen. `perform()` startet die Hard-Techno-Folge; `perform('freestyle')` den zweiten Rave-Mix. Alle bekannten Shuffle-Einzelknöpfe stehen ebenfalls bereit. Das eigene Profil verwendet 144 BPM, während Skelly bei seinem bisherigen Takt bleibt. Details: [RAVE-OPA.md](RAVE-OPA.md).
 
 ## Melbourne-Shuffle-Skelett
 

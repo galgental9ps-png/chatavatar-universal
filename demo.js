@@ -7,7 +7,7 @@
   if (!instance.pack) { $('knowledge-count').textContent = 'Parkwissen konnte nicht geladen werden'; $('question-grid').textContent = 'Bitte laden Sie die Seite erneut.'; return; }
   const picker=$('asset-set'),assetStatus=$('asset-status');
   let heroFigure,heroRenderer;
-  const drawHero=()=>{if(heroFigure)heroRenderer.paint(heroFigure);};
+  const drawHero=()=>{if(heroFigure)heroRenderer.paint(heroFigure,'idle',0,1,heroRenderer.asset.motion.power?{selection:{atlas:'running',sheet:'running',index:4}}:{});};
   function renderAsset(){
     const asset=instance.asset,name=instance.displayName();
     DemoAvatarThemes.apply(asset.id,document);
@@ -27,14 +27,15 @@
     const dancer=instance.isDancer();
     $('walk-demo').textContent=dancer?'T-Steps':asset.plural?'Gemeinsam gleiten':name+(instance.isSkater()?' gleiten lassen':' eine Runde laufen lassen');
     $('hop-demo').textContent=dancer?'Kicks':asset.motion.duet?'Synchrone Pirouetten':instance.isSkater()?'Pirouette':name+' springen lassen';
-    $('routine-demo').textContent=dancer?'Shuffle tanzen':asset.motion.duet?'Paartanz vorführen':'Kür vorführen';
+    $('routine-demo').textContent=asset.motion.power?'Hard-Techno tanzen':dancer?'Shuffle tanzen':asset.motion.duet?'Paartanz vorführen':'Kür vorführen';
+    $('freestyle-demo').textContent=asset.motion.power?'Rave-Mix · Folge 2':'Shuffle-Mix · Folge 2';
     $('jump-demo').textContent=asset.motion.duet?'Aufeinander zuspringen':'Drehsprung';
     $('spiral-demo').textContent=dancer?'Slides':asset.motion.duet?'Gemeinsame Gleitfigur':'Gleitfigur';
     $('duet-demo').textContent=dancer?'Spins':'Synchronfolge vorführen';
     $('encore-demo').textContent=dancer?'Running Man':'Pirouetten & Umkreisen';
     $('duet-demo').hidden=!asset.motion.duet&&!dancer;
     $('encore-demo').hidden=!asset.motion.encore&&!dancer;
-    $('quip-demo').textContent=dancer?'Ein Knochenwitz':instance.isSkater()?'Ein kleiner Gruß':'Ein Affenspruch';
+    $('quip-demo').textContent=asset.motion.power?'Ein Opa-Spruch':dancer?'Ein Knochenwitz':instance.isSkater()?'Ein kleiner Gruß':'Ein Affenspruch';
     $('spiral-demo').hidden=!instance.isSkater()&&!dancer;
     $('routine-demo').hidden=!instance.isSkater()&&!dancer;
     $('jump-demo').hidden=!instance.isSkater();

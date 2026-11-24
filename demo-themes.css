@@ -1,4 +1,4 @@
-/* Five complete demo worlds. Theme changes follow the selected asset. */
+/* Six complete demo worlds. Theme changes follow the selected asset. */
 html[data-avatar-theme]{
  --paper:#f5f6fb;--ink:#262b45;--purple:#7460b8;--muted:#72788e;--accent-2:#b66c9c;--accent-3:#5596a2;
  --line:#dcddeb;--panel:#ffffffac;--panel-soft:#ffffff75;--panel-solid:#faf9fd;
@@ -15,6 +15,15 @@ html[data-avatar-theme=shuffle-skeleton]{
  --glass:linear-gradient(130deg,#151d27f2,#0c1119ed);--shadow:0 18px 65px #0005,inset 0 1px 0 #ffffff08;
  --stage-bg:linear-gradient(145deg,#121a23,#0a0d13 65%,#16111d);--stage-glow:radial-gradient(ellipse,#1a42464d,transparent 70%);
  --title-gradient:linear-gradient(100deg,#76f6ec,#c3e7ff 45%,#ff85d3);--primary-bg:linear-gradient(115deg,#6bf0e8,#83dcfb);--primary-ink:#071115;
+ --serif:"Segoe UI",system-ui,sans-serif;--scheme:dark;
+}
+html[data-avatar-theme=rave-grandpa]{
+ --paper:#0b0c0e;--ink:#fff6e9;--purple:#ffbf70;--muted:#bcbdb6;--accent-2:#c5ed77;--accent-3:#d6944e;
+ --line:#3d4137;--panel:#1b1e1be8;--panel-soft:#171b16d9;--panel-solid:#1c211b;
+ --page-bg:radial-gradient(ellipse 65% 450px at 90% 8%,#4d2d1245,transparent),radial-gradient(ellipse 60% 550px at 0 35%,#2e3e1738,transparent),#0b0c0e;
+ --glass:linear-gradient(130deg,#23251fee,#111510ed);--shadow:0 18px 65px #0005,inset 0 1px 0 #ffffff08;
+ --stage-bg:linear-gradient(145deg,#25231b,#11140f 65%,#211b13);--stage-glow:radial-gradient(ellipse,#69512233,transparent 72%);
+ --title-gradient:linear-gradient(100deg,#ffd192,#ffc16d 48%,#c5ed77);--primary-bg:linear-gradient(115deg,#ffc16e,#d9ec8d);--primary-ink:#11160c;
  --serif:"Segoe UI",system-ui,sans-serif;--scheme:dark;
 }
 html[data-avatar-theme=jimmy]{
@@ -95,9 +104,18 @@ html[data-avatar-theme=shuffle-skeleton] .arch{border-radius:24px;border:1px sol
 html[data-avatar-theme=shuffle-skeleton] .arch:after{border-radius:18px}
 html[data-avatar-theme=shuffle-skeleton] .orbit{border-radius:26px;border-color:#ff79ce1a;transform:rotate(-14deg)}
 html[data-avatar-theme=shuffle-skeleton] .orbit-two{transform:rotate(14deg);border-color:#6aeaf01f}
+html[data-avatar-theme=rave-grandpa] h1{font-weight:780;letter-spacing:-3.1px;font-size:clamp(49px,5.8vw,80px)}
+html[data-avatar-theme=rave-grandpa] :is(h1 em,h2 em){font-style:normal}
+html[data-avatar-theme=rave-grandpa] h2{font-weight:650}
+html[data-avatar-theme=rave-grandpa] :is(.stage,.invite-inner){border-radius:18px}
+html[data-avatar-theme=rave-grandpa] .arch{border-radius:12px;border:1px solid #ffbf7026}
+html[data-avatar-theme=rave-grandpa] .arch:after{border-radius:8px}
+html[data-avatar-theme=rave-grandpa] .orbit{border-radius:8px;border-color:#ffbf7026;transform:rotate(-12deg)}
+html[data-avatar-theme=rave-grandpa] .orbit-two{transform:rotate(12deg);border-color:#c5ed7724}
 html[data-avatar-theme=jimmy] :is(h1,h2){font-weight:650;letter-spacing:-2px}
 html[data-avatar-theme=jimmy] h1 em{font-style:normal}
 html[data-avatar-theme=jimmy] .stage{border-radius:48px}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){html[data-avatar-theme] :is(.page-head,.floating-note,.demo-toast){background:var(--panel-solid)}}
 @media(max-width:760px){html[data-avatar-theme=shuffle-skeleton] h1{font-size:clamp(43px,11vw,66px);letter-spacing:-2.2px}html[data-avatar-theme=jimmy] h1{font-size:clamp(47px,11vw,72px)}}
+@media(max-width:760px){html[data-avatar-theme=rave-grandpa] h1{font-size:clamp(46px,11.5vw,68px);letter-spacing:-2.2px}}
 @media(forced-colors:active){html[data-avatar-theme] body{background:Canvas}html[data-avatar-theme] h1 em{background:none;color:CanvasText}html[data-avatar-theme] .primary,html[data-avatar-theme] .party-demo{background:ButtonFace;color:ButtonText}}
