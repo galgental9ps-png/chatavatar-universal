@@ -75,6 +75,31 @@ test('The orbit exit and following dance stay on one blade line, including the f
   }
 });
 
+test('Lina stays at the pirouette spot while Elio skates back to her before their shared glide',()=>{
+  for(const [w,h] of [[1200,800],[390,700],[1920,900]]){
+    const plan=planFor('feature',w,h),orbit=plan.blocks.find(b=>b.part==='orbit'),exit=plan.blocks.find(b=>b.part==='exit');
+    const cells=new Set();
+    assert.equal(exit.fromActors[0],orbit.woman);assert.equal(exit.toActors[0],orbit.woman);
+    assert.ok(exit.toActors[1]<exit.fromActors[1]);
+    for(let i=0;i<1000;i++){
+      const m=Skating.atTime(plan,exit.start+exit.duration*i/1000),[a,b]=m.actors;
+      assert.equal(a.x,orbit.woman,'The stationary woman must not be pushed sideways during her standing exit pose.');
+      assert.equal(a.selection,undefined);assert.equal(m.sheet,'flow');
+      assert.equal(b.selection.sheet,'glide');assert.equal(b.selection.atlas,'encore');assert.equal(b.facing,-1);
+      cells.add(pair.master.variants.encore.frames.glide[b.selection.index]);
+    }
+    assert.ok(cells.size>=7,'Elio closes the gap with a real skating step instead of drifting in a standing pose.');
+    const shared=plan.blocks[plan.blocks.indexOf(exit)+1],start=Skating.atTime(plan,shared.start+.0001);
+    assert.equal(shared.kind,'pass');assert.equal(shared.from,orbit.woman);assert.equal(start.sheet,'glide');
+    assert.ok(Math.abs(start.actors[0].x-orbit.woman)<.001,'The shared glide begins at their new formation.');
+  }
+  const tiny=planFor('feature',184,180),exit=tiny.blocks.find(b=>b.part==='exit'),size=Motion.dimensions(184,pair.motion,180);
+  for(let i=0;i<100;i++){
+    const m=Skating.atTime(tiny,exit.start+exit.duration*i/100);
+    for(const a of m.actors){assert.ok(a.x>=0&&a.x+size.actorWidth<=184);if(a.selection)assert.equal(a.selection.sheet,'glide');}
+  }
+});
+
 test('Elio completes successive full rotations without rocking back through the right-hand views',()=>{
   const actor=pair.master.actors[1],yaw={12:0,13:45,14:90,15:135,16:180,17:135,18:90,19:45};
   const angle=(index,facing=1)=>{

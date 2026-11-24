@@ -74,7 +74,11 @@
           from:part==='finish'?x:center,to:part==='finish'?x:center,facing:part==='finish'?direction:1,fromActors,toActors,depth,duration,...extra});
         addFeature('entry',joined,orbit,1100/tempo);
         addFeature('orbit',orbit,orbit,Math.max(9000/tempo,4*Math.PI*radius*1000/topSpeed),{woman,radius});
-        addFeature('exit',orbit,joined,1100/tempo);
+        // Re-form the pair at Lina's current spot, rather than sliding her
+        // standing illustration back to the old group center after her turn.
+        const exitX=clamp(woman,left,right),reunited=[exitX,exitX+(size.spacing||0)];
+        addFeature('exit',orbit,reunited,1100/tempo,{to:exitX});
+        x=exitX;
         direction=travelDirection;
         pass([phase('glide',2200,{atlas:'encore'})],edge());
         addFeature('finish',[x,x+(size.spacing||0)],[x,x+(size.spacing||0)],1800/tempo);
@@ -253,9 +257,15 @@
     const finish=block.part==='finish';
     const positions=block.fromActors.map((from,i)=>from+(block.toActors[i]-from)*eased);
     const index=finish?Math.min(15,8+Math.floor(8*eased)):block.part==='entry'?Math.max(0,7-Math.floor(8*eased)):Math.min(7,Math.floor(8*eased));
-    return {...base,sheet:'flow',index,phase:'feature-'+block.part,safeExit:finish&&p>.9,
-      actors:positions.map((x,i)=>({x,facing:finish?block.facing:1,
-        ...(finish&&i===1?{selection:{atlas:'encore',sheet:'poses',index:0}}:{})}))};
+    return {...base,x:block.from+(block.to-block.from)*eased,sheet:'flow',index,phase:'feature-'+block.part,safeExit:finish&&p>.9,
+      actors:positions.map((x,i)=>{
+        const travel=block.toActors[i]-block.fromActors[i],closing=block.part==='exit'&&Math.abs(travel)>.01;
+        // Whoever actually travels uses a complete skating step, paced by
+        // distance. The stationary dancer only opens out of the pirouette.
+        const selection=closing?{atlas:'encore',sheet:'glide',index:Math.min(15,Math.floor(Math.abs(x-block.fromActors[i])/Math.abs(travel)*16))}:
+          finish&&i===1?{atlas:'encore',sheet:'poses',index:0}:undefined;
+        return {x,facing:closing?Math.sign(travel):finish?block.facing:1,...(selection?{selection}:{})};
+      })};
   }
 
   function atTime(plan, milliseconds) {

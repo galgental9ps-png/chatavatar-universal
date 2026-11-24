@@ -214,3 +214,15 @@ test('The fixed blade line is used at startup, during manual gliding and after v
   context.innerWidth=1200;avatar.onResize();assert.equal(avatar.y,avatar.size().ground);assert.equal(avatar.encore(),true);
   advance(avatar.program.duration+100);assert.equal(avatar.program,null);assert.equal(avatar.y,avatar.size().ground);
 });
+
+test('On a very narrow viewport each moving partner renders their own closing skating steps',async()=>{
+  const {avatar,context,advance}=await mascot('ice-pair-fine');context.innerWidth=184;context.innerHeight=180;avatar.onResize();
+  assert.equal(avatar.encore(),true);const exit=avatar.program.blocks.find(b=>b.part==='exit');
+  advance(exit.start+exit.duration*.5);assert.equal(avatar.programFrame.phase,'feature-exit');
+  const draws=[];avatar.renderer.paint=(element,state,frame,facing,details)=>draws.push({element,details});avatar.drawFrame();
+  assert.equal(avatar.programFrame.actors[0].selection.sheet,'glide');
+  for(const [i,element] of [[0,avatar.visual],[1,avatar.partnerVisual]]){
+    const draw=draws.find(d=>d.element===element),selection=avatar.programFrame.actors[i].selection||avatar.programFrame;
+    assert.equal(draw.details.selection,selection);assert.equal(draw.details.selection.sheet,avatar.programFrame.actors[i].selection?'glide':'flow');
+  }
+});
