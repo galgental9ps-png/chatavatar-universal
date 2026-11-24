@@ -4,7 +4,7 @@
   if (window.JimmyChatAvatar) return;
   const script = document.currentScript;
   const BASE = new URL('.', script.src).href;
-  const VERSION = 'skelly-shuffle-flow-24';
+  const VERSION = 'avatar-worlds-25';
   const deps = new Map();
   function loadScript(url) {
     if (!deps.has(url)) deps.set(url, new Promise((resolve, reject) => { const s = document.createElement('script'); s.src = url; s.onload = resolve; s.onerror = () => reject(Error('Datei konnte nicht geladen werden: ' + url)); document.head.append(s); }));
@@ -263,7 +263,8 @@
       const dt = Math.min(.05, elapsed / 1000); this.last = now;
       if (!document.hidden && !this.paused && !this.opened && !this.hidden && !this.drag && this.pack && !this.character.matches(':focus-visible')&&!this.partner?.matches(':focus-visible')) {
         const M = window.JimmyMotion, size = this.size();
-        if (now >= this.nextQuip && this.tip.hidden && ['idle', 'walk'].includes(this.state)) this.showQuip(this.state === 'walk' ? 'walk' : 'idle');
+        if (now >= this.nextQuip && this.tip.hidden && (['idle','walk'].includes(this.state)||this.isDancer()&&this.program))
+          this.showQuip(this.isDancer()&&this.program?'party':this.state==='walk'?'walk':'idle');
         if(this.program){
           this.programElapsed+=elapsed;
           const move=this.programEngine().atTime(this.program,this.programElapsed);

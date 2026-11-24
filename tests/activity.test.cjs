@@ -241,3 +241,11 @@ test('The skeleton automatically shuffles, freezes while reading and switches to
   media.matches=false;avatar.onMotion();await avatar.setAsset('ice-pair-fine');assert.equal(avatar.isDancer(),false);assert.equal(avatar.partner.hidden,false);
   assert.equal(avatar.encore(),true);avatar.open();await avatar.setAsset('shuffle-skeleton');assert.equal(avatar.partner.hidden,true);assert.equal(avatar.pack.entries.length,0);
 });
+
+test('Skelly invites visitors to party during a dance without interrupting its motion',async()=>{
+ const {avatar,advance}=await mascot('shuffle-skeleton');avatar.perform('freestyle');advance(1200);
+ const program=avatar.program;avatar.hideTip();avatar.nextQuip=0;advance(20);
+ assert.equal(avatar.program,program);assert.equal(avatar.state,'dance-performance');
+ assert.ok(Assets.get('shuffle-skeleton').personality.party.includes(avatar.tip.children[0].textContent));
+ avatar.open();avatar.nextQuip=0;advance(1000);assert.equal(avatar.tip.hidden,true);assert.equal(avatar.program,null);
+});

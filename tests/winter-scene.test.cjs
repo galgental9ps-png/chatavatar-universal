@@ -7,7 +7,7 @@ class Events{
  removeEventListener(type,fn){this.listeners.get(type)?.delete(fn);}
  emit(type,event={}){for(const fn of [...this.listeners.get(type)||[]])fn({type,...event});}
 }
-async function music({blocked=true}={}){
+async function music({blocked=true,asset='jimmy'}={}){
  const audio=new Events();Object.assign(audio,{paused:true,ended:false,allowed:!blocked,calls:0,loop:true,src:'Bittersweet%20Beauty.mp3',loads:0});
  audio.play=function(){this.calls++;if(!this.allowed)return Promise.reject(Object.assign(Error('User activation required'),{name:'NotAllowedError'}));this.paused=false;this.emit('play');return Promise.resolve();};
  audio.pause=function(){this.paused=true;this.emit('pause');};
@@ -18,7 +18,7 @@ async function music({blocked=true}={}){
  });
  const next=new Events(),track={textContent:''};
  const document=new Events();Object.assign(document,{hidden:false,getElementById:id=>id==='demo-music'?audio:null,querySelectorAll:selector=>selector==='[data-music-toggle]'?buttons:selector==='[data-music-next]'?[next]:selector==='[data-music-track]'?[track]:[]});
- vm.runInNewContext(fs.readFileSync(path.join(root,'winter-scene.js'),'utf8'),{document,window:{},Promise,Set});await flush();
+ vm.runInNewContext(fs.readFileSync(path.join(root,'winter-scene.js'),'utf8'),{document,window:{UniversalAvatarAssets:{activeId:asset},DemoAvatarThemes:require('../demo-themes.js')},Promise,Set});await flush();
  return {audio,buttons,document,next,track};
 }
 
@@ -75,13 +75,32 @@ test('A track ending as the tab becomes hidden waits for return before starting 
  document.hidden=false;document.emit('visibilitychange');await flush();assert.equal(audio.paused,false);
 });
 
+test('Skelly starts with Hoffnungsvoll and selecting any skater chooses Bittersweet Beauty',async()=>{
+ const {audio,document,track}=await music({blocked:false,asset:'shuffle-skeleton'});
+ assert.equal(audio.src,'Hoffnungsvoll.mp3');assert.equal(track.textContent,'Hoffnungsvoll');assert.equal(audio.paused,false);
+ for(const id of ['ice-skater','ice-pair','ice-pair-fine']){
+   document.emit('jimmy:asset-change',{detail:{id}});await flush();assert.equal(audio.src,'Bittersweet%20Beauty.mp3');assert.equal(audio.paused,false);
+   document.emit('jimmy:asset-change',{detail:{id:'shuffle-skeleton'}});await flush();assert.equal(audio.src,'Hoffnungsvoll.mp3');
+ }
+ audio.paused=true;audio.ended=true;audio.emit('ended');await flush();assert.equal(track.textContent,'Bittersweet Beauty');
+});
+
+test('Changing the avatar selects its music while preserving a deliberate pause',async()=>{
+ const {audio,buttons,document,track}=await music({blocked:false});buttons[0].emit('click');await flush();const calls=audio.calls;
+ document.emit('jimmy:asset-change',{detail:{id:'shuffle-skeleton'}});await flush();
+ assert.equal(track.textContent,'Hoffnungsvoll');assert.equal(audio.paused,true);assert.equal(audio.calls,calls);
+ document.emit('jimmy:asset-change',{detail:{id:'ice-pair-fine'}});await flush();
+ assert.equal(track.textContent,'Bittersweet Beauty');assert.equal(audio.paused,true);
+ buttons[1].emit('click');await flush();assert.equal(audio.paused,false);
+});
+
 test('The published site includes all three actual MP3s and the demo-only winter files',()=>{
  execFileSync(process.execPath,['tools/build-site.cjs'],{cwd:root});
  for(const name of ['Bittersweet Beauty.mp3','Glacial Arpeggios.mp3','Hoffnungsvoll.mp3','winter-scene.css','winter-scene.js'])assert.ok(fs.statSync(path.join(root,'_site',name)).size>0);
  assert.equal(fs.statSync(path.join(root,'_site','Bittersweet Beauty.mp3')).size,fs.statSync(path.join(root,'Bittersweet Beauty.mp3')).size);
  assert.equal(fs.statSync(path.join(root,'_site','Glacial Arpeggios.mp3')).size,fs.statSync(path.join(root,'Glacial Arpeggios.mp3')).size);
  assert.equal(fs.statSync(path.join(root,'_site','Hoffnungsvoll.mp3')).size,fs.statSync(path.join(root,'Hoffnungsvoll.mp3')).size);
- assert.ok(fs.readFileSync(path.join(root,'_site','index.html'),'utf8').includes('Bittersweet%20Beauty.mp3'));
+ assert.ok(fs.readFileSync(path.join(root,'_site','index.html'),'utf8').includes('src="Hoffnungsvoll.mp3"'));
  assert.ok(!/id="demo-music"[^>]*\bloop\b/.test(fs.readFileSync(path.join(root,'_site','index.html'),'utf8')));
  assert.ok(!fs.readFileSync(path.join(root,'avatar.js'),'utf8').includes('winter-scene'));
 });

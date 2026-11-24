@@ -11,8 +11,10 @@
     {src:'Glacial%20Arpeggios.mp3',title:'Glacial Arpeggios'},
     {src:'Hoffnungsvoll.mp3',title:'Hoffnungsvoll'}
   ];
-  let index=0,mayAutoStart=true,starting=false,userPaused=false,resumeOnVisible=false,failed=false,playRequest=0;
+  const trackFor=id=>window.DemoAvatarThemes?.get(id)?.track??(id==='shuffle-skeleton'?2:0);
+  let index=trackFor(window.UniversalAvatarAssets?.activeId||document.documentElement?.dataset.avatarTheme),mayAutoStart=true,starting=false,userPaused=false,resumeOnVisible=false,failed=false,playRequest=0;
   const unavailable=new Set();
+  audio.src=tracks[index].src;
   audio.volume=.28;audio.loop=false;
   function renderMusic(){
     const playing=!failed&&!audio.paused&&!audio.ended;
@@ -40,9 +42,10 @@
       // A blocked autoplay remains available from either visible music button.
     }finally{if(request===playRequest){starting=false;renderMusic();}}
   }
-  function nextTrack(shouldPlay){
+  function nextTrack(shouldPlay,selected){
     stopPlayback();
-    do{index=(index+1)%tracks.length;}while(unavailable.has(index)&&unavailable.size<tracks.length);
+    index=selected??(index+1)%tracks.length;
+    while(unavailable.has(index)&&unavailable.size<tracks.length)index=(index+1)%tracks.length;
     audio.src=tracks[index].src;audio.load();renderMusic();
     if(shouldPlay&&!userPaused){
       if(document.hidden)resumeOnVisible=true;
@@ -70,6 +73,11 @@
     failed=true;stopPlayback();removeActivation();renderMusic();
   });
   document.addEventListener('click',activate,true);document.addEventListener('keydown',activate,true);
+  document.addEventListener('jimmy:asset-change',event=>{
+    if(!event.detail?.id)return;
+    const selected=trackFor(event.detail.id);
+    if(selected!==index)nextTrack(!userPaused,selected);
+  });
   document.addEventListener('visibilitychange',()=>{
     if(document.hidden){resumeOnVisible=(!audio.paused||starting)&&!userPaused;stopPlayback();}
     else if(resumeOnVisible&&!userPaused){resumeOnVisible=false;playMusic();}
