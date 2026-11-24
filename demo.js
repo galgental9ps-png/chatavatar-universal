@@ -11,7 +11,10 @@
   document.querySelector('.knowledge-section .eyebrow').textContent=name.toUpperCase()+'S KLEINE WISSENSWELT';
   const invitation=document.querySelector('.invitation h2');invitation.replaceChildren(name+' kommt',document.createElement('br'),'auch ');const emphasis=document.createElement('em');emphasis.textContent='zu euch.';invitation.append(emphasis);
   document.querySelector('.page-footer > span').textContent=name+' · Eigenständiges Demo-Konzept für Jimmy’s Fun Park';
-  $('hero-magician').dataset.asset=asset.id;$('hero-magician').append(JimmyMascot.create());
+  $('hero-magician').dataset.asset=asset.id;
+  const heroFigure=JimmyMascot.create();$('hero-magician').append(heroFigure);
+  const drawHero=()=>JimmyMascot.paint(heroFigure);
+  drawHero();window.addEventListener('resize',drawHero);
   document.querySelector('.name-tag b').textContent=name;
   document.querySelector('.name-tag small').textContent=asset.role;
   const intro=document.querySelector('.intro');intro.replaceChildren();const strong=document.createElement('strong');strong.textContent=name;intro.append('Darf ich vorstellen? ',strong,'. '+asset.introduction+' Ein Klick auf die Figur genügt.');

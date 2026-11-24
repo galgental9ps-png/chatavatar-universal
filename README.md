@@ -1,6 +1,8 @@
 # Chatavatar Universal · austauschbare Figuren
 
-Aktiv ist **Lumi, die Eiskunstläuferin**: eine zusammenhängende Kür von etwa 20–22 Sekunden mit tiefem, schnellem Anlauf, einfachem und doppeltem Drehsprung, weichen Landungen, Überkreuzschritten, tiefem Ausfallschritt, Spirale und aufrechten Pirouetten. 64 zusätzliche vollständige Actionframes zeigen die neuen Bewegungen und die Ein- und Ausstiege. Es wird keine Eisfläche eingeblendet. Jimmy bleibt als vollständiges zweites Asset-Set erhalten.
+Aktiv ist **Lumi, die Eiskunstläuferin**: eine ruhiger abgespielte Kür mit tiefem Anlauf, einfachem und doppeltem Drehsprung, weichen Landungen, Überkreuzschritten, tiefem Ausfallschritt, Spirale und aufrechten Pirouetten. Alle Bewegungen verwenden den gemeinsamen Master-Atlas mit 64 vollständigen Posen. Auf üblichen Desktop-Fenstern dauert die Kür etwa 35–55 Sekunden; breite Fenster verlängern den Anlauf statt das Fahrtempo. Es wird keine Eisfläche eingeblendet. Jimmy bleibt als vollständiges zweites Asset-Set erhalten.
+
+Die bewegte Figur ist auf dem Desktop 192 Pixel, mobil 160 Pixel breit. Die Vorschau verwendet 256 bzw. 240 Pixel und zeichnet direkt in der tatsächlichen Bildschirmauflösung. Dadurch entfällt das nachträgliche Strecken eines zu kleinen Canvas. Das Ausgangsbild enthält 192 × 192 Pixel pro Pose; größere Canvas-Bitmaps erzeugen keine zusätzlichen Bilddetails.
 
 Die Auswahl steht zentral in `asset-sets.js`: `const ACTIVE_ASSET_SET = 'ice-skater';`. Für Jimmy genügt der Wert `'jimmy'`. Bei einem späteren Wechsel braucht nur diese Auswahl geändert und veröffentlicht zu werden. Die Bilddateien, Bewegungen, Namen und Sprüche folgen der Auswahl. Details und Dateiliste: [docs/ASSET-SETS.md](docs/ASSET-SETS.md).
 

@@ -18,8 +18,25 @@ test('The routine links full-body acceleration, two airborne jumps, footwork, sp
       assert.deepEqual(Assets.frameFor(asset,'skate-performance',0,{selection:move}),{sheet:move.sheet,index:move.index});
     }
     for(const phase of ['speed','takeoff','air-turn','double-turn','landing-preparation','landing','crossovers','lunge','spiral','spin-entry','spin','spin-exit','bow'])assert.ok(seen.has(phase),phase);
-    if(width===1200)assert.ok(peak>218*.62*2,'The routine should move at least twice as fast as the earlier glide.');
+    assert.ok(peak<=size.performanceSpeed+.001,'The same speed limit applies on every screen.');
+    if(width===1200){assert.ok(peak>150);assert.ok(choreography.duration>32000,'The entire performance has a calmer pace.');}
     const end=Skating.atTime(choreography,choreography.duration+1000);assert.equal(end.finished,true);assert.equal(end.lift,0);assert.equal(end.index,0);
+  }
+});
+
+test('Wide screens lengthen the approach without speeding up the travel or stretching the airborne sequence',()=>{
+  let previous=0;
+  for(const width of [1200,1920,3840]){
+    const choreography=plan('routine',width),size=Motion.dimensions(width,asset.motion);
+    assert.ok(choreography.duration>previous);previous=choreography.duration;
+    const jumpDurations=[];
+    for(const block of choreography.blocks){
+      if(block.kind!=='pass')continue;
+      assert.ok(Math.abs(block.to-block.from)*1875/block.duration<=size.performanceSpeed+.001);
+      for(const item of block.phases)if(item.name==='jump')jumpDurations.push(item.duration);
+    }
+    assert.deepEqual(jumpDurations,[1470/asset.motion.tempo,1550/asset.motion.tempo]);
+    assert.ok(choreography.blocks.filter(b=>b.kind==='turn').every(b=>b.entry>=350/asset.motion.tempo&&b.exit>=400/asset.motion.tempo));
   }
 });
 

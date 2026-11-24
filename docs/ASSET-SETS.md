@@ -8,7 +8,7 @@ const ACTIVE_ASSET_SET = 'ice-skater';
 
 | Kennung | Figur | Bewegung |
 | --- | --- | --- |
-| `ice-skater` | Lumi, Eiskunstläuferin | Schneller tiefer Anlauf, Drehsprünge, Überkreuzschritte, Ausfallschritt, Spirale, aufrechte Pirouetten und komplette Kür |
+| `ice-skater` | Lumi, Eiskunstläuferin | Ruhiger tiefer Anlauf, Drehsprünge, Überkreuzschritte, Ausfallschritt, Spirale, aufrechte Pirouetten und komplette Kür |
 | `jimmy` | Jimmy, Park-Affe | Laufen und kleine Hüpfer |
 
 Für einen späteren Wechsel genügt diese eine Auswahlzeile. Zeichnungen, Bewegungsprofil, Name, Vorschauknöpfe und figurbezogene Sprüche folgen der Auswahl. Der Veröffentlichungsworkflow muss danach erfolgreich durchlaufen. Eine bereits offene Webseite neu laden; bei einem alten Browsercache vollständig neu laden.
@@ -18,6 +18,8 @@ Die Eiskunstläuferin ist eine transparente Figur. Es wird keine Eisfläche oder
 ## Master-Atlas (64 Posen)
 
 Wenn `assets/lumi-master-v1.webp` (1536 × 1536 Pixel, 8 × 8 Felder à 192 Pixel, Alpha) vorhanden ist, lädt der Renderer ausschließlich dieses Bild. Die logischen 16-Frame-Bewegungen greifen über die Zuordnung in `asset-sets.js` auf die 64 Originalposen zu; einzelne Posen werden mehrfach genutzt. Der gemeinsame Maßstab und die gemeinsame Kufenlinie sind bereits im Bild festgelegt. Solange das Bild fehlt, bleibt die bisherige Mehrbild-Version als Rückfalloption aktiv. Die alte Bildtafel-Liste unten dokumentiert diese Rückfalloption. Die Bilddatei muss separat hochgeladen werden.
+
+Die Bilddatei ist enthalten. Jede Pose wird direkt in einen Canvas mit der tatsächlichen CSS-Breite mal Geräte-Pixeldichte gezeichnet, auch nach Fenster- oder Zoomänderungen. Es gibt keinen festen 218-Pixel-Zwischenschritt mehr. Die bewegte Figur nutzt 192 Pixel auf dem Desktop und 160 Pixel mobil; die Vorschau 256 bzw. 240 Pixel. Die Bildschirmposition wird auf Gerätepixel gerundet. Die Quelldetails bleiben auf 192 × 192 Pixel je Pose begrenzt.
 
 ## Neue Bilddateien
 
@@ -41,7 +43,7 @@ Die Bildtafeln haben jeweils vier mal vier Felder. Der Renderer zeigt genau ein 
 
 Beim Sprung folgen jetzt acht kleinere Absprungänderungen aufeinander. Kurz vor dem Bodenkontakt öffnen drei weitere Posen Arme und Beine bereits im Flug. Erst danach setzt die Kufe auf; die tiefe Kniebeuge zum Abfedern folgt nach dem Kontakt. Der Auslauf bleibt in derselben Bildtafel, damit kein zusätzlicher Größen- oder Haltungswechsel am Ende der Landung entsteht.
 
-`skating-core.js` verbindet die vollständigen Bilder zu einer Kür von etwa 20–22 Sekunden. Zusammenhängende Fahrten bauen Tempo auf und bremsen nur vor den Wendungen ab. Geschwindigkeit und Beschleunigung schließen an diesen Punkten ohne Sprung an. Die Abstoßphasen folgen der Strecke. Erst die tiefen Kniebeugen, dann der vollständig gezeichnete aufrechte Drehsprung entlang einer Flugbahn, anschließend die gedämpfte Landung und das Weitergleiten. Der zweite Sprung verwendet zwei aufrechte Drehungen. Überkreuzschritte, tiefer Ausfallschritt und Spirale verbinden die Elemente.
+`skating-core.js` verwendet das Bewegungsprofil aus `asset-sets.js`: `tempo: .65` verlangsamt die Posen, Sprünge und Pirouetten. Die Kür dauert auf üblichen Desktop-Fenstern etwa 35–55 Sekunden. Das Fahrtempo ist auf etwa 230 CSS-Pixel pro Sekunde begrenzt; kleinere Figuren bewegen sich entsprechend langsamer. Breitere Fenster verlängern den Anlauf und die Gleitstrecke, während die Sprungdauer gleich bleibt. Der manuelle Gleitknopf fährt mit etwa 138 Pixeln pro Sekunde. Zusammenhängende Fahrten bauen Tempo auf und bremsen vor den Wendungen ab. Geschwindigkeit und Beschleunigung schließen an diesen Punkten ohne Sprung an. Die Abstoßphasen folgen der Strecke. Erst die tiefen Kniebeugen, dann der vollständig gezeichnete aufrechte Drehsprung entlang einer Flugbahn, anschließend die gedämpfte Landung und das Weitergleiten. Der zweite Sprung verwendet zwei aufrechte Drehungen. Überkreuzschritte, tiefer Ausfallschritt und Spirale verbinden die Elemente.
 
 Vor den Pirouetten schließen acht vollständige Zwischenposen Arme und Beine; danach öffnen acht Ausstiegsbilder die Haltung wieder. Die Drehgeschwindigkeit baut sich sanft auf und ab. Ein Richtungswechsel erfolgt während einer stationären Rückenansicht; die Bildfolge wird dabei entsprechend weitergeführt. Es werden keine Körperteile separat bewegt, keine flachen Bilder um die Bildschirmachse gedreht und keine halbtransparenten Doppelbilder überblendet.
 
@@ -58,3 +60,4 @@ Die drei Bewegungsbriefe ergänzen diese Vorgaben: sechzehn flache Abstoß- und 
 Der bestehende Name `JimmyChatAvatar` bleibt für bisherige Einbindungen erhalten; `UniversalChatAvatar` ist derselbe Einstieg. Die Standardinstanz bietet `perform()` für die gesamte Kür, `skateJump()` bzw. `hop()` für einen Anlauf mit Drehsprung, `spin()` für eine Pirouette mit Zwischenposen sowie `walkTo(x, {style:'speed'})`. Weitere Werte für `style` sind `'footwork'`, `'spiral'` und `'glide'`. Die übliche Script-Adresse bleibt `avatar.js`.
 
 Die vier neuen Bildtafeln wurden mit der integrierten Bildgenerierung erstellt und unverändert als WebP mit Alpha übernommen. Die vollständigen Bildvorgaben stehen in [LUMI-KUER-PROMPTS.md](LUMI-KUER-PROMPTS.md).
+

@@ -4,7 +4,7 @@
   if (window.JimmyChatAvatar) return;
   const script = document.currentScript;
   const BASE = new URL('.', script.src).href;
-  const VERSION = 'lumi-master-7';
+  const VERSION = 'lumi-calm-sharp-8';
   const deps = new Map();
   function loadScript(url) {
     if (!deps.has(url)) deps.set(url, new Promise((resolve, reject) => { const s = document.createElement('script'); s.src = url; s.onload = resolve; s.onerror = () => reject(Error('Datei konnte nicht geladen werden: ' + url)); document.head.append(s); }));
@@ -119,7 +119,8 @@
       const size = this.size().width, width = size;
       this.character.style.width=this.character.style.height=size+'px';
       this.x = Math.max(0, Math.min(Math.max(0, innerWidth - width), this.x)); this.y = Math.max(5, Math.min(Math.max(5, innerHeight - size), this.y));
-      this.character.style.transform = 'translate(' + this.x + 'px,' + (-this.y) + 'px)'; this.character.style.bottom = '0';
+      const ratio=window.devicePixelRatio||1;
+      this.character.style.transform = 'translate(' + Math.round(this.x*ratio)/ratio + 'px,' + (-Math.round(this.y*ratio)/ratio) + 'px)'; this.character.style.bottom = '0';
       this.tip.style.left = Math.max(10, Math.min(innerWidth - (innerWidth <= 540 ? 220 : 246), this.x - 25)) + 'px';
       this.tip.style.bottom = Math.min(innerHeight - 110, this.y + size - 12) + 'px';
     }
@@ -197,7 +198,7 @@
           const requested=this.pendingProgram;
           if(requested&&(move.finished||move.phase==='landing-exit'||move.sheet==='flow'&&move.index>=14)){
             this.cancelProgram();this.perform(requested);
-          }else if(move.finished){this.cancelProgram();this.nextRoutine=now+2300+Math.random()*1800;this.nextWalk=this.nextRoutine;}
+          }else if(move.finished){this.cancelProgram();this.nextRoutine=now+4500+Math.random()*2500;this.nextWalk=this.nextRoutine;}
           this.position();
         } else if (this.state === 'jump') {
           this.jumpElapsed += dt * 1000;
@@ -318,4 +319,5 @@
   const auto = () => { if (script.dataset.manual !== 'true') window.JimmyChatAvatar.instance = new Mascot({ knowledgeUrl: script.dataset.knowledge || undefined }); };
   if (document.body) auto(); else document.addEventListener('DOMContentLoaded', auto, { once: true });
 })();
+
 

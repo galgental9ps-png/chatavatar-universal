@@ -61,6 +61,16 @@
     ctx.putImageData(pixels,0,0);
     return {image:canvas,anchors};
   }
+  function fitCanvas(element) {
+    // Render straight from the source cell into the final device-pixel bitmap.
+    // The hero and the moving character have different CSS sizes.
+    const cssWidth = element.getBoundingClientRect?.().width || asset.motion.desktop || 192;
+    const pixels = Math.max(1, Math.round(cssWidth * Math.min(3, window.devicePixelRatio || 1)));
+    if (element.width !== pixels || element.height !== pixels) {
+      element.width = element.height = pixels;
+      element._frameKey = null;
+    }
+  }
   function paint(element, state = 'idle', frame = 0, facing = 1, details = {}) {
     const selection=catalog.frameFor(asset,state,frame,details),sheet=selection.sheet,index=selection.index,spec=asset.sheets[sheet];
     element.dataset.sheet=sheet;element.dataset.frame=String(index);element.dataset.pose=state;element.dataset.asset=asset.id;
@@ -71,14 +81,15 @@
       element.style.backgroundPosition=(index%spec.columns)*100/(spec.columns-1)+'% '+Math.floor(index/spec.columns)*100/(spec.rows-1)+'%';
       return;
     }
+    fitCanvas(element);
     if(masterImage){
       const cell=asset.master.frames[sheet][index],key='master:'+cell+':'+facing;
       if(element._frameKey===key)return;
       const ctx=element.getContext('2d');if(!ctx)return;
-      const w=element.width,cw=masterImage.naturalWidth/8,ch=masterImage.naturalHeight/8;
-      ctx.clearRect(0,0,w,w);ctx.globalAlpha=1;ctx.filter='none';ctx.imageSmoothingQuality='high';
+      const w=element.width,cw=masterImage.naturalWidth/asset.master.columns,ch=masterImage.naturalHeight/asset.master.rows;
+      ctx.clearRect(0,0,w,w);ctx.globalAlpha=1;ctx.filter='none';ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
       // The source has already been cleaned and aligned to a common baseline.
-      ctx.drawImage(masterImage,(cell%8)*cw,Math.floor(cell/8)*ch,cw,ch,0,0,w,w);
+      ctx.drawImage(masterImage,(cell%asset.master.columns)*cw,Math.floor(cell/asset.master.columns)*ch,cw,ch,0,0,w,w);
       element._frameKey=key;return;
     }
     const key=[sheet,index,facing].join(':');if(element._frameKey===key||!decoded[sheet])return;
@@ -111,7 +122,6 @@
     },
     create() {
       const element = document.createElement(asset.renderer==='canvas'?'canvas':'span');
-      if(asset.renderer==='canvas')element.width=element.height=Math.round(218*Math.min(2,window.devicePixelRatio||1));
       element.className = 'jimmy-frame';
       element.setAttribute('aria-hidden','true');
       paint(element);
@@ -120,3 +130,4 @@
     paint
   };
 })();
+

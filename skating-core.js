@@ -14,18 +14,27 @@
     if (!['routine', 'jump', 'spin'].includes(mode)) throw Error('Unbekannte Eiskunstlauf-Folge.');
     const max = Math.max(0, viewportWidth - size.width), margin = Math.min(12, max / 2);
     const left = margin, right = max - margin;
+    const tempo = clamp(size.tempo || 1, .25, 2), topSpeed = Math.max(1, size.performanceSpeed || size.width * 1.2);
     let x = clamp(startX, left, right), direction = facing < 0 ? -1 : 1, time = 0;
     const travelDirection=x > (left + right) / 2 ? -1 : 1;
     const blocks = [];
     const add = block => { block.start = time; time += block.duration; block.end = time; blocks.push(block); };
     const pass = (phases, target) => {
-      let offset = 0;
-      const steps = phases.map(item => { const result = { ...item, start: offset }; offset += item.duration; return result; });
       const to = clamp(target, left, right);
+      const paced = phases.map(item => ({ ...item, duration: item.duration / tempo }));
+      // A quintic glide reaches 1.875 times its average speed. Give wide screens
+      // a longer approach instead of speeding up the whole routine or stretching a jump.
+      const minimum = 1875 * Math.abs(to - x) / topSpeed;
+      const extra = Math.max(0, minimum - paced.reduce((sum, item) => sum + item.duration, 0));
+      const cruise = paced.find(item => ['speed', 'spiral', 'glide'].includes(item.name));
+      if (cruise) cruise.duration += extra;
+      let offset = 0;
+      const steps = paced.map(item => { const result = { ...item, start: offset }; offset += item.duration; return result; });
       direction = Math.sign(to - x) || direction;
       add({ kind: 'pass', from: x, to, facing: direction, duration: offset, phases: steps }); x = to;
     };
     const turn = (spinDuration, turns, reverse = true, entry = 400, exit = 450) => {
+      entry /= tempo; spinDuration /= tempo; exit /= tempo;
       add({ kind: 'turn', from: x, to: x, fromFacing: direction, toFacing: reverse ? -direction : direction,
         entry, spinDuration, exit, turns, duration: entry + spinDuration + exit });
       if (reverse) direction = -direction;
@@ -47,7 +56,7 @@
       pass([phase('speed', 1000), phase('footwork', 650), phase('jump', 1550, { turns: 2 }), phase('landing', 400)], edge());
       turn(1750, 2);
       pass([phase('glide', 1000)], x + direction * Math.min(size.width * 1.3, (right - left) * .35));
-      add({ kind: 'bow', from: x, to: x, facing: direction, duration: 1050 });
+      add({ kind: 'bow', from: x, to: x, facing: direction, duration: 1050 / tempo });
     }
     return { mode, blocks, duration: time, size: size.width,maxLift:Math.max(0,viewportHeight-size.height-22),
       jumpHeight: Math.min(size.height * .43, Math.max(0, viewportHeight - size.height - 22)) };
@@ -116,7 +125,7 @@
     if (block.kind === 'pass') return { ...samplePass(block, elapsed, plan), finished: false };
     if (block.kind === 'turn') return { ...sampleTurn(block, elapsed), finished: false };
     return { x: block.from, facing: block.facing, lift: 0, velocity: 0,
-      ...(elapsed < 700 ? { sheet: 'flow', index: Math.max(8, 15 - Math.floor(elapsed / 700 * 8)) } : { sheet: 'poses', index: 15 }),
+      ...(elapsed < block.duration * 2 / 3 ? { sheet: 'flow', index: Math.max(8, 15 - Math.floor(elapsed / (block.duration * 2 / 3) * 8)) } : { sheet: 'poses', index: 15 }),
       phase: 'bow', finished: false };
   }
   return { createPlan, atTime, jumpAt, smooth };

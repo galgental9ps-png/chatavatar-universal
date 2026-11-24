@@ -82,8 +82,8 @@ test('The skating set glides with sixteen frames and stops gracefully before ret
   const {avatar,advance}=await mascot('ice-skater');
   avatar.nextQuip=avatar.nextGesture=avatar.nextHop=Infinity;
   assert.equal(avatar.displayName(),'Lumi');assert.equal(avatar.walkTo(100,{style:'spiral'}),true);assert.equal(avatar.skateStyle,'spiral');
-  const frames=new Set();let stopped=false;
-  for(let i=0;i<650;i++){advance(20);frames.add(avatar.frame);assert.equal(avatar.y,10);assert.ok(avatar.x>=100&&avatar.x<=982);if(avatar.state==='skate-stop'){stopped=true;break;}}
+  const frames=new Set();let stopped=false;const max=1200-avatar.size().width;
+  for(let i=0;i<650;i++){advance(20);frames.add(avatar.frame);assert.equal(avatar.y,10);assert.ok(avatar.x>=100&&avatar.x<=max);assert.ok(avatar.velocity<=avatar.size().speed);if(avatar.state==='skate-stop'){stopped=true;break;}}
   assert.ok(stopped);assert.ok(frames.size>=12);avatar.nextWalk=Infinity;advance(avatar.asset.motion.stopDuration+80);
   assert.equal(avatar.state,'idle');assert.equal(avatar.x,100);
 });
@@ -113,13 +113,13 @@ test('The skater builds speed, performs an airborne turn and absorbs the landing
     lift=Math.max(lift,avatar.y-10);speed=Math.max(speed,avatar.velocity);if(avatar.y>10)airTravel+=Math.abs(avatar.x-lastX);lastX=avatar.x;
   }
   assert.ok(sheets.has('speed')&&sheets.has('jump'));assert.ok(phases.has('takeoff')&&phases.has('air-turn')&&phases.has('landing'));
-  assert.ok(lift>70);assert.ok(speed>260);assert.ok(airTravel>60);assert.equal(avatar.y,10);assert.equal(avatar.program,null);
+  assert.ok(lift>70);assert.ok(speed>150&&speed<=avatar.size().performanceSpeed+.001);assert.ok(airTravel>60);assert.equal(avatar.y,10);assert.equal(avatar.program,null);
 });
 
 test('A complete routine runs automatically, includes several tricks and returns to a finite resting state',async()=>{
   const {avatar,advance}=await mascot('ice-skater');avatar.nextRoutine=0;advance(20);
   assert.equal(avatar.program.mode,'routine');const duration=avatar.program.duration,phases=new Set();
-  for(let elapsed=0;elapsed<duration+80;elapsed+=20){advance(20);if(avatar.programFrame)phases.add(avatar.programFrame.phase);assert.ok(avatar.x>=0&&avatar.x<=982);assert.ok(avatar.y>=10&&avatar.y<800-218);}
+  for(let elapsed=0;elapsed<duration+80;elapsed+=20){advance(20);if(avatar.programFrame)phases.add(avatar.programFrame.phase);assert.ok(avatar.x>=0&&avatar.x<=1200-avatar.size().width);assert.ok(avatar.y>=10&&avatar.y<800-avatar.size().height);}
   for(const phase of ['speed','air-turn','double-turn','landing','spiral','lunge','spin-entry','spin','spin-exit','bow'])assert.ok(phases.has(phase),phase);
   assert.equal(avatar.program,null);assert.equal(avatar.state,'idle');assert.equal(avatar.y,10);
 });
@@ -128,7 +128,9 @@ test('A requested trick waits for a safe exit and reading or reduced motion canc
   const {avatar,advance,media}=await mascot('ice-skater');avatar.x=100;avatar.skateJump();
   while(avatar.y===10)advance(20);
   assert.equal(avatar.spin(),true);assert.equal(avatar.program.mode,'jump');assert.equal(avatar.pendingProgram,'spin');
-  advance(1600);assert.equal(avatar.program.mode,'spin');assert.equal(avatar.y,10);
+  const deadline=avatar.program.duration;
+  for(let elapsed=0;elapsed<=deadline&&avatar.program.mode==='jump';elapsed+=20)advance(20);
+  assert.equal(avatar.program.mode,'spin');assert.equal(avatar.y,10);
   avatar.open();assert.equal(avatar.program,null);assert.equal(avatar.pendingProgram,null);assert.equal(avatar.y,10);
   avatar.opened=false;avatar.perform();media.matches=true;avatar.onMotion();
   assert.equal(avatar.program,null);assert.equal(avatar.paused,true);assert.equal(avatar.perform(),false);

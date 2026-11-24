@@ -19,11 +19,11 @@ test('The skater uses complete glide, spiral and upright-turn frames rather than
   const asset=Assets.get('ice-skater'),seen=new Set();
   for(let i=0;i<16;i++){
     assert.deepEqual(Assets.frameFor(asset,'walk',i,{elapsed:1,style:'glide'}),{sheet:'glide',index:i});
-    const pose=Assets.frameFor(asset,'spin',0,{elapsed:.2+(i+.05)/32*2.15});assert.equal(pose.sheet,'spin');seen.add(pose.index);
+    const pose=Assets.frameFor(asset,'spin',0,{elapsed:(.2+(i+.05)/32*2.15)/asset.motion.tempo});assert.equal(pose.sheet,'spin');seen.add(pose.index);
   }
   assert.equal(seen.size,16);
   assert.equal(Assets.frameFor(asset,'walk',0,{elapsed:1,style:'spiral',remaining:2}).sheet,'spiral');
-  assert.equal(Assets.frameFor(asset,'spin',0,{elapsed:2.74}).sheet,'poses');
+  assert.equal(Assets.frameFor(asset,'spin',0,{elapsed:2.74/asset.motion.tempo}).sheet,'poses');
 });
 
 test('Skating accelerates gently, stays within its target and uses a scaled sixteen-frame stride',()=>{
@@ -49,7 +49,7 @@ test('Each pirouette view renders one opaque complete illustration without rotat
   vm.runInNewContext(fs.readFileSync(require.resolve('../mascot.js'),'utf8'),{window,document:{currentScript:{src:'https://example.test/mascot.js'},createElement:canvas},Image,URL,setTimeout,clearTimeout});
   await window.JimmyMascot.preload();const element=window.JimmyMascot.create();
   for(let i=0;i<16;i++){
-    calls.length=0;window.JimmyMascot.paint(element,'spin',0,1,{elapsed:.2+(i+.05)/32*2.15});
+    calls.length=0;window.JimmyMascot.paint(element,'spin',0,1,{elapsed:(.2+(i+.05)/32*2.15)/Assets.get('ice-skater').motion.tempo});
     assert.equal(calls.length,1);assert.equal(calls[0].alpha,1);assert.equal(element.dataset.sheet,'spin');assert.equal(element.dataset.frame,String(i));
     assert.equal(element.style.transform,undefined);
   }
@@ -87,3 +87,22 @@ test('The master atlas is loaded once and uses a single full-frame draw',async()
  await window.JimmyMascot.preload();const element=window.JimmyMascot.create();calls.length=0;window.JimmyMascot.paint(element,'spin',0,1,{elapsed:.2});
  assert.equal(urls.length,1);assert.ok(urls[0].endsWith('lumi-master-v1.webp'));assert.equal(calls.length,1);assert.deepEqual(calls[0].slice(1,5),[0,768,192,192]);
 });
+
+test('Hero and moving canvases draw directly at their CSS size and device ratio, including after resize',async()=>{
+ const calls=[];let cssWidth=256;
+ function canvas(){return {style:{},dataset:{},width:0,height:0,setAttribute(){},getBoundingClientRect(){return {width:cssWidth};},getContext(){return {clearRect(){},drawImage(...args){calls.push(args);}};}};}
+ class Image{constructor(){this.naturalWidth=this.naturalHeight=1536;}set src(value){queueMicrotask(()=>this.onload());}}
+ const window={UniversalAvatarAssets:{...Assets,active:Assets.get('ice-skater')},devicePixelRatio:1};
+ vm.runInNewContext(fs.readFileSync(require.resolve('../mascot.js'),'utf8'),{window,document:{currentScript:{src:'https://example.test/mascot.js'},createElement:canvas},Image,URL,setTimeout,clearTimeout});
+ await window.JimmyMascot.preload();const element=window.JimmyMascot.create();
+ for(const [css,ratio] of [[256,1],[256,2],[192,2],[160,3]]){
+   cssWidth=css;window.devicePixelRatio=ratio;calls.length=0;
+   // Invalidate only by resize, even when the illustration stays exactly the same.
+   if(css===256&&ratio===1){element.width=1;}
+   window.JimmyMascot.paint(element);
+   assert.equal(element.width,css*ratio);assert.equal(element.height,css*ratio);assert.equal(calls.length,1);
+   assert.deepEqual(calls[0].slice(1,5),[0,0,192,192]);assert.deepEqual(calls[0].slice(5),[0,0,css*ratio,css*ratio]);
+   calls.length=0;window.JimmyMascot.paint(element);assert.equal(calls.length,0,'An unchanged frame reuses the bitmap.');
+ }
+});
+
