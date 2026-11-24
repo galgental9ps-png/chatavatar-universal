@@ -108,7 +108,14 @@
       }
       ctx.putImageData(pixels,0,0);
       const ref=anchors[spec.reference||0];
-      return {image:canvas,rects,anchors,unitScale:(spec.heightRatio||.84)/Math.max(1,ref.feet-ref.top)};
+      const unitScale=(spec.heightRatio||.84)/Math.max(1,ref.feet-ref.top);
+      const unitScales=anchors.map((_,cell)=>{
+        const group=spec.scaleGroups?.find(g=>cell>=g.from&&cell<=g.to);
+        if(!group)return unitScale;
+        const standing=anchors[group.reference];
+        return (spec.heightRatio||.84)/Math.max(1,standing.feet-standing.top);
+      });
+      return {image:canvas,rects,anchors,unitScale,unitScales};
     }
     function paint(element, state = 'idle', frame = 0, facing = 1, details = {}) {
       const selection=catalog.frameFor(asset,state,frame,details),sheet=selection.sheet,index=selection.index,spec=asset.sheets[sheet];
@@ -125,20 +132,31 @@
         const variant=selection.atlas&&asset.master.variants?.[selection.atlas],atlas=variant||asset.master;
         const sources=variant?actorVariants[selection.atlas]:actorImages,actor=details.actor;
         const individual=actor===0||actor===1,key='actors:'+(selection.atlas||'main')+':'+sheet+':'+index+':'+facing+':'+(individual?actor:'preview');
+        const mirrored=id=>{
+          const spec=atlas.actors[id],cell=(spec.frames||atlas.frames)[sheet][index];
+          return spec.mirrorCells?.includes(cell)||spec.mirrorFrames?.[sheet]?.includes(index);
+        };
+        // Reflect a complete illustrated view only where the generated atlas
+        // repeats a right-side view in the left half of a full axial turn.
+        // Apply it before the cache check so repeated paints retain the view.
+        if(individual){element.style.scale=((facing<0?-1:1)*(mirrored(actor)?-1:1))+' 1';element.dataset.viewMirror=String(!!mirrored(actor));}
         if(element._frameKey===key)return;
         const ctx=element.getContext('2d');if(!ctx)return;
         const w=element.width;ctx.clearRect(0,0,w,w);ctx.globalAlpha=1;ctx.filter='none';ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
         const draw=(id,x,y,size)=>{
           const prepared=sources[id],source=prepared.image,spec=atlas.actors[id],cell=(spec.frames||atlas.frames)[sheet][index];
+          const reflect=!individual&&mirrored(id);
+          if(reflect){ctx.save();ctx.translate(x+size,y);ctx.scale(-1,1);x=0;y=0;}
           // Each source cell contains exactly one complete person. Never crop
           // halves of a paired illustration or compose separate body parts.
           if(prepared.rects){
-            const r=prepared.rects[cell],a=prepared.anchors[cell],scale=size*prepared.unitScale;
+            const r=prepared.rects[cell],a=prepared.anchors[cell],scale=size*(prepared.unitScales?.[cell]??prepared.unitScale);
             ctx.drawImage(source,r.x,r.y,r.w,r.h,x+size*.5-a.head*scale,y+size*.945-a.feet*scale,r.w*scale,r.h*scale);
           }else{
             const cw=source.naturalWidth/atlas.columns,ch=source.naturalHeight/atlas.rows;
             ctx.drawImage(source,cell%atlas.columns*cw,Math.floor(cell/atlas.columns)*ch,cw,ch,x,y,size,size);
           }
+          if(reflect)ctx.restore();
         };
         if(individual){draw(actor,0,0,w);element.dataset.sourceFile=atlas.actors[actor].file;}
         else{draw(0,0,w*.25,w*.66);draw(1,w*.34,w*.25,w*.66);element.dataset.sourceFile=atlas.actors.map(a=>a.file).join(' ');}

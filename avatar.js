@@ -4,7 +4,7 @@
   if (window.JimmyChatAvatar) return;
   const script = document.currentScript;
   const BASE = new URL('.', script.src).href;
-  const VERSION = 'fine-duet-19';
+  const VERSION = 'steady-turns-20';
   const deps = new Map();
   function loadScript(url) {
     if (!deps.has(url)) deps.set(url, new Promise((resolve, reject) => { const s = document.createElement('script'); s.src = url; s.onload = resolve; s.onerror = () => reject(Error('Datei konnte nicht geladen werden: ' + url)); document.head.append(s); }));
@@ -38,7 +38,7 @@
       this.tip.addEventListener('click', () => { const entry=this.tipEntry;this.open();if(entry)this.answer(entry); });
       this.launcher.addEventListener('click', () => { this.hidden = false; this.launcher.hidden = true; this.character.hidden = false; this.open(); });
       this.onKey = e => { if (e.key === 'Escape' && this.opened) this.close(); };
-      this.onResize = () => { this.cancelProgram();this.position(); }; this.onVisibility = () => { this.last = 0; };
+      this.onResize = () => { this.cancelProgram();if(this.asset?.motion.groundInset&&!this.drag&&['idle','walk','skate-stop'].includes(this.state))this.y=this.size().ground;this.position(); }; this.onVisibility = () => { this.last = 0; };
       document.addEventListener('keydown', this.onKey); window.addEventListener('resize', this.onResize); document.addEventListener('visibilitychange', this.onVisibility);
       this.bindDrag(); this.position(); this.ready = this.init();
       this.tick = this.tick.bind(this); this.raf = requestAnimationFrame(this.tick);
@@ -49,6 +49,7 @@
       try {
         await engineReady; if (this.destroyed) return;
         this.asset=window.UniversalAvatarAssets.active;
+        this.y=this.size().ground;
         this.host.dataset.asset=this.character.dataset.asset=this.asset.id;
         this.renderer=window.JimmyMascot.forAsset?.(this.asset.id)||window.JimmyMascot;
         await this.renderer.preload(); if (this.destroyed) return;
@@ -134,7 +135,7 @@
       const release = e => {
         if (!this.drag || e.pointerId !== this.drag.pointer) return;
         this.ignoreClick = this.drag.moved; const moved = this.drag.moved; this.drag = null; this.fallVelocity = 0; this.velocity = 0;
-        this.setState(moved && this.y > 10 ? 'fall' : 'idle'); this.nextWalk = performance.now() + 5500;this.nextRoutine=this.nextWalk;
+        this.setState(moved && this.y > this.size().ground ? 'fall' : 'idle'); this.nextWalk = performance.now() + 5500;this.nextRoutine=this.nextWalk;
       };
       character.addEventListener('pointerup', release); character.addEventListener('pointercancel', release);character.addEventListener('lostpointercapture',release);
       character.addEventListener('click', () => { if (this.ignoreClick) { this.ignoreClick = false; return; } this.opened ? this.close() : this.open(); });
@@ -191,7 +192,7 @@
     }
     hop() {
       if(this.isSkater())return this.skateJump();
-      if (!this.pack || this.destroyed || document.hidden || this.paused || this.motion.matches || this.opened || this.hidden || this.drag || ['jump', 'fall', 'held'].includes(this.state) || this.y > 11) return false;
+      if (!this.pack || this.destroyed || document.hidden || this.paused || this.motion.matches || this.opened || this.hidden || this.drag || ['jump', 'fall', 'held'].includes(this.state) || this.y > this.size().ground+1) return false;
       const M = window.JimmyMotion, size = this.size(), max = Math.max(0, innerWidth - size.width);
       this.jumpHeight = Math.min(size.height * .34, Math.max(0, innerHeight - size.height - size.ground - 6));
       if (this.jumpHeight < 8) return false;
@@ -205,7 +206,7 @@
       this.showQuip('jump', { animate: false, replace: true });
       this.setState('jump'); return true;
     }
-    canPerform(){return this.isSkater()&&this.pack&&!this.destroyed&&!document.hidden&&!this.paused&&!this.motion.matches&&!this.opened&&!this.hidden&&!this.drag&&(this.program||this.y<=11)&&!['jump','fall','held'].includes(this.state);}
+    canPerform(){return this.isSkater()&&this.pack&&!this.destroyed&&!document.hidden&&!this.paused&&!this.motion.matches&&!this.opened&&!this.hidden&&!this.drag&&(this.program||this.y<=this.size().ground+1)&&!['jump','fall','held'].includes(this.state);}
     cancelProgram(settle=true){
       if(!this.program)return;
       this.program=null;this.programFrame=null;this.programElapsed=0;this.pendingProgram=null;this.velocity=0;if(this.partner)this.partner.hidden=true;
@@ -232,7 +233,7 @@
     duet(){return this.asset?.motion.duet?this.perform('duet'):false;}
     encore(){return this.asset?.motion.encore?this.perform('feature'):false;}
     walkTo(target,{style='auto'}={}) {
-      if (!this.pack || this.destroyed || this.motion.matches || this.paused || this.hidden || this.drag || this.y > 11) return false;
+      if (!this.pack || this.destroyed || this.motion.matches || this.paused || this.hidden || this.drag || this.y > this.size().ground+1) return false;
       this.cancelProgram();
       const M = window.JimmyMotion, size = this.size();
       this.targetX = M.clamp(Number(target) || 0, 0, Math.max(0, innerWidth - size.width));

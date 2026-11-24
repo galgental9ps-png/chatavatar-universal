@@ -195,7 +195,7 @@ test('The fine pair alternates both routines and cancels the orbit cleanly when 
   const {avatar,advance,media}=await mascot('ice-pair-fine');avatar.nextRoutine=0;advance(20);
   assert.equal(avatar.partner.attributes['aria-label'],'Elio öffnen. Zum Versetzen ziehen.');
   assert.equal(avatar.program.mode,'feature');const duration=avatar.program.duration;
-  advance(duration+100);assert.equal(avatar.program,null);assert.equal(avatar.y,10);
+  advance(duration+100);assert.equal(avatar.program,null);assert.equal(avatar.y,avatar.size().ground);
   avatar.nextRoutine=0;advance(20);assert.equal(avatar.program.mode,'routine');
   avatar.open();assert.equal(avatar.program,null);assert.equal(avatar.partner.hidden,false);avatar.close();
   assert.equal(avatar.encore(),true);advance(avatar.program.blocks.find(b=>b.part==='orbit').start+500);
@@ -203,4 +203,14 @@ test('The fine pair alternates both routines and cancels the orbit cleanly when 
   await avatar.setAsset('ice-pair');assert.equal(avatar.program,null);assert.equal(avatar.encore(),false);assert.equal(avatar.partner.hidden,false);
   assert.equal(avatar.partner.attributes['aria-label'],'Noel öffnen. Zum Versetzen ziehen.');
   await avatar.setAsset('ice-pair-fine');media.matches=true;assert.equal(avatar.encore(),false);avatar.minimize();assert.equal(avatar.partner.hidden,true);
+});
+
+test('The fixed blade line is used at startup, during manual gliding and after viewport changes',async()=>{
+  const {avatar,context,advance}=await mascot('ice-pair-fine');
+  assert.equal(avatar.y,avatar.size().ground);assert.ok(avatar.y>10);
+  assert.equal(avatar.walkTo(120),true);advance(300);assert.equal(avatar.y,avatar.size().ground);
+  context.innerWidth=390;avatar.onResize();assert.equal(avatar.y,avatar.size().ground);assert.equal(avatar.walkTo(8),true);
+  advance(200);assert.equal(avatar.y,avatar.size().ground);
+  context.innerWidth=1200;avatar.onResize();assert.equal(avatar.y,avatar.size().ground);assert.equal(avatar.encore(),true);
+  advance(avatar.program.duration+100);assert.equal(avatar.program,null);assert.equal(avatar.y,avatar.size().ground);
 });

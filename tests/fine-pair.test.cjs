@@ -31,7 +31,7 @@ test('Lina stays on one spot for three turns while Elio completes two oval circu
       const m=Skating.atTime(plan,orbit.start+orbit.duration*Math.min(i/1600,.999999));
       assert.equal(m.phase,'feature-orbit');assert.equal(m.actors[0].x,woman.x);assert.equal(m.actors[0].depth||0,0);
       assert.equal(m.atlas,'encore');frames.add(m.index);
-      for(const a of m.actors){assert.ok(a.x>=0&&a.x+size.actorWidth<=w+.001);assert.ok(m.lift+(a.depth||0)>=-.001);assert.ok(m.lift+(a.depth||0)+size.height+10<=h);}
+      for(const a of m.actors){assert.ok(a.x>=0&&a.x+size.actorWidth<=w+.001);assert.ok(size.ground+m.lift+(a.depth||0)>=10-.001);assert.ok(size.ground+m.lift+(a.depth||0)+size.height<=h);}
       const b=m.actors[1];side.add(Math.sign(b.x-woman.x));layers.add(b.layer);assert.equal(b.selection.atlas,'encore');
       if(b.depth>0)assert.ok(b.layer<m.actors[0].layer);else assert.ok(b.layer>m.actors[0].layer);
     }
@@ -61,6 +61,59 @@ test('The feature sequence joins smoothly, synchronizes again and finishes with 
   assert.throws(()=>Skating.createPlan({mode:'feature',viewportWidth:1200,viewportHeight:800,size:Motion.dimensions(1200,Assets.get('ice-pair').motion)}),/Unbekannte/);
 });
 
+test('The orbit exit and following dance stay on one blade line, including the final resting pose',()=>{
+  for(const [w,h] of [[1200,800],[390,700],[184,180]]){
+    const plan=planFor('feature',w,h),size=Motion.dimensions(w,pair.motion,h),exit=plan.blocks.find(b=>b.part==='exit');
+    for(let t=0;t<plan.duration;t+=10){
+      const m=Skating.atTime(plan,t);assert.equal(size.ground+m.lift+(m.actors[0].depth||0),size.ground,'Lina never rises or sinks when joining the circle.');
+    }
+    for(let t=exit.start;t<=plan.duration+20;t+=10){
+      const m=Skating.atTime(plan,t);
+      for(const a of m.actors)assert.equal(size.ground+m.lift+(a.depth||0),size.ground,'No diagonal descent after the orbit.');
+    }
+    assert.equal(Skating.atTime(plan,plan.duration).lift,0);
+  }
+});
+
+test('Elio completes successive full rotations without rocking back through the right-hand views',()=>{
+  const actor=pair.master.actors[1],yaw={12:0,13:45,14:90,15:135,16:180,17:135,18:90,19:45};
+  const angle=(index,facing=1)=>{
+    const cell=pair.master.frames.spin[index],mirror=actor.mirrorCells?.includes(cell)?-1:1;
+    return ((yaw[cell]*facing*mirror)%360+360)%360;
+  };
+  for(const mode of ['routine','spin']){
+    const plan=planFor(mode);
+    for(const block of plan.blocks.filter(b=>b.kind==='turn')){
+      let previous=angle(Skating.atTime(plan,block.start+block.entry+.001).index,block.fromFacing),total=0;
+      for(let i=1;i<=1000;i++){
+        const m=Skating.atTime(plan,block.start+block.entry+block.spinDuration*Math.min(i/1000,.999999));
+        const now=angle(m.index,m.facing),delta=((now-previous+540)%360)-180;
+        assert.ok(delta*block.fromFacing>=0,'An axial turn must not reverse halfway through the second rotation.');
+        total+=delta;previous=now;
+      }
+      assert.equal(total,block.turns*360*block.fromFacing);
+    }
+    for(const block of plan.blocks.filter(b=>b.kind==='duet'&&b.part==='spin')){
+      let previous=angle(0,-1),total=0;
+      for(let i=1;i<=1000;i++){
+        const m=Skating.atTime(plan,block.start+block.duration*Math.min(i/1000,.999999));
+        const now=angle(m.index,m.actors[1].facing),delta=((now-previous+540)%360)-180;
+        assert.ok(delta<=0);total+=delta;previous=now;
+      }
+      total+=((0-previous+540)%360)-180;
+      assert.equal(total,-720,'The separate pirouette also closes both complete rotations.');
+    }
+  }
+  const encore=pair.master.variants.encore,man=encore.actors[1],views=man.frames.spin;
+  let previous=0,total=0;
+  for(let phase=1;phase<=16;phase++){
+    const index=phase%16,sourceYaw=views[index]*22.5,mirror=man.mirrorFrames.spin.includes(index)?-1:1;
+    const now=(sourceYaw*mirror+360)%360,delta=((now-previous+540)%360)-180;
+    assert.ok(delta>=0);total+=delta;previous=now;
+  }
+  assert.equal(total,360,'The orbit also includes the complete left-hand half of the body.');
+});
+
 test('The new pair has smaller, gently eased jumps without changing the existing pair profile',()=>{
   const fine=planFor('jump'),old=Skating.createPlan({mode:'jump',viewportWidth:1200,viewportHeight:800,size:Motion.dimensions(1200,Assets.get('ice-pair').motion)});
   assert.ok(fine.jumpHeight<old.jumpHeight*.7);assert.equal(old.jumpHeight,192*.43);assert.equal(fine.edgeLean,1.1);assert.equal(old.edgeLean,2.4);
@@ -73,7 +126,7 @@ test('Both atlases preload once, render whole figures independently and keep one
   const raw=new Uint8ClampedArray(80*160*4),calls=[],saved=[],urls=[];
   for(let i=0;i<raw.length;i+=4){raw[i]=raw[i+1]=raw[i+2]=250;raw[i+3]=30;}
   for(let row=0;row<8;row++)for(let col=0;col<4;col++){
-    const top=row===1?8:3;for(let y=top;y<18;y++)for(let x=6;x<14;x++){const p=((row*20+y)*80+col*20+x)*4;raw[p]=160;raw[p+1]=130;raw[p+2]=120;raw[p+3]=255;}
+    const top=row===3?(col===1?12:8):row===1?8:3;for(let y=top;y<18;y++)for(let x=6;x<14;x++){const p=((row*20+y)*80+col*20+x)*4;raw[p]=160;raw[p+1]=130;raw[p+2]=120;raw[p+3]=255;}
   }
   const mini={...pair,id:'mini',master:{...pair.master,actors:pair.master.actors.map(a=>({...a,width:80,height:160,rowBounds:undefined})),variants:{encore:{...pair.master.variants.encore,actors:pair.master.variants.encore.actors.map(a=>({...a,width:80,height:160}))}}}};
   const catalog={active:mini,get:()=>mini,frameFor:Assets.frameFor};
@@ -88,6 +141,16 @@ test('Both atlases preload once, render whole figures independently and keep one
   assert.equal(standing[7],bent[7]);assert.equal(standing[8],bent[8],'A bent body is not rescaled to standing height.');
   calls.length=0;for(const [i,e] of [[0,a],[1,b]])renderer.paint(e,'spin',0,1,{actor:i,selection:{atlas:'encore',sheet:'spin',index:4}});
   assert.equal(calls.length,2);assert.notEqual(calls[0][0],calls[1][0]);assert.ok(a.dataset.sourceFile.endsWith('lina-encore-v1.png'));assert.ok(b.dataset.sourceFile.endsWith('elio-encore-v1.png'));
+  b._frameKey=null;renderer.paint(b,'idle',0,1,{actor:1});const manStanding=calls.at(-1);
+  renderer.paint(b,'spin',0,1,{actor:1,selection:{sheet:'spin',index:0}});const manTurn=calls.at(-1);
+  assert.ok(Math.abs(15*manStanding[8]/manStanding[4]-10*manTurn[8]/manTurn[4])<.00001,'Upright reference poses match across source camera scales.');
+  renderer.paint(b,'spin',0,1,{actor:1,selection:{sheet:'spin',index:2}});const manBent=calls.at(-1);
+  assert.equal(manTurn[8],manBent[8]);assert.ok(6*manBent[8]/manBent[4]<10*manTurn[8]/manTurn[4],'The same calibrated scale keeps a bent pose lower.');
+  for(const selection of [{sheet:'spin',index:12},{atlas:'encore',sheet:'spin',index:10}]){
+    renderer.paint(b,'spin',0,1,{actor:1,selection});assert.equal(b.style.scale,'-1 1');
+    renderer.paint(b,'spin',0,1,{actor:1,selection});assert.equal(b.style.scale,'-1 1','A cached paint keeps the left-side view.');
+    renderer.paint(b,'spin',0,-1,{actor:1,selection});assert.equal(b.style.scale,'1 1');
+  }
   await renderer.preload();assert.equal(urls.length,4);
   assert.equal(Assets.frameFor(pair,'idle',0,{selection:{atlas:'encore',sheet:'speed',index:0}}).atlas,undefined);
 });

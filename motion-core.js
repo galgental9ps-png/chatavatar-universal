@@ -10,7 +10,10 @@
     const desired = viewportWidth <= 540 ? profile.mobile || 152 : profile.desktop || 192;
     const factor=profile.duet?1+(profile.spacing||.58):1;
     const size = Math.max(profile.duet?36:72,Math.min(desired,(viewportWidth-16)/factor,viewportHeight-24));
-    return { width: size*factor, height: size,actorWidth:size,spacing:size*(factor-1), ground: 10, stride: size * (profile.stride || .43), approachStride: size * (profile.approachStride || profile.stride || .43), speed: size * (profile.speed || .44), acceleration: profile.acceleration || 3.2, frames: profile.frames || 8,
+    // Reserve room below the fine pair's blade line for the near half of an
+    // oval. That line stays fixed during entry, exit and the following glide.
+    const ground=profile.groundInset?Math.max(10,Math.min(10+size*profile.groundInset,viewportHeight-size-12)):10;
+    return { width: size*factor, height: size,actorWidth:size,spacing:size*(factor-1), ground, stride: size * (profile.stride || .43), approachStride: size * (profile.approachStride || profile.stride || .43), speed: size * (profile.speed || .44), acceleration: profile.acceleration || 3.2, frames: profile.frames || 8,
       tempo: profile.tempo || 1, jumpTempo: profile.jumpTempo || profile.tempo || 1, spinTempo: profile.spinTempo || profile.tempo || 1,
       performanceSpeed: size * (profile.performanceSpeed || profile.speed || .44),
       duet:!!profile.duet,encore:!!profile.encore,softJump:!!profile.softJump,

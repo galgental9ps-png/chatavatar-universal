@@ -68,7 +68,7 @@
         pass([phase('glide',1200)],center);
         const joined=[center,center+(size.spacing||0)],woman=(viewportWidth-aw)/2;
         const radius=Math.max(0,Math.min(aw*.86,(viewportWidth-aw)/2-margin));
-        const depth=Math.min(aw*.12,Math.max(0,viewportHeight-size.height-22)/2);
+        const depth=Math.min(aw*.12,Math.max(0,(size.ground||10)-10),Math.max(0,viewportHeight-size.height-(size.ground||10)-12));
         const orbit=[woman,woman+radius];
         const addFeature=(part,fromActors,toActors,duration,extra={})=>add({kind:'feature',part,
           from:part==='finish'?x:center,to:part==='finish'?x:center,facing:part==='finish'?direction:1,fromActors,toActors,depth,duration,...extra});
@@ -111,11 +111,12 @@
         add({ kind: 'bow', from: x, to: x, facing: direction, duration: 1050 / tempo });
       }
     }
-    return { mode, blocks, duration: time, size: size.width,duet:!!size.duet,spacing:size.spacing||0,actorWidth:size.actorWidth||size.width,
+    const headroom=Math.max(0,viewportHeight-size.height-(size.ground||10)-12);
+    return { mode, blocks, duration: time, size: size.width,duet:!!size.duet,spacing:size.spacing||0,actorWidth:size.actorWidth||size.width,ground:size.ground||10,
       edgeLean:size.edgeLean??2.4,softJump:!!size.softJump,
-      arcDepth:Math.min((size.actorWidth||size.width)*(size.arcDepth??.14),32,Math.max(0,viewportHeight-size.height-22)*.25),
-      stride:size.stride||size.width*1.3,approachStride:size.approachStride||size.stride||size.width*1.3,maxLift:Math.max(0,viewportHeight-size.height-22),
-      jumpHeight: Math.min(size.height * (size.jumpHeight??.43), Math.max(0, viewportHeight - size.height - 22)) };
+      arcDepth:Math.min((size.actorWidth||size.width)*(size.arcDepth??.14),32,headroom*.25),
+      stride:size.stride||size.width*1.3,approachStride:size.approachStride||size.stride||size.width*1.3,maxLift:headroom,
+      jumpHeight: Math.min(size.height * (size.jumpHeight??.43),headroom) };
   }
 
   function jumpAt(progress, height, turns = 1, soft = false) {
@@ -244,7 +245,7 @@
       // Three axial turns for Lina; Elio completes two actual oval circuits.
       // Depth ordering makes the far half pass behind her, rather than through her.
       const angle=4*Math.PI*p,depth=block.depth*Math.sin(angle);
-      return {...base,lift:block.depth,sheet:'spin',index:wrap(48*p),phase:'feature-orbit',
+      return {...base,sheet:'spin',index:wrap(48*p),phase:'feature-orbit',
         actors:[{x:block.woman,facing:1,layer:2},
           {x:block.woman+block.radius*Math.cos(angle),facing:1,depth,layer:depth>0?1:3,
             selection:{atlas:'encore',sheet:'spin',index:wrap(32*p)}}]};
@@ -253,7 +254,6 @@
     const positions=block.fromActors.map((from,i)=>from+(block.toActors[i]-from)*eased);
     const index=finish?Math.min(15,8+Math.floor(8*eased)):block.part==='entry'?Math.max(0,7-Math.floor(8*eased)):Math.min(7,Math.floor(8*eased));
     return {...base,sheet:'flow',index,phase:'feature-'+block.part,safeExit:finish&&p>.9,
-      lift:finish?0:block.depth*(block.part==='entry'?eased:1-eased),
       actors:positions.map((x,i)=>({x,facing:finish?block.facing:1,
         ...(finish&&i===1?{selection:{atlas:'encore',sheet:'poses',index:0}}:{})}))};
   }

@@ -146,18 +146,24 @@
             flow:[31,31,30,30,29,29,28,28,28,28,29,29,30,30,31,31],
             spiral:[27,27,28,28,29,29,30,30,30,30,30,30,31,31,27,27]}},
         {id:'elio',name:'Elio',file:'assets/elio-action-v1.png',width:887,height:1774,heightRatio:.85,
-          rowBounds:[0,257,502,729,960,1183,1400,1602,1774]}
+          rowBounds:[0,257,502,729,960,1183,1400,1602,1774],mirrorCells:[17,18,19],
+          scaleGroups:[{from:4,to:11,reference:4},{from:12,to:19,reference:12},{from:20,to:31,reference:23}]}
       ],frames:fineFrames,
       variants:{encore:{columns:4,rows:8,normalize:true,
         actors:[
           {id:'lina',name:'Lina',file:'assets/lina-encore-v1.png',width:887,height:1774,heightRatio:.83,reference:31},
-          {id:'elio',name:'Elio',file:'assets/elio-encore-v1.png',width:887,height:1774,heightRatio:.85,reference:31}
+          {id:'elio',name:'Elio',file:'assets/elio-encore-v1.png',width:887,height:1774,heightRatio:.85,reference:31,
+            frames:{spin:[0,1,2,3,4,5,6,7,8,7,6,5,4,3,2,1],
+              glide:[16,16,17,17,18,18,19,19,20,20,21,21,22,22,23,23],
+              flow:[24,24,25,25,26,26,27,27,28,28,29,29,30,30,31,31],
+              poses:[31,31,27,31,31,31,31,31,31,31,31,31,31,31,31,31]},
+            mirrorFrames:{spin:[9,10,11,12,13,14,15]}}
         ],frames:{spin:Array.from({length:16},(_,i)=>i),
           glide:[16,16,17,17,18,18,19,19,20,20,21,21,22,22,23,23],
           flow:[24,24,25,25,26,26,27,27,28,28,29,29,30,30,31,31],
           poses:[31,31,27,31,31,31,31,31,31,31,31,31,31,31,31,31]}}}},
     motion:{...sets['ice-pair'].motion,encore:true,tempo:.74,jumpTempo:1.04,spinTempo:.74,
-      speed:.66,performanceSpeed:1.05,stride:1.6,approachStride:1.45,jumpHeight:.28,softJump:true,edgeLean:1.1,arcDepth:.04},
+      speed:.66,performanceSpeed:1.05,stride:1.6,approachStride:1.45,jumpHeight:.28,softJump:true,edgeLean:1.1,arcDepth:.04,groundInset:.12},
     sheets:Object.fromEntries(Object.keys(sets['ice-skater'].sheets).map(key=>[key,{file:'assets/lina-action-v1.png',columns:4,rows:8}])),
     personality:{
       idle:['Ein leiser Schwung, ein gemeinsames Lächeln.','Kleine Bewegungen können viel erzählen.','Wir bringen dir einen stillen Moment voller Leichtigkeit.','Ein freundlicher Gruß von Lina und Elio.'],
