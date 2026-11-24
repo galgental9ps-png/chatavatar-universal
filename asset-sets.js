@@ -19,6 +19,7 @@
       id:'ice-skater',name:'Lumi',role:'Eiskunstläuferin',subtitle:'Deine anmutige Begleiterin',
       introduction:'Die Eiskunstläuferin zeigt ihre kleine Kür: schneller Anlauf, Drehsprünge, Pirouetten und elegante Gleitfiguren. Bei Fragen zum Park hilft sie euch gerne.',
       renderer:'canvas',environment:'none',poses,
+      master:{file:'assets/lumi-master-v1.webp',columns:8,rows:8,frames:{"poses":[0,1,2,3,0,5,6,7,24,29,30,44,6,5,5,7],"glide":[8,9,10,11,12,13,14,15,8,9,10,11,12,13,14,15],"speed":[16,17,18,19,20,21,22,23,16,17,18,19,20,21,22,23],"jump":[24,25,26,27,32,33,34,35,36,37,38,39,41,42,43,44],"spin":[32,32,33,33,34,34,35,35,36,36,37,37,38,38,39,39],"spiral":[48,49,50,51,52,53,52,51,52,53,52,51,53,54,55,48],"flow":[3,42,41,41,40,40,39,32,40,40,41,41,42,42,43,47],"footwork":[56,57,58,59,60,61,62,63,56,57,58,59,60,61,62,63],"jumpBridge":[24,25,26,27,28,29,30,31,40,41,42,43,44,45,46,47]}},
       motion:{kind:'ice',desktop:218,mobile:174,stride:1.3,speed:1.15,acceleration:2.4,frames:16,spinDuration:3000,stopDuration:600},
       sheets:{
         poses:{file:'assets/ice-skater-poses-v1.webp',columns:4,rows:4,height:.88,reference:0},

@@ -6,7 +6,7 @@
   const catalog = window.UniversalAvatarAssets, asset = catalog.active;
   const images = Object.fromEntries(Object.entries(asset.sheets).map(([key,sheet])=>[key,base+sheet.file]));
   const decoded = {};
-  let loaded;
+  let loaded, masterImage;
   function removeFragments(p,stride,ox,oy,w,h,labels,queue){
     labels.fill(0);const parts=[null];let largest=0;
     const alpha=index=>p[((oy+Math.floor(index/w))*stride+ox+index%w)*4+3];
@@ -71,6 +71,16 @@
       element.style.backgroundPosition=(index%spec.columns)*100/(spec.columns-1)+'% '+Math.floor(index/spec.columns)*100/(spec.rows-1)+'%';
       return;
     }
+    if(masterImage){
+      const cell=asset.master.frames[sheet][index],key='master:'+cell+':'+facing;
+      if(element._frameKey===key)return;
+      const ctx=element.getContext('2d');if(!ctx)return;
+      const w=element.width,cw=masterImage.naturalWidth/8,ch=masterImage.naturalHeight/8;
+      ctx.clearRect(0,0,w,w);ctx.globalAlpha=1;ctx.filter='none';ctx.imageSmoothingQuality='high';
+      // The source has already been cleaned and aligned to a common baseline.
+      ctx.drawImage(masterImage,(cell%8)*cw,Math.floor(cell/8)*ch,cw,ch,0,0,w,w);
+      element._frameKey=key;return;
+    }
     const key=[sheet,index,facing].join(':');if(element._frameKey===key||!decoded[sheet])return;
     const source=decoded[sheet],image=source.image,ctx=element.getContext('2d');if(!ctx)return;
     const width=element.width,cw=image.width/spec.columns,ch=image.height/spec.rows;
@@ -83,12 +93,20 @@
   window.JimmyMascot = {
     images, asset,
     preload() {
-      if (!loaded) loaded = Promise.all(Object.entries(images).map(([key,url]) => new Promise((resolve,reject) => {
+      if (!loaded) {
+        const legacy=()=>Promise.all(Object.entries(images).map(([key,url]) => new Promise((resolve,reject) => {
         const image = new Image(),timeout=setTimeout(()=>reject(Error('Die Figur konnte nicht geladen werden.')),20000);
         image.onload = () => {try{decoded[key]=asset.renderer==='canvas'?prepare(image,asset.sheets[key]):{image};clearTimeout(timeout);resolve();}catch(error){clearTimeout(timeout);reject(error);}};
         image.onerror = () => {clearTimeout(timeout);reject(Error('Die Figur konnte nicht geladen werden.'));};
         if(/^https?:/.test(url))image.crossOrigin='anonymous';image.src = url;
       })));
+        loaded=asset.master?new Promise((resolve,reject)=>{
+          const image=new Image(),url=base+asset.master.file,timeout=setTimeout(()=>reject(Error('Master-Atlas nicht verfügbar.')),8000);
+          image.onload=()=>{clearTimeout(timeout);if(image.naturalWidth!==1536||image.naturalHeight!==1536){reject(Error('Ungültiges Master-Raster.'));return;}masterImage=image;resolve();};
+          image.onerror=()=>{clearTimeout(timeout);reject(Error('Master-Atlas nicht verfügbar.'));};
+          if(/^https?:/.test(url))image.crossOrigin='anonymous';image.src=url;
+        }).catch(legacy):legacy();
+      }
       return loaded;
     },
     create() {

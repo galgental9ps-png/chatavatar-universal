@@ -15,6 +15,10 @@ Für einen späteren Wechsel genügt diese eine Auswahlzeile. Zeichnungen, Beweg
 
 Die Eiskunstläuferin ist eine transparente Figur. Es wird keine Eisfläche oder sonstige Bodenfläche über die Webseite gelegt. Antworten, Wissensstudio, Quellen und Einbindung bleiben der vorhandene Park-Chatavatar.
 
+## Master-Atlas (64 Posen)
+
+Wenn `assets/lumi-master-v1.webp` (1536 × 1536 Pixel, 8 × 8 Felder à 192 Pixel, Alpha) vorhanden ist, lädt der Renderer ausschließlich dieses Bild. Die logischen 16-Frame-Bewegungen greifen über die Zuordnung in `asset-sets.js` auf die 64 Originalposen zu; einzelne Posen werden mehrfach genutzt. Der gemeinsame Maßstab und die gemeinsame Kufenlinie sind bereits im Bild festgelegt. Solange das Bild fehlt, bleibt die bisherige Mehrbild-Version als Rückfalloption aktiv. Die alte Bildtafel-Liste unten dokumentiert diese Rückfalloption. Die Bilddatei muss separat hochgeladen werden.
+
 ## Neue Bilddateien
 
 Alle Figuren bestehen aus vollständig gezeichneten Actionframes; es werden keine Arme, Beine oder anderen Körperteile zusammengesetzt.

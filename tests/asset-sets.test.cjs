@@ -71,3 +71,19 @@ test('Atlas cleanup removes a detached neighboring sliver while preserving the b
     assert.equal(alpha(8,0),0);assert.equal(alpha(8,6),255);assert.equal(alpha(8,18),255);
   }
 });
+
+
+test('The master atlas maps every logical frame to one of 64 aligned cells',()=>{
+ const asset=Assets.get('ice-skater');assert.equal(asset.master.columns,8);assert.equal(asset.master.rows,8);
+ const used=new Set();for(const key of Object.keys(asset.sheets)){const frames=asset.master.frames[key];assert.equal(frames.length,16);for(const i of frames){assert.ok(Number.isInteger(i)&&i>=0&&i<64);used.add(i);}}
+ assert.ok(used.size>=60);
+});
+
+test('The master atlas is loaded once and uses a single full-frame draw',async()=>{
+ const calls=[],urls=[];function canvas(){return {style:{},dataset:{},width:0,height:0,setAttribute(){},getContext(){return {clearRect(){},drawImage(...args){calls.push(args);}};}};}
+ class Image{constructor(){this.naturalWidth=this.naturalHeight=1536;}set src(value){urls.push(value);queueMicrotask(()=>this.onload());}}
+ const window={UniversalAvatarAssets:{...Assets,active:Assets.get('ice-skater')},devicePixelRatio:1};
+ vm.runInNewContext(fs.readFileSync(require.resolve('../mascot.js'),'utf8'),{window,document:{currentScript:{src:'https://example.test/mascot.js'},createElement:canvas},Image,URL,setTimeout,clearTimeout});
+ await window.JimmyMascot.preload();const element=window.JimmyMascot.create();calls.length=0;window.JimmyMascot.paint(element,'spin',0,1,{elapsed:.2});
+ assert.equal(urls.length,1);assert.ok(urls[0].endsWith('lumi-master-v1.webp'));assert.equal(calls.length,1);assert.deepEqual(calls[0].slice(1,5),[0,768,192,192]);
+});
