@@ -6,7 +6,9 @@ Die bewegte Figur ist auf dem Desktop 192 Pixel, mobil 160 Pixel breit. Die Vors
 
 Der Anlauf verwendet die acht Quellposen einmal je Bewegungszyklus. Überkreuzschritte liegen im verbindenden Gleitabschnitt. Vor jedem Sprung schließt Lumi ihre Haltung ohne eine zweite schnelle Anlauffolge. Das Antreten verwendet mit `approachStride: 1.22` eine etwas schnellere Schrittfolge. `tempo: .675`, `jumpTempo: .895` und `spinTempo: .79` stimmen den übrigen Ablauf behutsam darauf ab. Das Antreten läuft gegenüber der vorherigen Fassung etwa 11 % schneller, die übrigen Bewegungen etwa 4 %.
 
-Die Auswahl steht zentral in `asset-sets.js`: `const ACTIVE_ASSET_SET = 'ice-skater';`. Für Jimmy genügt der Wert `'jimmy'`. Bei einem späteren Wechsel braucht nur diese Auswahl geändert und veröffentlicht zu werden. Die Bilddateien, Bewegungen, Namen und Sprüche folgen der Auswahl. Details und Dateiliste: [docs/ASSET-SETS.md](docs/ASSET-SETS.md).
+Auf der Demoseite wechselt **„Figur auswählen“** direkt zwischen **Lumi · Eiskunstläuferin** und **Jimmy · Park-Affe**. Die laufende Figur, die große Vorschau, Namen, Bewegungsbuttons und Sprüche wechseln zusammen. Die Seite wird dabei nicht neu geladen; die Musik kann weiterspielen. Die Auswahl verwendet die vollständig vorhandenen Figuren aus `asset-sets.js`.
+
+Die Standardfigur steht weiterhin zentral in `asset-sets.js`: `const ACTIVE_ASSET_SET = 'ice-skater';`. Für Jimmy genügt der Wert `'jimmy'`. Diese Voreinstellung gilt beim Laden der Seite und für bestehende Einbindungen. Details und Dateiliste: [docs/ASSET-SETS.md](docs/ASSET-SETS.md).
 
 Die vorhandenen Antworten und das Wissensstudio beziehen sich weiterhin auf Jimmy’s Fun Park. Der Einbindungscode bleibt gleich.
 

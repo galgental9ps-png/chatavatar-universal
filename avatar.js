@@ -4,7 +4,7 @@
   if (window.JimmyChatAvatar) return;
   const script = document.currentScript;
   const BASE = new URL('.', script.src).href;
-  const VERSION = 'lumi-tempo-10';
+  const VERSION = 'asset-switch-13';
   const deps = new Map();
   function loadScript(url) {
     if (!deps.has(url)) deps.set(url, new Promise((resolve, reject) => { const s = document.createElement('script'); s.src = url; s.onload = resolve; s.onerror = () => reject(Error('Datei konnte nicht geladen werden: ' + url)); document.head.append(s); }));
@@ -50,9 +50,10 @@
         await engineReady; if (this.destroyed) return;
         this.asset=window.UniversalAvatarAssets.active;
         this.host.dataset.asset=this.character.dataset.asset=this.asset.id;
-        await window.JimmyMascot.preload(); if (this.destroyed) return;
+        this.renderer=window.JimmyMascot.forAsset?.(this.asset.id)||window.JimmyMascot;
+        await this.renderer.preload(); if (this.destroyed) return;
         this.quips = window.JimmyPersonality.createDeck(Math.random,this.asset.personality);
-        this.visual = window.JimmyMascot.create(); this.sprite.replaceChildren(this.visual); this.drawFrame();
+        this.visual = this.renderer.create(); this.sprite.replaceChildren(this.visual); this.drawFrame();
         this.position();
         const K = window.JimmyKnowledge; let data = this.options.knowledge;
         if (!data) {
@@ -84,6 +85,27 @@
       this.render(); this.host.dispatchEvent(new CustomEvent('jimmy:ready', { bubbles: true })); return this;
     }
     displayName(){return this.asset?.name||this.pack?.avatar.name||'Chatavatar';}
+    async setAsset(id){
+      await this.ready;
+      const asset=window.UniversalAvatarAssets.get(id),request=this.assetRequest=(this.assetRequest||0)+1;
+      if(this.destroyed||asset===this.asset)return false;
+      if(!this.pack)throw Error('Die Figur ist noch nicht bereit.');
+      const renderer=window.JimmyMascot.forAsset(asset.id);
+      await renderer.preload();
+      if(this.destroyed||request!==this.assetRequest)return false;
+      this.settleJump();this.timers.forEach(clearTimeout);this.timers.clear();this.hideTip();
+      if(this.voice&&'speechSynthesis' in window)speechSynthesis.cancel();
+      this.asset=asset;this.renderer=renderer;this.quips=window.JimmyPersonality.createDeck(Math.random,asset.personality);
+      this.drag=null;this.frame=0;this.walkDistance=0;this.velocity=0;this.fallVelocity=0;this.targetX=this.x;this.y=this.size().ground;
+      this.host.dataset.asset=this.character.dataset.asset=asset.id;
+      this.visual=renderer.create();this.sprite.replaceChildren(this.visual);
+      this.character.setAttribute('aria-label',asset.name+' öffnen. Zum Versetzen ziehen.');this.launcher.textContent=asset.name+' rufen';
+      this.panel.setAttribute('aria-label','Antworten von '+asset.name);
+      const now=performance.now();this.nextRoutine=now+3500;this.nextWalk=now+4500;this.nextHop=now+12000;this.nextGesture=now+9000;this.nextQuip=now+9500;
+      this.setState('idle');this.position();this.drawFrame();this.render();
+      this.host.dispatchEvent(new CustomEvent('jimmy:asset-change',{detail:{id:asset.id},bubbles:true}));
+      return true;
+    }
     isSkater(){return this.asset?.motion.kind==='ice';}
     size(){return window.JimmyMotion?window.JimmyMotion.dimensions(innerWidth,this.asset?.motion,innerHeight):{width:innerWidth<=540?152:192,height:innerWidth<=540?152:192,ground:10};}
     bindDrag() {
@@ -112,7 +134,7 @@
       this.character.dataset.state = state; this.drawFrame();
     }
     drawFrame() {
-      if (this.visual) window.JimmyMascot.paint(this.visual, this.state, this.motion.matches ? 0 : this.frame, this.facing,{elapsed:Math.max(0,performance.now()-this.stateStarted)/1000,style:this.skateStyle,selection:this.programFrame,remaining:Math.abs((this.targetX??this.x)-this.x)/Math.max(1,this.size().speed)});
+      if (this.visual) this.renderer.paint(this.visual, this.state, this.motion.matches ? 0 : this.frame, this.facing,{elapsed:Math.max(0,performance.now()-this.stateStarted)/1000,style:this.skateStyle,selection:this.programFrame,remaining:Math.abs((this.targetX??this.x)-this.x)/Math.max(1,this.size().speed)});
       this.character.dataset.paused = String(this.paused);
     }
     position() {

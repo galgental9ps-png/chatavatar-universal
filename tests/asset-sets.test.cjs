@@ -115,3 +115,16 @@ test('Hero and moving canvases draw directly at their CSS size and device ratio,
  }
 });
 
+test('Renderers cache both characters independently and switching back does not fetch the same illustrations again',async()=>{
+ const urls=[];function element(tag){return {tagName:tag,style:{},dataset:{},width:0,height:0,setAttribute(){},getContext(){return {clearRect(){},drawImage(){}};}};}
+ class Image{constructor(){this.naturalWidth=this.naturalHeight=Assets.active.master.width;}set src(url){urls.push(url);queueMicrotask(()=>this.onload());}}
+ const window={UniversalAvatarAssets:Assets,devicePixelRatio:1};
+ vm.runInNewContext(fs.readFileSync(require.resolve('../mascot.js'),'utf8'),{window,document:{currentScript:{src:'https://example.test/mascot.js'},createElement:element},Image,URL,setTimeout,clearTimeout});
+ const lumi=window.JimmyMascot.forAsset('ice-skater'),jimmy=window.JimmyMascot.forAsset('jimmy');
+ await lumi.preload();await jimmy.preload();
+ const skater=lumi.create(),monkey=jimmy.create();assert.equal(skater.tagName,'canvas');assert.equal(monkey.tagName,'span');assert.equal(skater.dataset.asset,'ice-skater');assert.equal(monkey.dataset.asset,'jimmy');
+ assert.equal(urls.length,3);assert.equal(jimmy.asset.id,'jimmy');assert.equal(lumi.asset.id,'ice-skater');
+ await window.JimmyMascot.forAsset('ice-skater').preload();await window.JimmyMascot.forAsset('jimmy').preload();assert.equal(urls.length,3);
+ assert.throws(()=>window.JimmyMascot.forAsset('unknown'),/Unbekanntes/);
+});
+

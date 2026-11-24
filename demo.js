@@ -4,27 +4,44 @@
   let pack, limit = 8, toastTimer;
   const instance = JimmyChatAvatar.instance;
   await instance.ready;
-  const asset=UniversalAvatarAssets.active,name=instance.displayName();
-  document.title=name+' · Dein digitaler Parkbegleiter';
-  document.querySelector('meta[name="description"]').content=name+' – dein animierter Chatavatar für Jimmy’s Fun Park mit Besuchsinfos, Geburtstagsplanung und eigenem Wissensstudio.';
-  $('discover-title').textContent='Wobei darf '+name+' helfen?';
-  document.querySelector('.knowledge-section .eyebrow').textContent=name.toUpperCase()+'S KLEINE WISSENSWELT';
-  const invitation=document.querySelector('.invitation h2');invitation.replaceChildren(name+' kommt',document.createElement('br'),'auch ');const emphasis=document.createElement('em');emphasis.textContent='zu euch.';invitation.append(emphasis);
-  document.querySelector('.page-footer > span').textContent=name+' · Eigenständiges Demo-Konzept für Jimmy’s Fun Park';
-  $('hero-magician').dataset.asset=asset.id;
-  const heroFigure=JimmyMascot.create();$('hero-magician').append(heroFigure);
-  const drawHero=()=>JimmyMascot.paint(heroFigure);
-  drawHero();window.addEventListener('resize',drawHero);
-  document.querySelector('.name-tag b').textContent=name;
-  document.querySelector('.name-tag small').textContent=asset.role;
-  const intro=document.querySelector('.intro');intro.replaceChildren();const strong=document.createElement('strong');strong.textContent=name;intro.append('Darf ich vorstellen? ',strong,'. '+asset.introduction+' Ein Klick auf die Figur genügt.');
-  $('start-avatar').textContent=name+' ausprobieren';
-  $('walk-demo').textContent=name+(instance.isSkater()?' gleiten lassen':' eine Runde laufen lassen');
-  $('hop-demo').textContent=instance.isSkater()?'Pirouette':name+' springen lassen';
-  $('quip-demo').textContent=instance.isSkater()?'Ein kleiner Gruß':'Ein Affenspruch';
-  $('spiral-demo').hidden=!instance.isSkater();
-  $('routine-demo').hidden=$('jump-demo').hidden=!instance.isSkater();
   if (!instance.pack) { $('knowledge-count').textContent = 'Parkwissen konnte nicht geladen werden'; $('question-grid').textContent = 'Bitte laden Sie die Seite erneut.'; return; }
+  const picker=$('asset-set'),assetStatus=$('asset-status');
+  let heroFigure,heroRenderer;
+  const drawHero=()=>{if(heroFigure)heroRenderer.paint(heroFigure);};
+  function renderAsset(){
+    const asset=instance.asset,name=instance.displayName();
+    document.title=name+' · Dein digitaler Parkbegleiter';
+    document.querySelector('meta[name="description"]').content=name+' – dein animierter Chatavatar für Jimmy’s Fun Park mit Besuchsinfos, Geburtstagsplanung und eigenem Wissensstudio.';
+    $('discover-title').textContent='Wobei darf '+name+' helfen?';
+    document.querySelector('.knowledge-section .eyebrow').textContent=name.toUpperCase()+'S KLEINE WISSENSWELT';
+    const invitation=document.querySelector('.invitation h2');invitation.replaceChildren(name+' kommt',document.createElement('br'),'auch ');const emphasis=document.createElement('em');emphasis.textContent='zu euch.';invitation.append(emphasis);
+    document.querySelector('.page-footer > span').textContent=name+' · Eigenständiges Demo-Konzept für Jimmy’s Fun Park';
+    $('hero-magician').dataset.asset=asset.id;
+    heroRenderer=instance.renderer;heroFigure=heroRenderer.create();$('hero-magician').replaceChildren(heroFigure);
+    drawHero();
+    document.querySelector('.name-tag b').textContent=name;
+    document.querySelector('.name-tag small').textContent=asset.role;
+    const intro=document.querySelector('.intro');intro.replaceChildren();const strong=document.createElement('strong');strong.textContent=name;intro.append('Darf ich vorstellen? ',strong,'. '+asset.introduction+' Ein Klick auf die Figur genügt.');
+    $('start-avatar').textContent=name+' ausprobieren';
+    $('walk-demo').textContent=name+(instance.isSkater()?' gleiten lassen':' eine Runde laufen lassen');
+    $('hop-demo').textContent=instance.isSkater()?'Pirouette':name+' springen lassen';
+    $('quip-demo').textContent=instance.isSkater()?'Ein kleiner Gruß':'Ein Affenspruch';
+    $('spiral-demo').hidden=!instance.isSkater();
+    $('routine-demo').hidden=$('jump-demo').hidden=!instance.isSkater();
+    picker.value=asset.id;
+  }
+  for(const asset of Object.values(UniversalAvatarAssets.sets)){
+    const option=document.createElement('option');option.value=asset.id;option.textContent=asset.name+' · '+asset.role;picker.append(option);
+  }
+  renderAsset();picker.disabled=false;
+  window.addEventListener('resize',drawHero);
+  instance.host.addEventListener('jimmy:asset-change',renderAsset);
+  picker.addEventListener('change',async()=>{
+    picker.disabled=true;picker.closest('.asset-switch').setAttribute('aria-busy','true');assetStatus.textContent='Figur wird geladen …';
+    try{await instance.setAsset(picker.value);assetStatus.textContent=instance.displayName()+' ist jetzt da.';}
+    catch(error){picker.value=instance.asset.id;assetStatus.textContent='Die Figur konnte nicht geladen werden. Bitte erneut versuchen.';}
+    finally{picker.disabled=false;picker.closest('.asset-switch').removeAttribute('aria-busy');}
+  });
   pack = instance.pack;
   $('knowledge-count').textContent = K.search(pack, '', { limit: 1500 }).length + ' hinterlegte Antworten';
   $('knowledge-date').textContent = pack.updatedAt.split('-').reverse().join('.');

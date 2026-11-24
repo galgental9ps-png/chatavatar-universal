@@ -8,4 +8,10 @@
 
 .demo-actions{display:flex;flex-wrap:wrap;gap:6px 20px;margin-top:14px}.demo-actions .walk-demo{margin-top:0;font-size:14px;line-height:1.5}
 
+.asset-switch{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:0 0 18px;max-width:425px}
+.asset-switch label{font-size:12px;color:#61776d}
+.asset-switch select{font:13px/1.5 "Segoe UI",system-ui,sans-serif;color:#203b36;background:#fffef7;border:1px solid #b7cbbf;border-radius:100px;padding:9px 32px 9px 13px;max-width:100%;min-width:210px;cursor:pointer}
+.asset-switch select:disabled{opacity:.65;cursor:wait}
+.asset-status{flex-basis:100%;min-height:1.5em;margin:0;color:#61776d;font-size:11px;line-height:1.5}
+
 .hero-magician[data-asset=ice-skater]{width:256px;height:256px;left:calc(50% - 128px);top:107px;filter:none}@media(max-width:700px){.hero-magician[data-asset=ice-skater]{width:240px;height:240px;left:calc(50% - 120px);top:79px}}

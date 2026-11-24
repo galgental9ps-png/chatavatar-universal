@@ -20,12 +20,14 @@ class Element {
 async function mascot(assetId='jimmy'){
   let clock=0,id=0;
   const timers=new Map(),media={matches:false,addEventListener(){},removeEventListener(){}};
+  const renderers=new Map();
+  const forAsset=id=>{if(!renderers.has(id)){const asset=Assets.get(id);renderers.set(id,{asset,preload:()=>Promise.resolve(),create:()=>new Element(asset.renderer==='canvas'?'canvas':'span'),paint(){}});}return renderers.get(id);};
   const context={URL,Map,Set,Promise,Math,Number,String,Error,Infinity,innerWidth:1200,innerHeight:800,performance:{now:()=>clock},
     document:{currentScript:{src:'https://demo.example/avatar.js',dataset:{manual:'true'}},body:new Element('body'),hidden:false,createElement:tag=>new Element(tag),addEventListener(){},removeEventListener(){}},
     matchMedia:()=>media,requestAnimationFrame:()=>1,cancelAnimationFrame(){},CustomEvent:class{},
     setTimeout:(fn,delay)=>{timers.set(++id,{fn,delay});return id;},clearTimeout:timer=>timers.delete(timer),
     JimmyMotion:Motion,UniversalSkating:Skating,JimmyPersonality:Personality,UniversalAvatarAssets:{...Assets,active:Assets.get(assetId)},
-    JimmyMascot:{preload:()=>Promise.resolve(),create:()=>new Element('span'),paint(){}},
+    JimmyMascot:{...forAsset(assetId),forAsset},
     JimmyKnowledge:{validate:x=>x,active:()=>true,search:()=>[]},
     addEventListener(){},removeEventListener(){}
   };
@@ -142,4 +144,36 @@ test('A slow rendered frame does not stretch the whole routine, while a hidden d
   assert.equal(avatar.programElapsed,before);context.document.hidden=false;avatar.onVisibility();advance(40);
   const late=avatar.program.duration+10000;setClock(late);avatar.tick(late);
   assert.equal(avatar.program,null);assert.equal(avatar.y,10);assert.equal(avatar.state,'idle');
+});
+
+test('A live asset switch safely lands an airborne skater and updates the renderer without replacing her knowledge',async()=>{
+  const {avatar,advance,timers}=await mascot('ice-skater'),pack=avatar.pack,oldQuips=avatar.quips;
+  avatar.x=100;avatar.skateJump();while(avatar.y===10)advance(20);
+  assert.ok(avatar.y>10);assert.equal(await avatar.setAsset('jimmy'),true);
+  assert.equal(avatar.displayName(),'Jimmy');assert.equal(avatar.isSkater(),false);assert.equal(avatar.visual.tagName,'span');
+  assert.equal(avatar.program,null);assert.equal(avatar.pendingProgram,null);assert.equal(avatar.y,10);assert.equal(avatar.velocity,0);assert.equal(avatar.state,'idle');
+  assert.equal(avatar.pack,pack);assert.notEqual(avatar.quips,oldQuips);assert.equal(timers.size,0);assert.equal(avatar.character.attributes['aria-label'],'Jimmy öffnen. Zum Versetzen ziehen.');
+  assert.equal(await avatar.setAsset('ice-skater'),true);assert.equal(avatar.visual.tagName,'canvas');assert.equal(avatar.displayName(),'Lumi');assert.equal(avatar.host.dataset.asset,'ice-skater');
+});
+
+test('Switching keeps the reading state, current answer and user pause preferences',async()=>{
+  const {avatar}=await mascot();avatar.open();avatar.paused=true;avatar.voice=true;avatar.current='saved-answer';
+  await avatar.setAsset('ice-skater');
+  assert.equal(avatar.opened,true);assert.equal(avatar.paused,true);assert.equal(avatar.voice,true);assert.equal(avatar.current,'saved-answer');assert.equal(avatar.perform(),false);
+  assert.equal(avatar.panel.attributes['aria-label'],'Antworten von Lumi');
+});
+
+test('An unavailable new asset leaves the current figure intact and an invalid selection cannot change it',async()=>{
+  const {avatar,context}=await mascot('ice-skater'),visual=avatar.visual,pack=avatar.pack;
+  context.JimmyMascot.forAsset('jimmy').preload=()=>Promise.reject(Error('Network unavailable'));
+  await assert.rejects(avatar.setAsset('jimmy'),/Network unavailable/);await assert.rejects(avatar.setAsset('unknown'),/Unbekanntes/);
+  assert.equal(avatar.visual,visual);assert.equal(avatar.pack,pack);assert.equal(avatar.asset.id,'ice-skater');
+});
+
+test('A slow earlier selection cannot overwrite a newer selection or revive a destroyed figure',async()=>{
+  const {avatar,context}=await mascot('ice-skater');let finish;
+  context.JimmyMascot.forAsset('jimmy').preload=()=>new Promise(resolve=>{finish=resolve;});
+  const pending=avatar.setAsset('jimmy');await Promise.resolve();assert.equal(await avatar.setAsset('ice-skater'),false);finish();
+  assert.equal(await pending,false);assert.equal(avatar.asset.id,'ice-skater');
+  const later=avatar.setAsset('jimmy');await Promise.resolve();avatar.destroy();finish();assert.equal(await later,false);assert.equal(avatar.asset.id,'ice-skater');
 });

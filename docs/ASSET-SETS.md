@@ -1,6 +1,6 @@
 # Austauschbare vollständige Figuren
 
-Die aktive Figur wird in **`asset-sets.js`** ausgewählt:
+Die Standardfigur wird in **`asset-sets.js`** ausgewählt:
 
 ```js
 const ACTIVE_ASSET_SET = 'ice-skater';
@@ -14,6 +14,12 @@ const ACTIVE_ASSET_SET = 'ice-skater';
 Für einen späteren Wechsel genügt diese eine Auswahlzeile. Zeichnungen, Bewegungsprofil, Name, Vorschauknöpfe und figurbezogene Sprüche folgen der Auswahl. Der Veröffentlichungsworkflow muss danach erfolgreich durchlaufen. Eine bereits offene Webseite neu laden; bei einem alten Browsercache vollständig neu laden.
 
 Die Eiskunstläuferin ist eine transparente Figur. Es wird keine Eisfläche oder sonstige Bodenfläche über die Webseite gelegt. Antworten, Wissensstudio, Quellen und Einbindung bleiben der vorhandene Park-Chatavatar.
+
+## Figurenschalter auf der Demo
+
+„Figur auswählen“ zeigt alle vollständigen Sets aus dem Katalog und tauscht die Figur direkt aus. Vorschau, Name, Sprüche und passende Bewegungsbuttons wechseln gemeinsam. Wissen, aktuelle Antwort sowie Pause-, Sichtbarkeits- und Vorleseeinstellungen bleiben erhalten. Ein laufender Sprung wird beim Wechsel am Boden beendet. Während die neue Bilddatei lädt, bleibt die bisherige Figur aktiv; bei einem Ladefehler kann der Wechsel erneut versucht werden.
+
+Die neue Schnittstelle ist `await JimmyChatAvatar.instance.setAsset('jimmy')` bzw. `await JimmyChatAvatar.instance.setAsset('ice-skater')`. Der Renderer stellt mit `JimmyMascot.forAsset(id)` pro Figur einen eigenen zwischengespeicherten Bildsatz bereit. Wiederholte Wechsel nutzen bereits geladene Bilder. Das Ereignis `jimmy:asset-change` meldet den erfolgreichen Austausch an die Vorschau. `ACTIVE_ASSET_SET` bleibt die veröffentlichte Voreinstellung; eine Besucherauswahl verändert diese Datei nicht.
 
 ## Master-Atlas (64 Posen)
 
