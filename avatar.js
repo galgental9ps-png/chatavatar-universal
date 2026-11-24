@@ -4,7 +4,7 @@
   if (window.JimmyChatAvatar) return;
   const script = document.currentScript;
   const BASE = new URL('.', script.src).href;
-  const VERSION = 'lumi-refined-9';
+  const VERSION = 'lumi-tempo-10';
   const deps = new Map();
   function loadScript(url) {
     if (!deps.has(url)) deps.set(url, new Promise((resolve, reject) => { const s = document.createElement('script'); s.src = url; s.onload = resolve; s.onerror = () => reject(Error('Datei konnte nicht geladen werden: ' + url)); document.head.append(s); }));
@@ -180,7 +180,8 @@
       this.facing = this.targetX < this.x ? -1 : 1; this.velocity = 0; this.walkDistance = 0; this.turnUntil = performance.now() + 140;
       this.skateTrips++;this.skateStyle=this.isSkater()?(style==='auto'?['speed','footwork','spiral'][this.skateTrips%3]:style):'glide';
       if(Math.abs(this.targetX-this.x)<size.width*.8)this.skateStyle='glide';
-      const travel=Math.abs(this.targetX-this.x);this.walkStride=this.isSkater()?travel/Math.max(1,Math.round(travel/size.stride)):size.stride;
+      const travel=Math.abs(this.targetX-this.x),stride=this.isSkater()&&this.skateStyle==='speed'?size.approachStride:size.stride;
+      this.walkStride=this.isSkater()?travel/Math.max(1,Math.round(travel/stride)):stride;
       this.nextRoutine=Infinity;this.setState('walk'); return true;
     }
     tick(now) {

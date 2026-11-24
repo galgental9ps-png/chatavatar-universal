@@ -59,7 +59,7 @@
       pass([phase('glide', 1000)], x + direction * Math.min(size.width * 1.3, (right - left) * .35));
       add({ kind: 'bow', from: x, to: x, facing: direction, duration: 1050 / tempo });
     }
-    return { mode, blocks, duration: time, size: size.width,maxLift:Math.max(0,viewportHeight-size.height-22),
+    return { mode, blocks, duration: time, size: size.width,stride:size.stride||size.width*1.3,approachStride:size.approachStride||size.stride||size.width*1.3,maxLift:Math.max(0,viewportHeight-size.height-22),
       jumpHeight: Math.min(size.height * .43, Math.max(0, viewportHeight - size.height - 22)) };
   }
 
@@ -83,17 +83,18 @@
     const itemIndex=block.phases.findIndex(item=>elapsed<item.start+item.duration);
     const item=block.phases[itemIndex<0?block.phases.length-1:itemIndex];
     const p = clamp((elapsed - item.start) / item.duration, 0, 1);
-    const strideFrame = wrap(distance / Math.max(1, plan.size * 1.3) * 16);
+    const strideFrame = wrap(distance / Math.max(1, plan.stride || plan.size * 1.3) * 16);
     let frame;
     switch (item.name) {
       case 'gather': frame = { sheet: 'jumpBridge', index: Math.min(2, Math.floor(p * 3)), phase: 'gather' }; break;
       case 'speed': {
-        let index=strideFrame;
+        const stride=Math.max(1,plan.approachStride||plan.stride||plan.size*1.3);
+        let index=wrap(distance/stride*16);
         if(block.phases[itemIndex+1]?.name==='jump'){
           const settle=Math.min(450,item.duration*.25),start=item.start+item.duration-settle;
           if(elapsed>=start){
             const startDistance=Math.abs(block.to-block.from)*smooth(start/block.duration);
-            const from=wrap(startDistance/Math.max(1,plan.size*1.3)*16);
+            const from=wrap(startDistance/stride*16);
             index=Math.floor(from+(15-from)*smooth((elapsed-start)/settle));
           }
         }
