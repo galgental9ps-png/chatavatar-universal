@@ -59,6 +59,26 @@ test('Separate spins and inward jumps finish, and skipped frames cannot strand e
   }
 });
 
+test('The outward glide uses full skating strokes on smooth mirrored curves, then settles upright before spinning',()=>{
+  const plan=makePlan('duet'),block=plan.blocks.find(b=>b.kind==='duet'&&b.part==='open'),cells=new Set();
+  let previous,maximumDepth=0;
+  for(let t=0;t<=block.duration;t+=10){
+    const move=Skating.atTime(plan,block.start+t),[a,b]=move.actors;
+    assert.equal(move.lift,0,'The shallow curve is a path over the ice, not another jump.');
+    assert.equal(a.depth||0,b.depth||0);maximumDepth=Math.max(maximumDepth,a.depth||0);
+    if(move.sheet==='glide')cells.add(pair.master.frames.glide[move.index]);
+    if(move.phase==='duet-open'){
+      assert.ok(a.lean<=0&&b.lean>=0);assert.ok(Math.abs(a.lean)<=2.4);
+      if(previous)assert.ok(Math.abs((a.depth||0)-(previous.depth||0))<1,'No vertical step between sampled frames.');
+    }
+    previous=a;
+  }
+  assert.ok(cells.size>=6,'Outward motion uses a real multi-pose skating cycle.');assert.ok(maximumDepth>20&&maximumDepth<=32);
+  const first=Skating.atTime(plan,block.start),last=Skating.atTime(plan,block.end-.001),next=Skating.atTime(plan,block.end+.001);
+  assert.ok(first.actors[0].depth<.001);assert.ok(last.actors[0].depth<.001);assert.equal(next.actors[0].depth,0);
+  assert.equal(pair.master.frames[last.sheet][last.index],23,'Extend gently into the upright turn stance.');
+});
+
 test('Each avatar loads its own PNG and draws a whole source cell at the same phase and scale',async()=>{
   const calls=[],urls=[];
   const canvas=()=>({style:{},dataset:{},width:0,height:0,setAttribute(){},getBoundingClientRect(){return{width:208};},getContext(){return{clearRect(){},drawImage(...args){calls.push(args);}};}});

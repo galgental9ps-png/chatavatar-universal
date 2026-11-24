@@ -94,7 +94,9 @@
         add({ kind: 'bow', from: x, to: x, facing: direction, duration: 1050 / tempo });
       }
     }
-    return { mode, blocks, duration: time, size: size.width,duet:!!size.duet,spacing:size.spacing||0,actorWidth:size.actorWidth||size.width,stride:size.stride||size.width*1.3,approachStride:size.approachStride||size.stride||size.width*1.3,maxLift:Math.max(0,viewportHeight-size.height-22),
+    return { mode, blocks, duration: time, size: size.width,duet:!!size.duet,spacing:size.spacing||0,actorWidth:size.actorWidth||size.width,
+      arcDepth:Math.min((size.actorWidth||size.width)*.14,32,Math.max(0,viewportHeight-size.height-22)*.25),
+      stride:size.stride||size.width*1.3,approachStride:size.approachStride||size.stride||size.width*1.3,maxLift:Math.max(0,viewportHeight-size.height-22),
       jumpHeight: Math.min(size.height * .43, Math.max(0, viewportHeight - size.height - 22)) };
   }
 
@@ -175,7 +177,13 @@
     let frame,facings=[1,-1],partnerSelection;
     if(block.part==='open'){
       facings=[-1,1];
-      frame={sheet:'jumpBridge',index:12+Math.min(3,Math.floor(p*4)),phase:'duet-open'};
+      const settle=Math.min(850,block.duration*.28),moving=block.duration-settle;
+      if(elapsed<moving){
+        const distance=Math.abs(positions[0]-block.fromActors[0]);
+        frame={sheet:'glide',index:wrap(distance/Math.max(1,plan.stride)*16),phase:'duet-open'};
+      }else{
+        frame={sheet:'jumpBridge',index:Math.min(7,Math.floor(smooth((elapsed-moving)/settle)*8)),phase:'duet-open'};
+      }
     }else if(block.part==='spin'){
       frame={sheet:'spin',index:wrap(32*smooth(p)),phase:'duet-spin'};
     }else if(block.part==='rejoin'){
@@ -183,7 +191,8 @@
       frame={sheet:'spin',index,phase:'duet-rejoin',safeExit:p>.9};
       if(index>=8){facings=[1,1];partnerSelection={sheet:'spin',index:wrap(-index)};}
     }else if(!block.jump){
-      frame={sheet:'jumpBridge',index:12+Math.min(3,Math.floor(p*4)),phase:'duet-return'};
+      const distance=Math.abs(positions[0]-block.fromActors[0]);
+      frame={sheet:'glide',index:wrap(distance/Math.max(1,plan.stride)*16),phase:'duet-return'};
     }else if(elapsed<block.approach){
       const distance=Math.abs(positions[0]-block.fromActors[0]);
       const settle=450,remaining=block.approach-elapsed;
@@ -202,7 +211,12 @@
     }else{
       frame={sheet:'jumpBridge',index:15,phase:'duet-landing-exit',safeExit:true};
     }
-    return {...base,...frame,actors:positions.map((x,i)=>({x,facing:facings[i],...(i===1&&partnerSelection?{selection:partnerSelection}:{})})),finished:false};
+    const curved=block.part==='open'||block.part==='converge'&&!block.jump;
+    const arc=curved?Math.sin(Math.PI*smooth(p))**2:0;
+    const depth=Math.min((plan.arcDepth||0)*arc,Math.max(0,plan.maxLift-(frame.lift||0)));
+    return {...base,...frame,actors:positions.map((x,i)=>({x,facing:facings[i],depth,
+      lean:Math.sign(block.toActors[i]-block.fromActors[i])*2.4*arc,
+      ...(i===1&&partnerSelection?{selection:partnerSelection}:{})})),finished:false};
   }
 
   function atTime(plan, milliseconds) {

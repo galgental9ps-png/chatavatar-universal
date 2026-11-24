@@ -4,7 +4,7 @@
   if (window.JimmyChatAvatar) return;
   const script = document.currentScript;
   const BASE = new URL('.', script.src).href;
-  const VERSION = 'separate-pair-16';
+  const VERSION = 'music-glass-17';
   const deps = new Map();
   function loadScript(url) {
     if (!deps.has(url)) deps.set(url, new Promise((resolve, reject) => { const s = document.createElement('script'); s.src = url; s.onload = resolve; s.onerror = () => reject(Error('Datei konnte nicht geladen werden: ' + url)); document.head.append(s); }));
@@ -165,10 +165,20 @@
       this.x = Math.max(0, Math.min(Math.max(0, innerWidth - width), this.x)); this.y = Math.max(5, Math.min(Math.max(5, innerHeight - size), this.y));
       const ratio=window.devicePixelRatio||1;
       const actors=this.actorPositions();
-      const place=(element,x)=>{element.style.width=element.style.height=size+'px';element.style.bottom='0';element.style.transform='translate('+Math.round(x*ratio)/ratio+'px,'+(-Math.round(this.y*ratio)/ratio)+'px)';};
-      place(this.character,actors?actors[0].x:this.x);
-      if(actors&&this.partner)place(this.partner,actors[1].x);
-      this.tip.style.left = Math.max(10, Math.min(innerWidth - (innerWidth <= 540 ? 220 : 246), this.x - 25)) + 'px';
+      const place=(element,x,actor)=>{
+        element.style.width=element.style.height=size+'px';element.style.bottom='0';
+        if(actor){
+          // Continuous compositor movement avoids whole-pixel stepping during
+          // slow curved glides. Lean around the blades, never rotate a pirouette.
+          const y=this.y+(actor.depth||0),lean=actor.lean||0;
+          element.style.transformOrigin='50% 94%';
+          element.style.transform='translate3d('+x.toFixed(3)+'px,'+(-y).toFixed(3)+'px,0) rotate('+lean.toFixed(3)+'deg)';
+        }else element.style.transform='translate('+Math.round(x*ratio)/ratio+'px,'+(-Math.round(this.y*ratio)/ratio)+'px)';
+      };
+      place(this.character,actors?actors[0].x:this.x,actors?.[0]);
+      if(actors&&this.partner)place(this.partner,actors[1].x,actors[1]);
+      const contentWidth=document.documentElement?.clientWidth||innerWidth;
+      this.tip.style.left = Math.max(10, Math.min(contentWidth - (innerWidth <= 540 ? 220 : 246), this.x - 25)) + 'px';
       this.tip.style.bottom = Math.min(innerHeight - 110, this.y + size - 12) + 'px';
     }
     settleJump() {

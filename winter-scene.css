@@ -11,10 +11,15 @@
 .music-toggle:disabled{opacity:.6;cursor:default}
 .music-toggle--compact{padding:9px 12px;font-size:12px;gap:7px}
 .music-toggle--compact svg{width:16px;height:16px}
+.winter-music-controls{display:flex;align-items:center;gap:8px}
+.music-next{display:grid;place-items:center;width:42px;height:42px;padding:10px;border:1px solid #c9c7db;border-radius:50%;color:#76649d;background:#fffef7;cursor:pointer}
+.music-next:hover{background:#f0eaf8;border-color:#a595c0}.music-next:disabled{opacity:.5;cursor:default}
+.music-next svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .winter-scene{width:100%;aspect-ratio:3 / 1;min-height:300px;max-height:640px;overflow:hidden;border:0;border-radius:0;background:#f4f8fa}
 .winter-scene-image{display:block;width:100%;height:100%;object-fit:cover;object-position:center bottom}
 .winter-credit{font:italic 13px/1.6 Georgia,serif;letter-spacing:.1px;color:#7d8c80;text-align:center;margin:16px auto 0}
 .winter-credit span{margin:0 7px;color:#b5bfae}
+.winter-credit [data-music-track]{margin:0;color:inherit}
 @media(max-width:700px){
  .winter-section{padding-top:48px;padding-bottom:35px}
  .winter-heading{align-items:flex-start;flex-direction:column;gap:18px;margin-bottom:22px}

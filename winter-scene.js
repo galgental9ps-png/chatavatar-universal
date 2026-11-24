@@ -4,8 +4,15 @@
   const audio=document.getElementById('demo-music');
   if(!audio)return;
   const buttons=Array.from(document.querySelectorAll('[data-music-toggle]'));
-  let mayAutoStart=true,starting=false,userPaused=false,resumeOnVisible=false,failed=false;
-  audio.volume=.28;
+  const nextButtons=Array.from(document.querySelectorAll('[data-music-next]'));
+  const trackLabels=Array.from(document.querySelectorAll('[data-music-track]'));
+  const tracks=[
+    {src:'Bittersweet%20Beauty.mp3',title:'Bittersweet Beauty'},
+    {src:'Glacial%20Arpeggios.mp3',title:'Glacial Arpeggios'}
+  ];
+  let index=0,mayAutoStart=true,starting=false,userPaused=false,resumeOnVisible=false,failed=false,playRequest=0;
+  const unavailable=new Set();
+  audio.volume=.28;audio.loop=false;
   function renderMusic(){
     const playing=!failed&&!audio.paused&&!audio.ended;
     for(const button of buttons){
@@ -15,34 +22,55 @@
       const label=button.querySelector('[data-music-label]');
       if(label)label.textContent=button.classList.contains('music-toggle--compact')?'Musik':action;
     }
+    for(const button of nextButtons)button.disabled=failed;
+    for(const label of trackLabels)label.textContent=tracks[index].title;
   }
   function removeActivation(){document.removeEventListener('click',activate,true);document.removeEventListener('keydown',activate,true);}
+  function stopPlayback(){playRequest++;starting=false;audio.pause();}
   async function playMusic(){
     if(starting||failed||userPaused||document.hidden)return;
-    starting=true;
+    const request=++playRequest;starting=true;
     try{
       await audio.play();
+      if(request!==playRequest)return;
       if(userPaused||document.hidden)audio.pause();
       else{mayAutoStart=false;removeActivation();}
     }catch(error){
       // A blocked autoplay remains available from either visible music button.
-    }finally{starting=false;renderMusic();}
+    }finally{if(request===playRequest){starting=false;renderMusic();}}
+  }
+  function nextTrack(shouldPlay){
+    stopPlayback();
+    do{index=(index+1)%tracks.length;}while(unavailable.has(index)&&unavailable.size<tracks.length);
+    audio.src=tracks[index].src;audio.load();renderMusic();
+    if(shouldPlay&&!userPaused){
+      if(document.hidden)resumeOnVisible=true;
+      else playMusic();
+    }
   }
   function activate(event){
-    if(!mayAutoStart||userPaused||event.target.closest?.('[data-music-toggle]'))return;
+    if(!mayAutoStart||userPaused||event.target.closest?.('[data-music-toggle],[data-music-next]'))return;
     if(event.type==='keydown'&&(!['Enter',' '].includes(event.key)||event.ctrlKey||event.metaKey||event.altKey))return;
     playMusic();
   }
   for(const button of buttons)button.addEventListener('click',()=>{
     mayAutoStart=false;removeActivation();
-    if(!audio.paused||starting){userPaused=true;resumeOnVisible=false;audio.pause();renderMusic();}
+    if(!audio.paused||starting){userPaused=true;resumeOnVisible=false;stopPlayback();renderMusic();}
     else{userPaused=false;playMusic();}
   });
+  for(const button of nextButtons)button.addEventListener('click',()=>{
+    mayAutoStart=false;removeActivation();nextTrack(!userPaused);
+  });
   audio.addEventListener('play',renderMusic);audio.addEventListener('pause',renderMusic);
-  audio.addEventListener('error',()=>{failed=true;audio.pause();removeActivation();renderMusic();});
+  audio.addEventListener('ended',()=>{if(!failed)nextTrack(!userPaused);});
+  audio.addEventListener('error',()=>{
+    unavailable.add(index);
+    if(unavailable.size<tracks.length){nextTrack(!userPaused);return;}
+    failed=true;stopPlayback();removeActivation();renderMusic();
+  });
   document.addEventListener('click',activate,true);document.addEventListener('keydown',activate,true);
   document.addEventListener('visibilitychange',()=>{
-    if(document.hidden){resumeOnVisible=(!audio.paused||starting)&&!userPaused;audio.pause();}
+    if(document.hidden){resumeOnVisible=(!audio.paused||starting)&&!userPaused;stopPlayback();}
     else if(resumeOnVisible&&!userPaused){resumeOnVisible=false;playMusic();}
   });
   renderMusic();playMusic();
