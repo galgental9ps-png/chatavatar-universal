@@ -10,12 +10,12 @@
   const drawHero=()=>{if(heroFigure)heroRenderer.paint(heroFigure);};
   function renderAsset(){
     const asset=instance.asset,name=instance.displayName();
-    document.title=name+' · Dein digitaler Parkbegleiter';
+    document.title=name+' · Atelier Chatavatar';
     document.querySelector('meta[name="description"]').content=name+' – dein animierter Chatavatar für Jimmy’s Fun Park mit Besuchsinfos, Geburtstagsplanung und eigenem Wissensstudio.';
     $('discover-title').textContent='Wobei '+(asset.plural?'dürfen ':'darf ')+name+' helfen?';
     document.querySelector('.knowledge-section .eyebrow').textContent=asset.plural?'UNSERE KLEINE WISSENSWELT':name.toUpperCase()+'S KLEINE WISSENSWELT';
     const invitation=document.querySelector('.invitation h2');invitation.replaceChildren(name+(asset.plural?' kommen':' kommt'),document.createElement('br'),'auch ');const emphasis=document.createElement('em');emphasis.textContent='zu euch.';invitation.append(emphasis);
-    document.querySelector('.page-footer > span').textContent=name+' · Eigenständiges Demo-Konzept für Jimmy’s Fun Park';
+    document.querySelector('.page-footer > span').textContent=name+' · Atelier Chatavatar · Parkwissen als Demo';
     $('hero-magician').dataset.asset=asset.id;
     heroRenderer=instance.renderer;heroFigure=heroRenderer.create();$('hero-magician').replaceChildren(heroFigure);
     drawHero();

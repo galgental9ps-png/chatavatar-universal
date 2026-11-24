@@ -213,7 +213,7 @@
     }
     const curved=block.part==='open'||block.part==='converge'&&!block.jump;
     const arc=curved?Math.sin(Math.PI*smooth(p))**2:0;
-    const depth=Math.min((plan.arcDepth||0)*arc,Math.max(0,plan.maxLift-(frame.lift||0)));
+    const depth=block.part==='open'?0:Math.min((plan.arcDepth||0)*arc,Math.max(0,plan.maxLift-(frame.lift||0)));
     return {...base,...frame,actors:positions.map((x,i)=>({x,facing:facings[i],depth,
       lean:Math.sign(block.toActors[i]-block.fromActors[i])*2.4*arc,
       ...(i===1&&partnerSelection?{selection:partnerSelection}:{})})),finished:false};

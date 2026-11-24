@@ -59,12 +59,12 @@ test('Separate spins and inward jumps finish, and skipped frames cannot strand e
   }
 });
 
-test('The outward glide uses full skating strokes on smooth mirrored curves, then settles upright before spinning',()=>{
+test('The outward glide keeps a fixed blade height and full skating strokes, then settles upright before spinning',()=>{
   const plan=makePlan('duet'),block=plan.blocks.find(b=>b.kind==='duet'&&b.part==='open'),cells=new Set();
   let previous,maximumDepth=0;
   for(let t=0;t<=block.duration;t+=10){
     const move=Skating.atTime(plan,block.start+t),[a,b]=move.actors;
-    assert.equal(move.lift,0,'The shallow curve is a path over the ice, not another jump.');
+    assert.equal(move.lift,0,'Outward skating does not become a jump.');
     assert.equal(a.depth||0,b.depth||0);maximumDepth=Math.max(maximumDepth,a.depth||0);
     if(move.sheet==='glide')cells.add(pair.master.frames.glide[move.index]);
     if(move.phase==='duet-open'){
@@ -73,10 +73,12 @@ test('The outward glide uses full skating strokes on smooth mirrored curves, the
     }
     previous=a;
   }
-  assert.ok(cells.size>=6,'Outward motion uses a real multi-pose skating cycle.');assert.ok(maximumDepth>20&&maximumDepth<=32);
+  assert.ok(cells.size>=6,'Outward motion uses a real multi-pose skating cycle.');assert.equal(maximumDepth,0,'Both blades remain on the same baseline throughout separation.');
   const first=Skating.atTime(plan,block.start),last=Skating.atTime(plan,block.end-.001),next=Skating.atTime(plan,block.end+.001);
   assert.ok(first.actors[0].depth<.001);assert.ok(last.actors[0].depth<.001);assert.equal(next.actors[0].depth,0);
   assert.equal(pair.master.frames[last.sheet][last.index],23,'Extend gently into the upright turn stance.');
+  const spin=makePlan('spin'),returning=spin.blocks.find(b=>b.kind==='duet'&&b.part==='converge');
+  assert.ok(Skating.atTime(spin,returning.start+returning.duration/2).actors[0].depth>20,'The separate return movement retains its existing path.');
 });
 
 test('Each avatar loads its own PNG and draws a whole source cell at the same phase and scale',async()=>{
