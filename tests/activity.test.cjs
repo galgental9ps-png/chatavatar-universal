@@ -257,3 +257,13 @@ test('Rave-Opa alternates his two techno routines and changes back to Skelly wit
  avatar.open();assert.equal(avatar.program,null);await avatar.setAsset('shuffle-skeleton');assert.equal(avatar.displayName(),'Skelly');assert.equal(avatar.size().bpm,120);
  avatar.opened=false;await avatar.setAsset('rave-grandpa');media.matches=true;avatar.onMotion();assert.equal(avatar.perform(),false);
 });
+
+test('The Opa renders a subtle grounded weight shift and clears it when reading or changing figures',async()=>{
+ const {avatar,advance}=await mascot('rave-grandpa');avatar.perform('running-man');
+ advance(260);
+ assert.match(avatar.character.style.transform,/rotate\(/);assert.equal(avatar.y,avatar.size().ground);
+ assert.equal(avatar.character.style.width,'192px');assert.equal(avatar.character.style.height,'192px');
+ avatar.open();assert.doesNotMatch(avatar.character.style.transform,/rotate\(/);assert.equal(avatar.program,null);
+ await avatar.setAsset('shuffle-skeleton');avatar.opened=false;avatar.perform('running-man');advance(260);
+ assert.doesNotMatch(avatar.character.style.transform,/rotate\(/);assert.equal(avatar.y,10);
+});

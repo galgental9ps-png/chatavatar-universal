@@ -66,16 +66,22 @@
     }else if(mode==='spin'){spin(4);spin(4,true);}
     else add(mode,8,{cycles:4,atlas:mode==='kicks'?'encore':'moves'});
     groove();
-    return {kind:'shuffle',mode,blocks,duration:time,from:x0,to:x};
+    return {kind:'shuffle',mode,blocks,duration:time,from:x0,to:x,beat,power:!!size.power};
   }
   function atTime(plan,milliseconds){
     const t=clamp(Number(milliseconds)||0,0,plan.duration),finished=milliseconds>=plan.duration;
     const block=plan.blocks.find(b=>t<b.end)||plan.blocks.at(-1);
     const p=clamp((t-block.start)/block.duration,0,1),distance=block.to-block.from;
-    const index=finished?0:Math.floor(p*block.cycles*16)%16;
+    // Slightly settle into each beat, then release into the next whole pose.
+    // Keep spins linear and every beat/cycle boundary exactly on the clock.
+    const beats=p*block.cycles*2,accent=plan.power&&block.sheet!=='spin';
+    const phrased=accent?beats-.22*Math.sin(2*Math.PI*beats)/(2*Math.PI):beats;
+    const offset=plan.power&&block.sheet==='running'?4:0;
+    const index=finished?0:plan.power?Math.floor(phrased*8+offset+1e-9)%16:Math.floor(p*block.cycles*16)%16;
     return {x:block.from+distance*smooth(p),lift:0,facing:1,
       velocity:Math.abs(distance)*30*p*p*(1-p)*(1-p)/(block.duration/1000),
       sheet:block.sheet,index,...(block.atlas?{atlas:block.atlas}:{}),phase:'shuffle-'+block.sheet,
+      ...(plan.power?{lean:!finished&&accent ? .65*Math.sin(Math.PI*t/plan.beat) : 0}:{}),
       safeExit:block.sheet==='groove'||index===0,finished};
   }
   return {createPlan,atTime};

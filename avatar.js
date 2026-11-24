@@ -4,7 +4,7 @@
   if (window.JimmyChatAvatar) return;
   const script = document.currentScript;
   const BASE = new URL('.', script.src).href;
-  const VERSION = 'rave-opa-26';
+  const VERSION = 'rave-groove-27';
   const deps = new Map();
   function loadScript(url) {
     if (!deps.has(url)) deps.set(url, new Promise((resolve, reject) => { const s = document.createElement('script'); s.src = url; s.onload = resolve; s.onerror = () => reject(Error('Datei konnte nicht geladen werden: ' + url)); document.head.append(s); }));
@@ -179,7 +179,11 @@
           element.style.transformOrigin='50% 94%';
           element.style.zIndex=actor.layer?String(actor.layer):'';
           element.style.transform='translate3d('+x.toFixed(3)+'px,'+(-y).toFixed(3)+'px,0) rotate('+lean.toFixed(3)+'deg)';
-        }else if(this.isDancer())element.style.transform='translate3d('+x.toFixed(3)+'px,'+(-this.y).toFixed(3)+'px,0)';
+        }else if(this.isDancer()){
+          const lean=this.programFrame?.lean||0;
+          element.style.transformOrigin='50% 94.5%';
+          element.style.transform='translate3d('+x.toFixed(3)+'px,'+(-this.y).toFixed(3)+'px,0)'+(lean?' rotate('+lean.toFixed(3)+'deg)':'');
+        }
         else element.style.transform='translate('+Math.round(x*ratio)/ratio+'px,'+(-Math.round(this.y*ratio)/ratio)+'px)';
       };
       place(this.character,actors?actors[0].x:this.x,actors?.[0]);

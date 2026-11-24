@@ -35,3 +35,39 @@ test('The Opa has a faster dance clock while Skelly retains both accepted sequen
  assert.ok(Math.abs(a.duration*1.2-b.duration)<.001);
  assert.ok(planFor('routine').blocks.filter(x=>x.sheet==='running').every(x=>x.atlas==='running'));
 });
+
+test('The Opa plants alternating sneakers on each beat and raises the knee between beats without changing tempo or travel',()=>{
+ for(const mode of ['routine','freestyle','running-man']){
+  const plan=planFor(mode),linear={...plan,power:false},running=plan.blocks.find(b=>b.sheet==='running');
+  const cell=beats=>opa.master.variants.running.frames.running[Shuffle.atTime(plan,running.start+beats*plan.beat).index];
+  assert.deepEqual([0,1,2,3].map(cell),[2,6,2,6]);
+  assert.deepEqual([.5,1.5,2.5,3.5].map(cell),[4,0,4,0]);
+  assert.equal(Shuffle.atTime(plan,running.start+plan.beat/8).index,4,'The planted pose holds briefly on the beat.');
+  for(let t=0;t<plan.duration;t+=11){
+   const a=Shuffle.atTime(plan,t),b=Shuffle.atTime(linear,t);
+   assert.equal(a.x,b.x);assert.equal(a.velocity,b.velocity);assert.equal(a.lift,0);
+   assert.ok(Math.abs(a.lean)<=.65);assert.equal(a.finished,b.finished);
+  }
+  assert.equal(Shuffle.atTime(plan,plan.duration).lean,0);
+ }
+});
+
+test('Groove weight shifts settle on every beat and action boundary while spins and Skelly remain steady',()=>{
+ const plan=planFor('freestyle');
+ for(let t=0;t<plan.duration;t+=plan.beat)assert.ok(Math.abs(Shuffle.atTime(plan,t).lean)<1e-10);
+ for(const block of plan.blocks){
+  const before=Shuffle.atTime(plan,block.end-.001),after=Shuffle.atTime(plan,block.end+.001);
+  assert.ok(Math.abs(before.lean-after.lean)<.00002);
+  if(block.sheet==='spin')for(let i=0;i<32;i++){
+   const move=Shuffle.atTime(plan,block.start+(i+.1)*block.duration/32);
+   assert.equal(move.lean,0);assert.equal(move.index,Math.floor((i+.1)*block.cycles/2)%16);
+  }
+ }
+ const old=Assets.get('shuffle-skeleton'),skelly=Shuffle.createPlan({mode:'freestyle',startX:970,viewportWidth:1200,size:Motion.dimensions(1200,old.motion)});
+ for(let t=0;t<skelly.duration;t+=17){
+  const block=skelly.blocks.find(b=>t<b.end),move=Shuffle.atTime(skelly,t);
+  assert.equal(move.index,Math.floor((t-block.start)/block.duration*block.cycles*16)%16);assert.equal(move.lean,undefined);
+ }
+ assert.equal(Assets.frameFor(opa,'idle',0,{elapsed:1,frozen:true}).index,0);
+ assert.equal(Assets.frameFor(opa,'idle',0,{elapsed:60/144}).index,4);
+});

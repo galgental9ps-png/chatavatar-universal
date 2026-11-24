@@ -240,7 +240,7 @@
       if(details.selection&&Object.hasOwn(asset.sheets,details.selection.sheet))return {sheet:details.selection.sheet,index:wrap(details.selection.index,16),
         ...(asset.master.variants[details.selection.atlas]?.frames[details.selection.sheet]?{atlas:details.selection.atlas}:{})};
       if(state==='walk')return {sheet:'slide',index:wrap(frame,16)};
-      if(state==='idle')return {sheet:'groove',index:details.frozen?0:wrap(Math.max(0,details.elapsed||0)*8,16),atlas:'encore'};
+      if(state==='idle')return {sheet:'groove',index:details.frozen?0:wrap(Math.max(0,details.elapsed||0)*(asset.motion.power?asset.motion.bpm/60*4:8),16),atlas:'encore'};
       return {sheet:'poses',index:state==='jump'?[8,9,10,11][Math.min(3,Math.max(0,Math.floor(frame)))]:asset.poses[state]??0,atlas:'encore'};
     }
     const ice=asset.motion.kind==='ice',elapsed=Math.max(0,details.elapsed||0)*(ice?asset.motion.tempo||1:1);

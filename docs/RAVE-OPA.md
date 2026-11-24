@@ -22,6 +22,8 @@ Dreh- und Armtafeln wurden zusätzlich mit sicheren Rändern neu gezeichnet. Jed
 
 Der Opa verwendet 144 BPM als eigenen Animationstakt, keine Audioanalyse der MP3. Running Man und seitliche Wege werden zeitbasiert mit leichtem Beschleunigen und Auslaufen berechnet. Die erste Folge enthält vier vollständige Drehungen, die zweite fünf. Skelly behält seinen Takt von 120 BPM und seine beiden freigegebenen Folgen. Antwortenlesen, Pause, reduzierte Bewegung, Ziehen, Tabwechsel und Assetwechsel behalten die bestehenden Unterbrechungsregeln.
 
+Die Schritte betonen den Takt mit einer sanften zeitlichen Akzentuierung: Beim Running Man setzt der Schuh auf jedem Beat auf, das Knie hebt sich dazwischen. Die bestehenden ganzen Posen verweilen kurz im Akzent und wechseln anschließend etwas zügiger weiter. Eine Gewichtsverlagerung von höchstens 0,65 Grad um die Schuhlinie unterstützt den Groove ohne Größenänderung oder zusätzlichen Sprung. Die Drehungen laufen weiterhin gleichmäßig und ohne seitliches Wippen; Tempo, Weg und Länge beider Folgen bleiben erhalten. Auch die ruhigen Groove-Posen zwischen den Folgen folgen dem Opa-Takt.
+
 Die Seite wechselt zu Anthrazit, Orange und Limette, einschließlich der Sprechfenster. Das Warehouse-Bild enthält keinen zweiten Avatar und reicht mit seiner Tanzfläche bis zu allen Rändern. Als Starttitel ist wie bei Skelly „Hoffnungsvoll“ ausgewählt; die komplette vorhandene Drei-Lieder-Playlist bleibt verfügbar.
 
 ## Verwendete Bildvorgaben
