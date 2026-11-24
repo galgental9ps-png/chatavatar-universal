@@ -1,4 +1,4 @@
-/* Sound and a self-contained winter stage, only loaded on the demo page. */
+/* Background music for the demo page; the winter panorama is decorative. */
 (function () {
   'use strict';
   const audio=document.getElementById('demo-music');
@@ -46,56 +46,4 @@
     else if(resumeOnVisible&&!userPaused){resumeOnVisible=false;playMusic();}
   });
   renderMusic();playMusic();
-})();
-
-(async function () {
-  'use strict';
-  const section=document.getElementById('winterzauber'),scene=document.getElementById('winter-scene'),runway=document.getElementById('winter-runway'),runner=document.getElementById('winter-skater');
-  if(!section||!window.JimmyChatAvatar?.instance)return;
-  const instance=window.JimmyChatAvatar.instance;
-  await instance.ready;
-  if(!instance.pack||!instance.isSkater())return;
-  const asset=window.UniversalAvatarAssets.active,motion=matchMedia('(prefers-reduced-motion: reduce)');
-  section.hidden=false;scene.setAttribute('aria-label',asset.name+' zeigt ihre kleine Kür auf einem verzauberten zugefrorenen See im Mondlicht.');
-  const figure=window.JimmyMascot.create();runner.append(figure);runner.dataset.asset=asset.id;
-  let active=false,raf=0,last=0,elapsed=0,plan=null,x=0,facing=1,size,width=0,height=0;
-  function drawIdle(){
-    runner.dataset.state='idle';scene.dataset.phase='idle';
-    runner.style.transform='translate('+Math.round(x*(devicePixelRatio||1))/(devicePixelRatio||1)+'px,0px)';
-    window.JimmyMascot.paint(figure,'idle',0,facing);
-  }
-  function makePlan(){return window.UniversalSkating.createPlan({mode:'routine',startX:x,facing,viewportWidth:width,viewportHeight:height,size});}
-  function measure(){
-    const nextWidth=runway.clientWidth,nextHeight=runway.clientHeight;if(!nextWidth||!nextHeight)return;
-    const ratio=width>size?.width?x/(width-size.width):.5;
-    width=nextWidth;height=nextHeight;size=window.JimmyMotion.dimensions(width,asset.motion,height);
-    runner.style.width=runner.style.height=size.width+'px';
-    x=Math.max(0,Math.min(width-size.width,(width-size.width)*ratio));plan=null;elapsed=0;last=0;drawIdle();
-  }
-  function tick(now){
-    raf=0;
-    if(!active||document.hidden||motion.matches){last=0;return;}
-    if(instance.paused||instance.opened){
-      if(plan){plan=null;elapsed=0;drawIdle();}last=0;raf=requestAnimationFrame(tick);return;
-    }
-    if(!plan){plan=makePlan();elapsed=0;}
-    elapsed+=last?Math.max(0,now-last):0;last=now;
-    const move=window.UniversalSkating.atTime(plan,elapsed),ratio=devicePixelRatio||1;
-    x=move.x;facing=move.facing;runner.dataset.state=move.finished?'idle':'skate-performance';scene.dataset.phase=move.phase;
-    runner.style.transform='translate('+Math.round(x*ratio)/ratio+'px,'+(-Math.round(move.lift*ratio)/ratio)+'px)';
-    window.JimmyMascot.paint(figure,move.finished?'idle':'skate-performance',move.index,facing,{selection:move});
-    if(move.finished&&elapsed>=plan.duration+2400){plan=null;elapsed=0;}
-    raf=requestAnimationFrame(tick);
-  }
-  function update(){
-    cancelAnimationFrame(raf);raf=0;last=0;
-    if(active&&!document.hidden){
-      if(motion.matches){plan=null;elapsed=0;drawIdle();}else raf=requestAnimationFrame(tick);
-    }
-    scene.dataset.active=String(active&&!document.hidden);
-  }
-  measure();new ResizeObserver(measure).observe(runway);
-  new IntersectionObserver(entries=>{active=entries[0].isIntersecting&&entries[0].intersectionRatio>=.2;update();},{threshold:[0,.2,.5]}).observe(scene);
-  document.addEventListener('visibilitychange',update);motion.addEventListener('change',update);
-  scene.dataset.ready='true';
 })();
