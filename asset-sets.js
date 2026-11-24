@@ -5,7 +5,7 @@
   else root.UniversalAvatarAssets=api;
 })(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
-  const ACTIVE_ASSET_SET = 'ice-pair-fine';
+  const ACTIVE_ASSET_SET = 'shuffle-skeleton';
   const poses={idle:0,wave:1,talk:2,point:3,think:13,held:14,rest:15,celebrate:12,fall:10,land:11};
   const sets={
     jimmy:{
@@ -173,11 +173,42 @@
       routine:['Jetzt tanzen wir unsere feine kleine Kür.','Heute wechseln sich Paartanz und Solopirouetten ab.','Ein wenig Leichtigkeit, nur für euch.']
     }
   };
+  const doubled=from=>Array.from({length:16},(_,i)=>from+Math.floor(i/2));
+  const skeletonFrames={running:Array.from({length:16},(_,i)=>i),tstep:doubled(16),slide:doubled(24),
+    poses:Array(16).fill(0),groove:Array.from({length:16},(_,i)=>i)};
+  sets['shuffle-skeleton']={
+    id:'shuffle-skeleton',name:'Skelly',role:'Shuffle-Skelett',subtitle:'Kleine Knochen. Großer Groove.',
+    introduction:'Das freundliche Cartoon-Skelett mit großen Augen, Sonnenbrille und Neon-Sneakern tanzt Melbourne Shuffle: Running Man auf der Stelle, T-Steps, Slides, Kicks und ganze Drehungen.',
+    renderer:'canvas',environment:'none',poses,
+    master:{columns:4,rows:8,required:true,normalize:true,
+      actors:[{id:'skelly',name:'Skelly',file:'assets/skelly-shuffle-v1.png',width:887,height:1774,heightRatio:.84,reference:0}],
+      frames:skeletonFrames,
+      variants:{encore:{columns:4,rows:8,normalize:true,
+        actors:[{id:'skelly',name:'Skelly',file:'assets/skelly-tricks-v1.png',width:887,height:1774,heightRatio:.84,reference:24}],
+        frames:{spin:doubled(0),kicks:doubled(8),groove:doubled(16),
+          poses:[24,25,26,27,28,29,31,30,8,9,10,24,30,28,29,31]}}}},
+    motion:{kind:'shuffle',desktop:192,mobile:160,stride:1.1,speed:.68,acceleration:2.6,frames:16},
+    sheets:Object.fromEntries(['running','tstep','slide','spin','kicks','groove','poses'].map(sheet=>[sheet,{file:'assets/skelly-shuffle-v1.png',columns:4,rows:8}])),
+    personality:{
+      idle:['Ich habe den Rhythmus in den Knochen!','Meine Sneaker leuchten schon mal vor.','Keine Angst, ich bin nur zum Tanzen hier.','Ein Lächeln passt zu jedem Beat.','Mein Lieblingssport? Knochenlocker bleiben!','Heute lasse ich die gute Laune hüpfen.'],
+      walk:['Ein T-Step nach links – und die Sorgen rutschen weiter.','Meine Schuhe wissen schon, wo der Beat wohnt.','Ich gleite kurz um die Ecke.','Kleine Schritte, ganz viel Groove!'],
+      jump:['Ein kleiner Kick für die gute Laune!','Die Knochen bleiben dran. Versprochen!','Knie hoch, Fuß raus, Grinsen an.'],
+      spin:['Einmal rundherum – die Brille bleibt oben!','Auch mein Rücken kann tanzen.','Eine ganze Drehung voller guter Laune.'],
+      routine:['Running Man an, Alltag aus!','Bereit? Ich shuffle eine kleine Runde für dich!','Erst die Füße, dann wackelt das ganze Grinsen.','Mein Knochenkonzert beginnt mit einem T-Step.','Der Running Man läuft. Ich bleibe trotzdem hier!']
+    }
+  };
   function freeze(value){if(value&&typeof value==='object'){Object.values(value).forEach(freeze);Object.freeze(value);}return value;}
   freeze(sets);
   function get(id=ACTIVE_ASSET_SET){if(!Object.hasOwn(sets,id))throw Error('Unbekanntes Asset-Set: '+id);return sets[id];}
   const wrap=(frame,count)=>((Math.floor(frame)%count)+count)%count;
   function frameFor(asset,state='idle',frame=0,details={}){
+    if(asset.motion.kind==='shuffle'){
+      if(details.selection&&Object.hasOwn(asset.sheets,details.selection.sheet))return {sheet:details.selection.sheet,index:wrap(details.selection.index,16),
+        ...(details.selection.atlas==='encore'?{atlas:'encore'}:{})};
+      if(state==='walk')return {sheet:'slide',index:wrap(frame,16)};
+      if(state==='idle')return {sheet:'groove',index:details.frozen?0:wrap(Math.max(0,details.elapsed||0)*8,16),atlas:'encore'};
+      return {sheet:'poses',index:state==='jump'?[8,9,10,11][Math.min(3,Math.max(0,Math.floor(frame)))]:asset.poses[state]??0,atlas:'encore'};
+    }
     const ice=asset.motion.kind==='ice',elapsed=Math.max(0,details.elapsed||0)*(ice?asset.motion.tempo||1:1);
     if(ice&&details.selection&&Object.hasOwn(asset.sheets,details.selection.sheet))return {sheet:details.selection.sheet,index:wrap(details.selection.index,16),
       ...(asset.master?.variants?.[details.selection.atlas]?.frames?.[details.selection.sheet]?{atlas:details.selection.atlas}:{})};

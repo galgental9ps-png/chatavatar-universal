@@ -23,16 +23,20 @@
     document.querySelector('.name-tag small').textContent=asset.role;
     const intro=document.querySelector('.intro');intro.replaceChildren();const strong=document.createElement('strong');strong.textContent=name;intro.append('Darf ich vorstellen? ',strong,'. '+asset.introduction+' Ein Klick auf die Figur genügt.');
     $('start-avatar').textContent=name+' ausprobieren';
-    $('walk-demo').textContent=asset.plural?'Gemeinsam gleiten':name+(instance.isSkater()?' gleiten lassen':' eine Runde laufen lassen');
-    $('hop-demo').textContent=asset.motion.duet?'Synchrone Pirouetten':instance.isSkater()?'Pirouette':name+' springen lassen';
-    $('routine-demo').textContent=asset.motion.duet?'Paartanz vorführen':'Kür vorführen';
+    const dancer=instance.isDancer();
+    $('walk-demo').textContent=dancer?'T-Steps':asset.plural?'Gemeinsam gleiten':name+(instance.isSkater()?' gleiten lassen':' eine Runde laufen lassen');
+    $('hop-demo').textContent=dancer?'Kicks':asset.motion.duet?'Synchrone Pirouetten':instance.isSkater()?'Pirouette':name+' springen lassen';
+    $('routine-demo').textContent=dancer?'Shuffle tanzen':asset.motion.duet?'Paartanz vorführen':'Kür vorführen';
     $('jump-demo').textContent=asset.motion.duet?'Aufeinander zuspringen':'Drehsprung';
-    $('spiral-demo').textContent=asset.motion.duet?'Gemeinsame Gleitfigur':'Gleitfigur';
-    $('duet-demo').hidden=!asset.motion.duet;
-    $('encore-demo').hidden=!asset.motion.encore;
-    $('quip-demo').textContent=instance.isSkater()?'Ein kleiner Gruß':'Ein Affenspruch';
-    $('spiral-demo').hidden=!instance.isSkater();
-    $('routine-demo').hidden=$('jump-demo').hidden=!instance.isSkater();
+    $('spiral-demo').textContent=dancer?'Slides':asset.motion.duet?'Gemeinsame Gleitfigur':'Gleitfigur';
+    $('duet-demo').textContent=dancer?'Spins':'Synchronfolge vorführen';
+    $('encore-demo').textContent=dancer?'Running Man':'Pirouetten & Umkreisen';
+    $('duet-demo').hidden=!asset.motion.duet&&!dancer;
+    $('encore-demo').hidden=!asset.motion.encore&&!dancer;
+    $('quip-demo').textContent=dancer?'Ein Knochenwitz':instance.isSkater()?'Ein kleiner Gruß':'Ein Affenspruch';
+    $('spiral-demo').hidden=!instance.isSkater()&&!dancer;
+    $('routine-demo').hidden=!instance.isSkater()&&!dancer;
+    $('jump-demo').hidden=!instance.isSkater();
     picker.value=asset.id;
   }
   for(const asset of Object.values(UniversalAvatarAssets.sets)){
@@ -68,15 +72,16 @@
   }
   $('walk-demo').onclick = () => {
     if (!prepareDemo()) return;
+    if(instance.isDancer()){instance.perform('t-step');return;}
     const max = Math.max(0, innerWidth - instance.size().width - 8);
     instance.walkTo(instance.x > max / 2 ? 8 : max,{style:instance.isSkater()?'speed':'auto'});
   };
   $('hop-demo').onclick = () => { if (prepareDemo()) instance.isSkater()?instance.spin():instance.hop(); };
   $('routine-demo').onclick=()=>{if(prepareDemo())instance.perform();};
   $('jump-demo').onclick=()=>{if(prepareDemo())instance.skateJump();};
-  $('duet-demo').onclick=()=>{if(prepareDemo())instance.duet();};
-  $('encore-demo').onclick=()=>{if(prepareDemo())instance.encore();};
-  $('spiral-demo').onclick=()=>{if(!prepareDemo())return;const max=Math.max(0,innerWidth-instance.size().width-8);instance.walkTo(instance.x>max/2?8:max,{style:'spiral'});};
+  $('duet-demo').onclick=()=>{if(prepareDemo())instance.isDancer()?instance.spin():instance.duet();};
+  $('encore-demo').onclick=()=>{if(prepareDemo())instance.isDancer()?instance.perform('running-man'):instance.encore();};
+  $('spiral-demo').onclick=()=>{if(!prepareDemo())return;if(instance.isDancer()){instance.perform('slides');return;}const max=Math.max(0,innerWidth-instance.size().width-8);instance.walkTo(instance.x>max/2?8:max,{style:'spiral'});};
   $('quip-demo').onclick = () => { if (prepareDemo(false)) instance.showQuip('idle', { replace: true, userInitiated: true }); };
   function draw() {
     const results = K.search(pack, $('knowledge-search').value, { category: $('knowledge-category').value, limit: 1500 });

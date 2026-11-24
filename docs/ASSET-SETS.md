@@ -3,11 +3,12 @@
 Die Standardfigur wird in **`asset-sets.js`** ausgewählt:
 
 ```js
-const ACTIVE_ASSET_SET = 'ice-pair-fine';
+const ACTIVE_ASSET_SET = 'shuffle-skeleton';
 ```
 
 | Kennung | Figur | Bewegung |
 | --- | --- | --- |
+| `shuffle-skeleton` | Skelly, freundliches Cartoon-Skelett | Melbourne Shuffle mit Running Man, T-Steps, Slides, ganzen Spins und Kicks |
 | `ice-pair-fine` | Lina & Elio, feines Eiskunstlauf-Paar | Feine Paarkür mit kleinen Sprüngen; zweite Folge mit stationären Solopirouetten, Umkreisen und synchronem Abschluss |
 | `ice-pair` | Aurora & Noel, Eiskunstlauf-Paar | Gemeinsamer Paartanz, getrennte synchrone Pirouetten, Sprung aufeinander zu und gemeinsamer Abschluss |
 | `ice-skater` | Lumi, Eiskunstläuferin | Ruhiger tiefer Anlauf, Drehsprünge, Überkreuzschritte, Ausfallschritt, Spirale, aufrechte Pirouetten und komplette Kür |
@@ -22,6 +23,10 @@ Die Eiskunstläuferin ist eine transparente Figur. Es wird keine Eisfläche oder
 „Figur auswählen“ zeigt alle vollständigen Sets aus dem Katalog und tauscht die Figur direkt aus. Vorschau, Name, Sprüche und passende Bewegungsbuttons wechseln gemeinsam. Wissen, aktuelle Antwort sowie Pause-, Sichtbarkeits- und Vorleseeinstellungen bleiben erhalten. Ein laufender Sprung wird beim Wechsel am Boden beendet. Während die neue Bilddatei lädt, bleibt die bisherige Figur aktiv; bei einem Ladefehler kann der Wechsel erneut versucht werden.
 
 Die neue Schnittstelle ist `await JimmyChatAvatar.instance.setAsset('jimmy')` bzw. `await JimmyChatAvatar.instance.setAsset('ice-skater')`. Der Renderer stellt mit `JimmyMascot.forAsset(id)` pro Figur einen eigenen zwischengespeicherten Bildsatz bereit. Wiederholte Wechsel nutzen bereits geladene Bilder. Das Ereignis `jimmy:asset-change` meldet den erfolgreichen Austausch an die Vorschau. `ACTIVE_ASSET_SET` bleibt die veröffentlichte Voreinstellung; eine Besucherauswahl verändert diese Datei nicht.
+
+## Melbourne-Shuffle-Skelett
+
+Skelly nutzt zwei transparente 4×8-Action-PNGs mit je 887×1774 Pixeln und ganzen Figuren. `perform()` startet eine vollständige Tanzfolge; `perform('running-man')`, `perform('t-step')`, `perform('slides')`, `spin()` und `hop()` starten einzelne Tanzteile. `walkTo(x)` verwendet seitliche Slides. Die eigene Zeitsteuerung in `shuffle-core.js` hält Running Man am selben Ort und seitliche Wege auf einer festen Bodenlinie. Details: [SHUFFLE-SKELETON.md](SHUFFLE-SKELETON.md).
 
 ## Feiner Paarlauf mit zusätzlicher Bildfolge
 

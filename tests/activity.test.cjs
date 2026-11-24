@@ -1,7 +1,7 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const Motion=require('../motion-core.js'),Personality=require('../personality-core.js'),Assets=require('../asset-sets.js');
-const Skating=require('../skating-core.js');
+const Skating=require('../skating-core.js'),Shuffle=require('../shuffle-core.js');
 
 class Element {
   constructor(tag){this.tagName=tag;this.children=[];this.dataset={};this.attributes={};this.style={setProperty(){}};this.hidden=false;this.textContent='';}
@@ -26,7 +26,7 @@ async function mascot(assetId='jimmy'){
     document:{currentScript:{src:'https://demo.example/avatar.js',dataset:{manual:'true'}},body:new Element('body'),hidden:false,createElement:tag=>new Element(tag),addEventListener(){},removeEventListener(){}},
     matchMedia:()=>media,requestAnimationFrame:()=>1,cancelAnimationFrame(){},CustomEvent:class{},
     setTimeout:(fn,delay)=>{timers.set(++id,{fn,delay});return id;},clearTimeout:timer=>timers.delete(timer),
-    JimmyMotion:Motion,UniversalSkating:Skating,JimmyPersonality:Personality,UniversalAvatarAssets:{...Assets,active:Assets.get(assetId)},
+    JimmyMotion:Motion,UniversalSkating:Skating,UniversalShuffle:Shuffle,JimmyPersonality:Personality,UniversalAvatarAssets:{...Assets,active:Assets.get(assetId)},
     JimmyMascot:{...forAsset(assetId),forAsset},
     JimmyKnowledge:{validate:x=>x,active:()=>true,search:()=>[]},
     addEventListener(){},removeEventListener(){}
@@ -225,4 +225,17 @@ test('On a very narrow viewport each moving partner renders their own closing sk
     const draw=draws.find(d=>d.element===element),selection=avatar.programFrame.actors[i].selection||avatar.programFrame;
     assert.equal(draw.details.selection,selection);assert.equal(draw.details.selection.sheet,avatar.programFrame.actors[i].selection?'glide':'flow');
   }
+});
+
+test('The skeleton automatically shuffles, freezes while reading and switches to the existing pair cleanly',async()=>{
+  const {avatar,advance,media,context}=await mascot('shuffle-skeleton');
+  avatar.nextRoutine=0;advance(20);assert.equal(avatar.program.kind,'shuffle');assert.equal(avatar.state,'dance-performance');
+  const duration=avatar.program.duration;advance(duration+40);assert.equal(avatar.program,null);assert.equal(avatar.y,10);
+  avatar.perform('running-man');advance(1400);assert.equal(avatar.programFrame.sheet,'running');const x=avatar.x;
+  advance(2000);assert.equal(avatar.x,x);avatar.open();assert.equal(avatar.program,null);assert.equal(avatar.opened,true);
+  assert.equal(avatar.perform(),false);avatar.opened=false;assert.equal(avatar.spin(),true);
+  context.document.hidden=true;const before=avatar.programElapsed;advance(1000);assert.equal(avatar.programElapsed,before);context.document.hidden=false;
+  media.matches=true;avatar.onMotion();assert.equal(avatar.program,null);assert.equal(avatar.perform(),false);
+  media.matches=false;avatar.onMotion();await avatar.setAsset('ice-pair-fine');assert.equal(avatar.isDancer(),false);assert.equal(avatar.partner.hidden,false);
+  assert.equal(avatar.encore(),true);avatar.open();await avatar.setAsset('shuffle-skeleton');assert.equal(avatar.partner.hidden,true);assert.equal(avatar.pack.entries.length,0);
 });

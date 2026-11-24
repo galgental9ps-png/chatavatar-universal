@@ -4,7 +4,7 @@
   if (window.JimmyChatAvatar) return;
   const script = document.currentScript;
   const BASE = new URL('.', script.src).href;
-  const VERSION = 'natural-rejoin-21';
+  const VERSION = 'skelly-shuffle-22';
   const deps = new Map();
   function loadScript(url) {
     if (!deps.has(url)) deps.set(url, new Promise((resolve, reject) => { const s = document.createElement('script'); s.src = url; s.onload = resolve; s.onerror = () => reject(Error('Datei konnte nicht geladen werden: ' + url)); document.head.append(s); }));
@@ -15,6 +15,7 @@
     window.JimmyKnowledge ? Promise.resolve() : loadScript(BASE + 'knowledge-core.js'),
     window.JimmyMotion ? Promise.resolve() : loadScript(BASE + 'motion-core.js?v=' + VERSION),
     window.UniversalSkating ? Promise.resolve() : loadScript(BASE + 'skating-core.js?v=' + VERSION),
+    window.UniversalShuffle ? Promise.resolve() : loadScript(BASE + 'shuffle-core.js?v=' + VERSION),
     window.JimmyMascot ? Promise.resolve() : loadScript(BASE + 'mascot.js?v=' + VERSION),
     window.JimmyPersonality ? Promise.resolve() : loadScript(BASE + 'personality-core.js?v=' + VERSION)
   ]));
@@ -108,6 +109,8 @@
       return true;
     }
     isSkater(){return this.asset?.motion.kind==='ice';}
+    isDancer(){return this.asset?.motion.kind==='shuffle';}
+    programEngine(){return this.isDancer()?window.UniversalShuffle:window.UniversalSkating;}
     preparePartner(){
       if(!this.asset?.motion.duet){if(this.partner)this.partner.hidden=true;return;}
       if(!this.partner){
@@ -148,7 +151,7 @@
     }
     drawFrame() {
       const actors=this.actorPositions();
-      const details={elapsed:Math.max(0,performance.now()-this.stateStarted)/1000,style:this.skateStyle,selection:this.programFrame,remaining:Math.abs((this.targetX??this.x)-this.x)/Math.max(1,this.size().speed)};
+      const details={elapsed:Math.max(0,performance.now()-this.stateStarted)/1000,frozen:this.paused||this.motion.matches,style:this.skateStyle,selection:this.programFrame,remaining:Math.abs((this.targetX??this.x)-this.x)/Math.max(1,this.size().speed)};
       if (this.visual) this.renderer.paint(this.visual, this.state, this.motion.matches ? 0 : this.frame,actors?actors[0].facing:this.facing,{...details,...(actors?{actor:0,selection:actors[0].selection||details.selection}:{})});
       if(this.partner){
         this.partner.hidden=!actors||this.hidden;
@@ -176,7 +179,8 @@
           element.style.transformOrigin='50% 94%';
           element.style.zIndex=actor.layer?String(actor.layer):'';
           element.style.transform='translate3d('+x.toFixed(3)+'px,'+(-y).toFixed(3)+'px,0) rotate('+lean.toFixed(3)+'deg)';
-        }else element.style.transform='translate('+Math.round(x*ratio)/ratio+'px,'+(-Math.round(this.y*ratio)/ratio)+'px)';
+        }else if(this.isDancer())element.style.transform='translate3d('+x.toFixed(3)+'px,'+(-this.y).toFixed(3)+'px,0)';
+        else element.style.transform='translate('+Math.round(x*ratio)/ratio+'px,'+(-Math.round(this.y*ratio)/ratio)+'px)';
       };
       place(this.character,actors?actors[0].x:this.x,actors?.[0]);
       if(actors&&this.partner)place(this.partner,actors[1].x,actors[1]);
@@ -186,11 +190,12 @@
     }
     settleJump() {
       if(this.program)this.cancelProgram();
-      if (!['jump','spin','skate-stop','skate-performance'].includes(this.state)) return;
+      if (!['jump','spin','skate-stop','skate-performance','dance-performance'].includes(this.state)) return;
       this.y = this.size().ground;
       this.jumpElapsed = 0; this.velocity = 0; this.fallVelocity = 0; this.position();
     }
     hop() {
+      if(this.isDancer())return this.perform('kicks');
       if(this.isSkater())return this.skateJump();
       if (!this.pack || this.destroyed || document.hidden || this.paused || this.motion.matches || this.opened || this.hidden || this.drag || ['jump', 'fall', 'held'].includes(this.state) || this.y > this.size().ground+1) return false;
       const M = window.JimmyMotion, size = this.size(), max = Math.max(0, innerWidth - size.width);
@@ -206,7 +211,7 @@
       this.showQuip('jump', { animate: false, replace: true });
       this.setState('jump'); return true;
     }
-    canPerform(){return this.isSkater()&&this.pack&&!this.destroyed&&!document.hidden&&!this.paused&&!this.motion.matches&&!this.opened&&!this.hidden&&!this.drag&&(this.program||this.y<=this.size().ground+1)&&!['jump','fall','held'].includes(this.state);}
+    canPerform(){return (this.isSkater()||this.isDancer())&&this.pack&&!this.destroyed&&!document.hidden&&!this.paused&&!this.motion.matches&&!this.opened&&!this.hidden&&!this.drag&&(this.program||this.y<=this.size().ground+1)&&!['jump','fall','held'].includes(this.state);}
     cancelProgram(settle=true){
       if(!this.program)return;
       this.program=null;this.programFrame=null;this.programElapsed=0;this.pendingProgram=null;this.velocity=0;if(this.partner)this.partner.hidden=true;
@@ -214,18 +219,19 @@
       this.character.dataset.move='';this.character.dataset.program='';
       this.nextRoutine=performance.now()+4500;this.setState('idle');if(settle)this.position();
     }
-    perform(mode='routine'){
-      if(!this.canPerform()||!window.UniversalSkating)return false;
+    perform(mode='routine',options={}){
+      const engine=this.programEngine();
+      if(!this.canPerform()||!engine)return false;
       if(this.program){if(this.program.mode===mode)return false;this.pendingProgram=mode;return true;}
       this.cancelProgram();this.hideTip();this.cancelLater(this.greetingTimer);
-      this.program=window.UniversalSkating.createPlan({mode,startX:this.x,facing:this.facing,viewportWidth:innerWidth,viewportHeight:innerHeight,size:this.size()});
+      this.program=engine.createPlan({mode,startX:this.x,facing:this.facing,viewportWidth:innerWidth,viewportHeight:innerHeight,size:this.size(),...options});
       this.lastProgramMode=mode;
       this.programElapsed=0;this.velocity=0;this.fallVelocity=0;
-      this.programFrame=window.UniversalSkating.atTime(this.program,0);
+      this.programFrame=engine.atTime(this.program,0);
       this.facing=this.programFrame.facing;this.character.dataset.program=mode;
       this.nextRoutine=Infinity;this.nextGesture=performance.now()+this.program.duration+8000;
-      this.setState('skate-performance');
-      this.showQuip(mode==='routine'||mode==='duet'?'routine':mode==='jump'?'jump':'spin',{animate:false,replace:true});
+      this.setState(this.isDancer()?'dance-performance':'skate-performance');
+      this.showQuip(mode==='spin'?'spin':mode==='jump'||mode==='kicks'?'jump':'routine',{animate:false,replace:true});
       return true;
     }
     spin(){return this.perform('spin');}
@@ -235,6 +241,10 @@
     walkTo(target,{style='auto'}={}) {
       if (!this.pack || this.destroyed || this.motion.matches || this.paused || this.hidden || this.drag || this.y > this.size().ground+1) return false;
       this.cancelProgram();
+      if(this.isDancer()){
+        this.opened=false;this.panel.hidden=true;this.character.setAttribute('aria-expanded','false');
+        return this.perform('slides',{targetX:Number(target)||0});
+      }
       const M = window.JimmyMotion, size = this.size();
       this.targetX = M.clamp(Number(target) || 0, 0, Math.max(0, innerWidth - size.width));
       if (Math.abs(this.targetX - this.x) < 20) return false;
@@ -256,7 +266,7 @@
         if (now >= this.nextQuip && this.tip.hidden && ['idle', 'walk'].includes(this.state)) this.showQuip(this.state === 'walk' ? 'walk' : 'idle');
         if(this.program){
           this.programElapsed+=elapsed;
-          const move=window.UniversalSkating.atTime(this.program,this.programElapsed);
+          const move=this.programEngine().atTime(this.program,this.programElapsed);
           this.programFrame=move;this.frame=move.index;this.facing=move.facing;this.x=move.x;
           this.y=size.ground+move.lift;this.velocity=move.velocity;this.character.dataset.move=move.phase;
           const requested=this.pendingProgram;
@@ -293,16 +303,16 @@
             }
             this.position();
           }
-        } else if(this.isSkater()&&this.state==='idle'&&now>=this.nextRoutine){
-          const mode=this.asset.motion.encore&&this.lastProgramMode!=='feature'?'feature':'routine';
+        } else if((this.isSkater()||this.isDancer())&&this.state==='idle'&&now>=this.nextRoutine){
+          const mode=this.isSkater()&&this.asset.motion.encore&&this.lastProgramMode!=='feature'?'feature':'routine';
           if(!this.perform(mode))this.nextRoutine=now+3000;
-        } else if (!this.isSkater()&&this.state === 'idle' && now >= this.nextHop) {
+        } else if (!this.isSkater()&&!this.isDancer()&&this.state === 'idle' && now >= this.nextHop) {
           if (!this.hop()) this.nextHop = now + 5000;
-        } else if (!this.isSkater()&&this.state === 'idle' && this.tip.hidden && now >= this.nextGesture) {
+        } else if (!this.isSkater()&&!this.isDancer()&&this.state === 'idle' && this.tip.hidden && now >= this.nextGesture) {
           const gestures = ['wave', 'think', 'celebrate', 'rest'];
           this.setState(gestures[Math.floor(Math.random() * gestures.length)]);
           this.nextGesture = now + 9000 + Math.random() * 8000;
-        } else if (!this.isSkater()&&now > this.nextWalk && this.state === 'idle') {
+        } else if (!this.isSkater()&&!this.isDancer()&&now > this.nextWalk && this.state === 'idle') {
           const max = Math.max(0, innerWidth - size.width - 8);
           const distance = Math.min(max, 140 + Math.random() * 250);
           const target = this.x > max / 2 ? Math.max(8, this.x - distance) : Math.min(max, this.x + distance);

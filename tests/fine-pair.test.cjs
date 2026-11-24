@@ -5,7 +5,7 @@ const pair=Assets.get('ice-pair-fine');
 const planFor=(mode='feature',w=1200,h=800)=>Skating.createPlan({mode,viewportWidth:w,viewportHeight:h,startX:w-240,facing:1,size:Motion.dimensions(w,pair.motion,h)});
 
 test('The minimalist pair has four distinct whole-person action PNGs and valid independent mappings',()=>{
-  assert.equal(Assets.activeId,'ice-pair-fine');
+  assert.equal(pair.id,'ice-pair-fine');
   const files=new Set();
   for(const atlas of [pair.master,pair.master.variants.encore]){
     assert.equal(atlas.actors.length,2);assert.equal(atlas.columns,4);assert.equal(atlas.rows,8);

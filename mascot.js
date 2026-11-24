@@ -159,7 +159,7 @@
           if(reflect)ctx.restore();
         };
         if(individual){draw(actor,0,0,w);element.dataset.sourceFile=atlas.actors[actor].file;}
-        else{draw(0,0,w*.25,w*.66);draw(1,w*.34,w*.25,w*.66);element.dataset.sourceFile=atlas.actors.map(a=>a.file).join(' ');}
+        else{if(atlas.actors.length===1)draw(0,0,0,w);else{draw(0,0,w*.25,w*.66);draw(1,w*.34,w*.25,w*.66);}element.dataset.sourceFile=atlas.actors.map(a=>a.file).join(' ');}
         element.dataset.atlas=selection.atlas||'main';
         element.dataset.actor=individual?String(actor):'preview';element._frameKey=key;return;
       }

@@ -12,3 +12,4 @@
 .character[data-asset=ice-pair][data-state=idle] .jimmy-frame,[data-asset=ice-pair][data-state=idle]>.jimmy-frame{animation:none}.jimmy-frame[data-asset=ice-pair]{background:none;image-rendering:auto}
 
 .character[data-asset=ice-pair-fine][data-state=idle] .jimmy-frame,[data-asset=ice-pair-fine][data-state=idle]>.jimmy-frame{animation:none}.jimmy-frame[data-asset=ice-pair-fine]{background:none;image-rendering:auto}
+.character[data-asset=shuffle-skeleton][data-state=idle] .jimmy-frame,[data-asset=shuffle-skeleton][data-state=idle]>.jimmy-frame{animation:none}.jimmy-frame[data-asset=shuffle-skeleton]{background:none;image-rendering:auto}
