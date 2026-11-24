@@ -10,6 +10,10 @@ Die Auswahl steht zentral in `asset-sets.js`: `const ACTIVE_ASSET_SET = 'ice-ska
 
 Die vorhandenen Antworten und das Wissensstudio beziehen sich weiterhin auf Jimmy’s Fun Park. Der Einbindungscode bleibt gleich.
 
+Unten auf der Demoseite liegt eine kleine Winterbühne mit Mondlicht, Bäumen und einer schimmernden Eisfläche. Sie verwendet Lumis vollständige Posen und die vorhandene Kür. Die frei laufende Figur bleibt auch dort sichtbar. Die Bühnenanimation läuft nur, während der Abschnitt sichtbar ist, und berücksichtigt reduzierte Bewegung.
+
+`Bittersweet Beauty.mp3` ist die Hintergrundmusik der Demo, mit leiser Lautstärke und Wiederholung. Die Seite versucht, sie beim Besuch zu starten; blockiert der Browser den hörbaren Autostart, beginnt sie nach dem ersten Klick oder über „Musik einschalten“. Der Musikschalter steht oben in der Navigation und direkt an der Winterbühne. Eine manuelle Pause bleibt erhalten; beim Wechsel in einen anderen Tab pausiert die Musik. Audiodatei, `winter-scene.css` und `winter-scene.js` werden im Seitenpaket veröffentlicht. Die normale Avatar-Einbindung lädt keine Musik und keine Winterlandschaft.
+
 **Kür vorführen**, **Drehsprung** und **Pirouette** starten die zusammenhängende Folge bzw. einzelne Elemente. Automatisch führt Lumi ihre Kür nach kurzen Pausen erneut auf. Beim Öffnen einer Antwort, bei Pause, reduzierter Bewegung und beim Ziehen wird sie unterbrochen. Ein während eines Sprungs angefordertes anderes Element wartet auf einen sicheren Ausstieg.
 
 Die Sprungübergänge verwenden zusätzlich 16 vollständige Zwischenposen: schrittweises Strecken beim Absprung, Öffnen der Haltung vor dem Aufsetzen und anschließendes Abfedern. Anlauf, Flughaltung und Landung werden an denselben anatomischen Maßstäben ausgerichtet; eine gebeugte Haltung wird dabei nicht künstlich vergrößert.

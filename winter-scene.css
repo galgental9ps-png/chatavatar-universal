@@ -1,0 +1,61 @@
+/* A small winter stage, confined to the bottom of the demo page. */
+.winter-section{padding-top:76px;padding-bottom:60px}
+.winter-heading{display:flex;justify-content:space-between;align-items:center;gap:30px;margin-bottom:27px}
+.winter-heading .eyebrow{margin:0 0 12px}
+.winter-heading h2{font-size:clamp(30px,3.3vw,43px);letter-spacing:-1px}
+.winter-intro{font-size:14px;line-height:1.8;color:#61776d;margin:14px 0 0}
+.music-toggle{display:inline-flex;flex-shrink:0;align-items:center;justify-content:center;gap:10px;border:1px solid #b7cbbf;background:#fffef7;border-radius:100px;padding:12px 17px;font-size:12px;line-height:1.4;color:#326558;cursor:pointer;transition:background .2s,border-color .2s}
+.music-toggle svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.music-toggle:hover{background:#ebf4e8;border-color:#7fae99}
+.music-toggle[data-state=playing]{background:#e3f0e7;border-color:#83b19b}
+.music-toggle:disabled{opacity:.6;cursor:default}
+.music-toggle--compact{padding:9px 12px;font-size:12px;gap:7px}
+.music-toggle--compact svg{width:16px;height:16px}
+.winter-scene{height:400px;position:relative;overflow:hidden;isolation:isolate;border:1px solid #153f45;border-radius:20px;background:radial-gradient(ellipse at 74% 22%,#6b82722b,transparent 40%),linear-gradient(180deg,#132f3c 0%,#254c53 69%,#5a807c 100%)}
+.winter-moon{position:absolute;right:16%;top:38px;width:42px;height:42px;border-radius:50%;background:#fff4ce;box-shadow:0 0 0 13px #fff4ce05,0 0 55px #fff4ce16}
+.winter-moon:after{content:"";position:absolute;inset:7px;border:1px solid #e7ddb64a;border-radius:50%}
+.winter-stars{position:absolute;inset:0}
+.winter-stars i{position:absolute;left:var(--x);top:var(--y);width:3px;height:3px;border-radius:50%;background:#f4e4b9;opacity:.55;animation:winter-twinkle 6s var(--delay) ease-in-out infinite}
+.winter-stars i:nth-child(2n):after{content:"";position:absolute;inset:-3px;border-left:1px solid #f4e4b950;transform:rotate(45deg)}
+.winter-hill{position:absolute;border-radius:50% 50% 0 0;z-index:-1}
+.winter-hill--back{left:-20%;right:-20%;height:240px;bottom:-60px;background:#345d62;transform:rotate(5deg)}
+.winter-hill--front{left:20%;right:-25%;height:210px;bottom:-65px;background:#3d696a;transform:rotate(-5deg)}
+.winter-trees{position:absolute;width:150px;height:185px;bottom:73px;fill:#153b43;stroke:#41686a;stroke-width:1;stroke-linecap:round;stroke-linejoin:round}
+.winter-trees--left{left:3%;opacity:.95}
+.winter-trees--right{right:3%;width:135px;height:175px;fill:#173f46}
+.winter-trees .winter-tree-light{fill:none;stroke:#83aaa04a;stroke-width:2}
+.winter-shore{position:absolute;left:6%;right:6%;height:124px;bottom:17px;border-radius:50%;background:#97bdb21a;box-shadow:0 -2px 0 #cfe5d125}
+.winter-pond{position:absolute;left:9%;right:9%;bottom:25px;height:103px;border-radius:50%;background:radial-gradient(ellipse at 63% 25%,#d9eee4af,transparent 56%),linear-gradient(170deg,#a7cfca,#7eafaf 76%,#67999f);border:1px solid #c8e4d58c;box-shadow:inset 0 -5px 20px #24485226,0 7px 18px #0b2a3321}
+.winter-pond:before,.winter-pond:after,.winter-pond span{content:"";position:absolute;border:1px solid #ebfff532;border-radius:50%;transform:rotate(-5deg)}
+.winter-pond:before{inset:17px 10% 22px 13%}
+.winter-pond:after{inset:30px 24% 14px 29%;transform:rotate(8deg);border-left-color:transparent}
+.winter-pond span{inset:12px 32% 27px 42%;border-bottom-color:transparent;transform:rotate(-13deg)}
+.winter-runway{position:absolute;left:12%;right:12%;bottom:58px;height:290px;pointer-events:none}
+.winter-skater{position:absolute;left:0;bottom:0;width:192px;height:192px;pointer-events:none;will-change:transform}
+.winter-scene-caption{position:absolute;left:25px;right:25px;bottom:13px;display:flex;justify-content:space-between;align-items:center;color:#d5e6d7ab;font-size:10px;letter-spacing:1.2px}
+.winter-scene-caption span:last-child{font-size:15px;color:#eadcafa8}
+.winter-credit{font:italic 13px/1.6 Georgia,serif;letter-spacing:.1px;color:#7d8c80;text-align:center;margin:16px 0 0}
+.winter-credit span{margin:0 7px;color:#b5bfae}
+@keyframes winter-twinkle{0%,100%{opacity:.35}50%{opacity:.85}}
+@media(max-width:700px){
+ .winter-section{padding-top:48px;padding-bottom:35px}
+ .winter-heading{align-items:flex-start;flex-direction:column;gap:18px;margin-bottom:22px}
+ .winter-heading h2{font-size:32px;line-height:1.2}
+ .winter-intro{font-size:13px;max-width:310px}
+ .music-toggle{font-size:12px;padding:10px 14px}
+ .music-toggle--compact{height:34px;width:34px;padding:0;min-width:34px}
+ .music-toggle--compact [data-music-label]{display:none}
+ .page-head nav{gap:10px}
+ .winter-scene{height:350px;border-radius:15px}
+ .winter-moon{width:33px;height:33px;right:15%;top:32px}
+ .winter-trees{width:94px;height:146px;left:-2%;bottom:67px}
+ .winter-trees--right{left:auto;right:-4%;width:99px;height:145px;bottom:62px}
+ .winter-hill--back{height:190px;bottom:-45px}
+ .winter-hill--front{height:180px;bottom:-50px}
+ .winter-shore{left:3%;right:3%;height:104px;bottom:15px}
+ .winter-pond{left:5%;right:5%;height:88px;bottom:23px}
+ .winter-runway{left:7%;right:7%;height:245px;bottom:44px}
+ .winter-scene-caption{left:16px;right:16px;font-size:8px;letter-spacing:.7px;bottom:10px}
+ .winter-credit{font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){.winter-stars i{animation:none}.music-toggle{transition:none}}
