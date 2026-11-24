@@ -7,3 +7,5 @@
 @keyframes jimmy-held{from{transform:rotate(-3deg)}to{transform:rotate(3deg)}}
 @keyframes jimmy-land{from{transform:scaleY(.96)}to{transform:scaleY(1)}}
 @media(prefers-reduced-motion:reduce){.jimmy-frame{animation:none!important}}
+
+.character[data-asset=ice-skater][data-state=idle] .jimmy-frame,[data-asset=ice-skater][data-state=idle]>.jimmy-frame{animation:none}.jimmy-frame[data-asset=ice-skater]{background:none;image-rendering:auto}

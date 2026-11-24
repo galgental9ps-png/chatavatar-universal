@@ -1,6 +1,6 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
-const Motion=require('../motion-core.js'),Personality=require('../personality-core.js');
+const Motion=require('../motion-core.js'),Personality=require('../personality-core.js'),Assets=require('../asset-sets.js');
 
 class Element {
   constructor(tag){this.tagName=tag;this.children=[];this.dataset={};this.attributes={};this.style={setProperty(){}};this.hidden=false;this.textContent='';}
@@ -16,14 +16,14 @@ class Element {
   dispatchEvent(){}
   remove(){}
 }
-async function mascot(){
+async function mascot(assetId='jimmy'){
   let clock=0,id=0;
   const timers=new Map(),media={matches:false,addEventListener(){},removeEventListener(){}};
   const context={URL,Map,Set,Promise,Math,Number,String,Error,Infinity,innerWidth:1200,innerHeight:800,performance:{now:()=>clock},
     document:{currentScript:{src:'https://demo.example/avatar.js',dataset:{manual:'true'}},body:new Element('body'),hidden:false,createElement:tag=>new Element(tag),addEventListener(){},removeEventListener(){}},
     matchMedia:()=>media,requestAnimationFrame:()=>1,cancelAnimationFrame(){},CustomEvent:class{},
     setTimeout:(fn,delay)=>{timers.set(++id,{fn,delay});return id;},clearTimeout:timer=>timers.delete(timer),
-    JimmyMotion:Motion,JimmyPersonality:Personality,
+    JimmyMotion:Motion,JimmyPersonality:Personality,UniversalAvatarAssets:{...Assets,active:Assets.get(assetId)},
     JimmyMascot:{preload:()=>Promise.resolve(),create:()=>new Element('span'),paint(){}},
     JimmyKnowledge:{validate:x=>x,active:()=>true,search:()=>[]},
     addEventListener(){},removeEventListener(){}
@@ -75,4 +75,28 @@ test('Due ambient hops run automatically and destruction removes pending bubble 
   avatar.nextQuip=avatar.nextWalk=avatar.nextGesture=Infinity;avatar.nextHop=0;
   advance(20);assert.equal(avatar.state,'jump');
   avatar.destroy();assert.equal(timers.size,0);assert.equal(avatar.hop(),false);assert.equal(avatar.showQuip(),false);
+});
+
+test('The skating set glides with sixteen frames and stops gracefully before returning to idle',async()=>{
+  const {avatar,advance}=await mascot('ice-skater');
+  avatar.nextQuip=avatar.nextGesture=avatar.nextHop=Infinity;
+  assert.equal(avatar.displayName(),'Lumi');assert.equal(avatar.walkTo(100,{style:'spiral'}),true);assert.equal(avatar.skateStyle,'spiral');
+  const frames=new Set();let stopped=false;
+  for(let i=0;i<650;i++){advance(20);frames.add(avatar.frame);assert.equal(avatar.y,10);assert.ok(avatar.x>=100&&avatar.x<=982);if(avatar.state==='skate-stop'){stopped=true;break;}}
+  assert.ok(stopped);assert.ok(frames.size>=12);avatar.nextWalk=Infinity;advance(600);
+  assert.equal(avatar.state,'idle');assert.equal(avatar.x,100);
+});
+
+test('A pirouette stays upright on the baseline, finishes by itself, and never becomes an endless gesture',async()=>{
+  const {avatar,advance}=await mascot('ice-skater');const x=avatar.x;
+  assert.equal(avatar.hop(),true);assert.equal(avatar.state,'spin');
+  for(let i=0;i<145;i++){advance(20);assert.equal(avatar.y,10);assert.equal(avatar.x,x);}
+  assert.equal(avatar.state,'idle');
+  for(const key of ['opened','paused','hidden','drag']){avatar[key]=true;assert.equal(avatar.spin(),false);avatar[key]=false;}
+});
+
+test('Opening an answer during a pirouette settles the new asset without an overlay surface',async()=>{
+  const {avatar,advance}=await mascot('ice-skater');avatar.spin();advance(900);avatar.open();advance(1000);
+  assert.equal(avatar.opened,true);assert.notEqual(avatar.state,'spin');assert.equal(avatar.y,10);
+  assert.equal(avatar.asset.environment,'none');assert.equal(avatar.host.dataset.asset,'ice-skater');
 });

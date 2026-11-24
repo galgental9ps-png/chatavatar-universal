@@ -1,10 +1,25 @@
 'use strict';
 (async function () {
   const $ = id => document.getElementById(id), K = JimmyKnowledge;
-  $('hero-magician').append(JimmyMascot.create());
   let pack, limit = 8, toastTimer;
   const instance = JimmyChatAvatar.instance;
   await instance.ready;
+  const asset=UniversalAvatarAssets.active,name=instance.displayName();
+  document.title=name+' · Dein digitaler Parkbegleiter';
+  document.querySelector('meta[name="description"]').content=name+' – dein animierter Chatavatar für Jimmy’s Fun Park mit Besuchsinfos, Geburtstagsplanung und eigenem Wissensstudio.';
+  $('discover-title').textContent='Wobei darf '+name+' helfen?';
+  document.querySelector('.knowledge-section .eyebrow').textContent=name.toUpperCase()+'S KLEINE WISSENSWELT';
+  const invitation=document.querySelector('.invitation h2');invitation.replaceChildren(name+' kommt',document.createElement('br'),'auch ');const emphasis=document.createElement('em');emphasis.textContent='zu euch.';invitation.append(emphasis);
+  document.querySelector('.page-footer > span').textContent=name+' · Eigenständiges Demo-Konzept für Jimmy’s Fun Park';
+  $('hero-magician').dataset.asset=asset.id;$('hero-magician').append(JimmyMascot.create());
+  document.querySelector('.name-tag b').textContent=name;
+  document.querySelector('.name-tag small').textContent=asset.role;
+  const intro=document.querySelector('.intro');intro.replaceChildren();const strong=document.createElement('strong');strong.textContent=name;intro.append('Darf ich vorstellen? ',strong,'. '+asset.introduction+' Ein Klick auf die Figur genügt.');
+  $('start-avatar').textContent=name+' ausprobieren';
+  $('walk-demo').textContent=name+(instance.isSkater()?' gleiten lassen':' eine Runde laufen lassen');
+  $('hop-demo').textContent=instance.isSkater()?'Pirouette':name+' springen lassen';
+  $('quip-demo').textContent=instance.isSkater()?'Ein kleiner Gruß':'Ein Affenspruch';
+  $('spiral-demo').hidden=!instance.isSkater();
   if (!instance.pack) { $('knowledge-count').textContent = 'Parkwissen konnte nicht geladen werden'; $('question-grid').textContent = 'Bitte laden Sie die Seite erneut.'; return; }
   pack = instance.pack;
   $('knowledge-count').textContent = K.search(pack, '', { limit: 1500 }).length + ' hinterlegte Antworten';
@@ -15,7 +30,7 @@
   $('start-avatar').onclick = () => answer();
   function prepareDemo(moving = true) {
     if (moving && instance.motion.matches) {
-      $('toast').textContent = 'Bewegungen sind in den Geräteeinstellungen reduziert. Jimmy bleibt deshalb ruhig.';
+      $('toast').textContent = 'Bewegungen sind in den Geräteeinstellungen reduziert. Die Figur bleibt deshalb ruhig.';
       $('toast').hidden = false;
       clearTimeout(toastTimer); toastTimer = setTimeout(() => { $('toast').hidden = true; }, 5000);
       return false;
@@ -27,10 +42,11 @@
   }
   $('walk-demo').onclick = () => {
     if (!prepareDemo()) return;
-    const max = Math.max(0, innerWidth - (innerWidth <= 540 ? 152 : 192) - 8);
+    const max = Math.max(0, innerWidth - instance.size().width - 8);
     instance.walkTo(instance.x > max / 2 ? 8 : max);
   };
   $('hop-demo').onclick = () => { if (prepareDemo()) instance.hop(); };
+  $('spiral-demo').onclick=()=>{if(!prepareDemo())return;const max=Math.max(0,innerWidth-instance.size().width-8);instance.walkTo(instance.x>max/2?8:max,{style:'spiral'});};
   $('quip-demo').onclick = () => { if (prepareDemo(false)) instance.showQuip('idle', { replace: true, userInitiated: true }); };
   function draw() {
     const results = K.search(pack, $('knowledge-search').value, { category: $('knowledge-category').value, limit: 1500 });

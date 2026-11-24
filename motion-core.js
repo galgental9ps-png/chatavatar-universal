@@ -6,16 +6,17 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
-  function dimensions(viewportWidth) {
-    const size = viewportWidth <= 540 ? 152 : 192;
-    return { width: size, height: size, ground: 10, stride: size * 0.43, speed: size * 0.44 };
+  function dimensions(viewportWidth, profile = {}, viewportHeight = 1000) {
+    const desired = viewportWidth <= 540 ? profile.mobile || 152 : profile.desktop || 192;
+    const size = Math.max(72,Math.min(desired,viewportWidth-16,viewportHeight-24));
+    return { width: size, height: size, ground: 10, stride: size * (profile.stride || .43), speed: size * (profile.speed || .44), acceleration: profile.acceleration || 3.2, frames: profile.frames || 8 };
   }
-  function frameAtDistance(distance, stride) {
-    return Math.floor(((Math.max(0, distance) / Math.max(1, stride)) % 1) * 8) % 8;
+  function frameAtDistance(distance, stride, frames = 8) {
+    return Math.floor(((Math.max(0, distance) / Math.max(1, stride)) % 1) * frames) % frames;
   }
   function walkStep({ x, target, velocity = 0, distance = 0 }, seconds, size) {
     const dt = clamp(seconds, 0, 0.05), remaining = Math.abs(target - x);
-    const direction = Math.sign(target - x), acceleration = size.speed * 3.2;
+    const direction = Math.sign(target - x), acceleration = size.speed * (size.acceleration || 3.2);
     if (remaining < 0.6) return { x: target, target, velocity: 0, distance, arrived: true };
     const desired = Math.min(size.speed, Math.sqrt(2 * acceleration * remaining));
     const velocityNext = velocity + clamp(desired - velocity, -acceleration * dt, acceleration * dt);

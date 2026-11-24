@@ -1,3 +1,13 @@
+# Chatavatar Universal · austauschbare Figuren
+
+Aktiv ist **Lumi, die Eiskunstläuferin**: transparentes Gleiten über den Bildschirm, elegante Gleitfiguren und aufrechte Pirouetten. Es wird keine Eisfläche eingeblendet. Jimmy bleibt als vollständiges zweites Asset-Set erhalten.
+
+Die Auswahl steht zentral in `asset-sets.js`: `const ACTIVE_ASSET_SET = 'ice-skater';`. Für Jimmy genügt der Wert `'jimmy'`. Bei einem späteren Wechsel braucht nur diese Auswahl geändert und veröffentlicht zu werden. Die Bilddateien, Bewegungen, Namen und Sprüche folgen der Auswahl. Details und Dateiliste: [docs/ASSET-SETS.md](docs/ASSET-SETS.md).
+
+Die vorhandenen Antworten und das Wissensstudio beziehen sich weiterhin auf Jimmy’s Fun Park. Der Einbindungscode bleibt gleich.
+
+---
+
 # Jimmy · Chatavatar für Jimmy’s Fun Park
 
 Ein animierter Affe für eine Webseite: Er läuft am Seitenrand, hüpft, winkt, lässt sich ziehen und beantwortet anklickbare Fragen über Jimmy’s Fun Park in Dasing. Die Anwendung basiert auf [Pinselio](https://github.com/galgental9ps-png/atelier-chatavatar), mit eigener Figur, eigenem Parkwissen und getrennter JavaScript-Schnittstelle.

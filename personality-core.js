@@ -73,13 +73,13 @@
       'Hüpf! Mein bester Gedanke hatte gerade Auftrieb.'
     ])
   });
-  function createDeck(random = Math.random) {
+  function createDeck(random = Math.random, pools = quips) {
     const queues = new Map(), last = new Map();
     return {
       next(kind = 'idle') {
-        const key = Object.hasOwn(quips, kind) ? kind : 'idle';
+        const key = Object.hasOwn(pools, kind) ? kind : 'idle';
         if (!queues.get(key)?.length) {
-          const deck = [...quips[key]];
+          const deck = [...pools[key]];
           for (let i = deck.length - 1; i > 0; i--) {
             const j = Math.min(i, Math.max(0, Math.floor(random() * (i + 1))));
             [deck[i], deck[j]] = [deck[j], deck[i]];

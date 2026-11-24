@@ -4,22 +4,24 @@
   if (window.JimmyChatAvatar) return;
   const script = document.currentScript;
   const BASE = new URL('.', script.src).href;
-  const VERSION = 'jimmy-3';
+  const VERSION = 'assets-4';
   const deps = new Map();
   function loadScript(url) {
     if (!deps.has(url)) deps.set(url, new Promise((resolve, reject) => { const s = document.createElement('script'); s.src = url; s.onload = resolve; s.onerror = () => reject(Error('Datei konnte nicht geladen werden: ' + url)); document.head.append(s); }));
     return deps.get(url);
   }
-  const engineReady = Promise.all([
+  const assetReady = window.UniversalAvatarAssets ? Promise.resolve() : loadScript(BASE + 'asset-sets.js?v=' + VERSION);
+  const engineReady = assetReady.then(() => Promise.all([
     window.JimmyKnowledge ? Promise.resolve() : loadScript(BASE + 'knowledge-core.js'),
     window.JimmyMotion ? Promise.resolve() : loadScript(BASE + 'motion-core.js?v=' + VERSION),
     window.JimmyMascot ? Promise.resolve() : loadScript(BASE + 'mascot.js?v=' + VERSION),
     window.JimmyPersonality ? Promise.resolve() : loadScript(BASE + 'personality-core.js?v=' + VERSION)
-  ]);
+  ]));
   function el(tag, cls, text) { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
   class Mascot {
     constructor(options = {}) {
       this.options = options; this.x = Math.max(8, innerWidth - 210); this.y = 10; this.state = 'idle'; this.facing = 1; this.opened = false; this.paused = false; this.voice = false; this.hidden = false; this.destroyed = false; this.category = ''; this.timers = new Set(); this.frame = 0; this.walkDistance = 0; this.velocity = 0; this.fallVelocity = 0; this.nextWalk = performance.now() + 4500; this.nextHop = performance.now() + 12000 + Math.random() * 5000; this.nextQuip = performance.now() + 9500; this.nextGesture = performance.now() + 9000 + Math.random() * 5000; this.jumpElapsed = 0; this.last = 0; this.stateUntil = Infinity;
+      this.asset=window.UniversalAvatarAssets?.active;this.stateStarted=performance.now();this.skateTrips=0;this.skateStyle='glide';
       this.motion = matchMedia('(prefers-reduced-motion: reduce)');
       this.onMotion = () => { this.paused = this.motion.matches; this.settleJump(); this.hideTip(); this.setState('idle'); this.render(); };
       this.motion.addEventListener('change', this.onMotion); this.paused = this.motion.matches;
@@ -31,7 +33,7 @@
       this.panel = el('section', 'panel'); this.panel.hidden = true; this.panel.setAttribute('role', 'region'); this.panel.setAttribute('aria-label', 'Antworten von Jimmy');
       this.launcher = el('button', 'launcher', 'Parkbegleiter rufen'); this.launcher.hidden = true;
       this.shadow.append(this.tip, this.character, this.panel, this.launcher); document.body.append(this.host);
-      this.tip.addEventListener('click', () => { this.open(); if (this.tipEntry) this.answer(this.tipEntry); });
+      this.tip.addEventListener('click', () => { const entry=this.tipEntry;this.open();if(entry)this.answer(entry); });
       this.launcher.addEventListener('click', () => { this.hidden = false; this.launcher.hidden = true; this.character.hidden = false; this.open(); });
       this.onKey = e => { if (e.key === 'Escape' && this.opened) this.close(); };
       this.onResize = () => this.position(); this.onVisibility = () => { this.last = 0; };
@@ -44,9 +46,12 @@
     async init() {
       try {
         await engineReady; if (this.destroyed) return;
+        this.asset=window.UniversalAvatarAssets.active;
+        this.host.dataset.asset=this.character.dataset.asset=this.asset.id;
         await window.JimmyMascot.preload(); if (this.destroyed) return;
-        this.quips = window.JimmyPersonality.createDeck();
+        this.quips = window.JimmyPersonality.createDeck(Math.random,this.asset.personality);
         this.visual = window.JimmyMascot.create(); this.sprite.replaceChildren(this.visual); this.drawFrame();
+        this.position();
         const K = window.JimmyKnowledge; let data = this.options.knowledge;
         if (!data) {
           if (location.protocol === 'file:' && !this.options.knowledgeUrl) {
@@ -64,17 +69,21 @@
       } catch (err) {
         if (this.destroyed) return;
         this.character.hidden = true; this.tip.hidden = true;
-        this.error = el('div', 'error'); this.error.append(el('strong', '', 'Jimmy konnte nicht starten'), el('p', '', err.message));
+        this.error = el('div', 'error'); this.error.append(el('strong', '', 'Die Figur konnte nicht starten'), el('p', '', err.message));
         const close = el('button', 'back', 'Schließen'); close.onclick = () => this.destroy(); this.error.append(close); this.shadow.append(this.error);
         this.host.dispatchEvent(new CustomEvent('jimmy:error', { detail: { message: err.message }, bubbles: true }));
       }
     }
     setKnowledge(input) {
       this.pack = window.JimmyKnowledge.validate(input); this.host.style.setProperty('--ca-blue', this.pack.avatar.color); this.category = ''; this.current = '';
-      this.character.setAttribute('aria-label', this.pack.avatar.name + ' öffnen. Zum Versetzen ziehen.'); this.launcher.textContent = this.pack.avatar.name + ' rufen';
+      this.character.setAttribute('aria-label', this.displayName() + ' öffnen. Zum Versetzen ziehen.'); this.launcher.textContent = this.displayName() + ' rufen';
+      this.panel.setAttribute('aria-label','Antworten von '+this.displayName());
       if (this.error) { this.error.remove(); this.error = null; this.character.hidden = this.hidden; }
       this.render(); this.host.dispatchEvent(new CustomEvent('jimmy:ready', { bubbles: true })); return this;
     }
+    displayName(){return this.asset?.name||this.pack?.avatar.name||'Chatavatar';}
+    isSkater(){return this.asset?.motion.kind==='ice';}
+    size(){return window.JimmyMotion?window.JimmyMotion.dimensions(innerWidth,this.asset?.motion,innerHeight):{width:innerWidth<=540?152:192,height:innerWidth<=540?152:192,ground:10};}
     bindDrag() {
       this.character.addEventListener('pointerdown', e => {
         if (e.button !== 0) return;
@@ -96,29 +105,31 @@
     }
     setState(state) {
       if (state !== this.state) { this.state = state; this.frame = 0; this.stateStarted = performance.now(); }
-      const durations = { wave: 1300, talk: 3200, point: 1600, think: 3000, celebrate: 1800, land: 220, rest: 4500 };
+      const durations = { wave: 1300, talk: 3200, point: 1600, think: 3000, celebrate: 1800, land: 220, rest: 4500,spin:this.asset?.motion.spinDuration||2750,'skate-stop':this.asset?.motion.stopDuration||420 };
       this.stateUntil = durations[state] ? performance.now() + durations[state] : Infinity;
       this.character.dataset.state = state; this.drawFrame();
     }
     drawFrame() {
-      if (this.visual) window.JimmyMascot.paint(this.visual, this.state, this.motion.matches ? 0 : this.frame, this.facing);
+      if (this.visual) window.JimmyMascot.paint(this.visual, this.state, this.motion.matches ? 0 : this.frame, this.facing,{elapsed:Math.max(0,performance.now()-this.stateStarted)/1000,style:this.skateStyle,remaining:Math.abs((this.targetX??this.x)-this.x)/Math.max(1,this.size().speed)});
       this.character.dataset.paused = String(this.paused);
     }
     position() {
-      const size = innerWidth <= 540 ? 152 : 192, width = size;
+      const size = this.size().width, width = size;
+      this.character.style.width=this.character.style.height=size+'px';
       this.x = Math.max(0, Math.min(Math.max(0, innerWidth - width), this.x)); this.y = Math.max(5, Math.min(Math.max(5, innerHeight - size), this.y));
       this.character.style.transform = 'translate(' + this.x + 'px,' + (-this.y) + 'px)'; this.character.style.bottom = '0';
       this.tip.style.left = Math.max(10, Math.min(innerWidth - (innerWidth <= 540 ? 220 : 246), this.x - 25)) + 'px';
       this.tip.style.bottom = Math.min(innerHeight - 110, this.y + size - 12) + 'px';
     }
     settleJump() {
-      if (this.state !== 'jump') return;
-      this.y = window.JimmyMotion.dimensions(innerWidth).ground;
+      if (!['jump','spin','skate-stop'].includes(this.state)) return;
+      this.y = this.size().ground;
       this.jumpElapsed = 0; this.velocity = 0; this.fallVelocity = 0; this.position();
     }
     hop() {
+      if(this.isSkater())return this.spin();
       if (!this.pack || this.destroyed || document.hidden || this.paused || this.motion.matches || this.opened || this.hidden || this.drag || ['jump', 'fall', 'held'].includes(this.state) || this.y > 11) return false;
-      const M = window.JimmyMotion, size = M.dimensions(innerWidth), max = Math.max(0, innerWidth - size.width);
+      const M = window.JimmyMotion, size = this.size(), max = Math.max(0, innerWidth - size.width);
       this.jumpHeight = Math.min(size.height * .34, Math.max(0, innerHeight - size.height - size.ground - 6));
       if (this.jumpHeight < 8) return false;
       this.jumpFromX = this.x;
@@ -131,23 +142,35 @@
       this.showQuip('jump', { animate: false, replace: true });
       this.setState('jump'); return true;
     }
-    walkTo(target) {
+    spin(){
+      if(!this.isSkater()||!this.pack||this.destroyed||document.hidden||this.paused||this.motion.matches||this.opened||this.hidden||this.drag||this.y>11||['jump','fall','held','spin'].includes(this.state))return false;
+      this.velocity=0;this.fallVelocity=0;this.hideTip();this.cancelLater(this.greetingTimer);
+      this.showQuip('spin',{animate:false,replace:true});this.setState('spin');
+      this.nextHop=performance.now()+16000+Math.random()*10000;this.nextWalk=performance.now()+this.asset.motion.spinDuration+1000;
+      this.nextGesture=performance.now()+8000;return true;
+    }
+    walkTo(target,{style='auto'}={}) {
       if (!this.pack || this.paused || this.hidden || this.drag || this.y > 11) return false;
-      const M = window.JimmyMotion, size = M.dimensions(innerWidth);
+      const M = window.JimmyMotion, size = this.size();
       this.targetX = M.clamp(Number(target) || 0, 0, Math.max(0, innerWidth - size.width));
       if (Math.abs(this.targetX - this.x) < 20) return false;
       this.opened = false; this.panel.hidden = true; this.character.setAttribute('aria-expanded', 'false');
       if (this.tipKind !== 'quip') this.hideTip();
       this.facing = this.targetX < this.x ? -1 : 1; this.velocity = 0; this.walkDistance = 0; this.turnUntil = performance.now() + 140;
+      this.skateTrips++;this.skateStyle=this.isSkater()&&(style==='spiral'||style==='auto'&&this.skateTrips%3===0)?'spiral':'glide';
+      if(Math.abs(this.targetX-this.x)<size.width*.8)this.skateStyle='glide';
+      const travel=Math.abs(this.targetX-this.x);this.walkStride=this.isSkater()?travel/Math.max(1,Math.round(travel/size.stride)):size.stride;
       this.setState('walk'); return true;
     }
     tick(now) {
       if (this.destroyed) return;
       const dt = Math.min(.05, this.last ? (now - this.last) / 1000 : 0); this.last = now;
       if (!document.hidden && !this.paused && !this.opened && !this.hidden && !this.drag && this.pack && !this.character.matches(':focus-visible')) {
-        const M = window.JimmyMotion, size = M.dimensions(innerWidth);
+        const M = window.JimmyMotion, size = this.size();
         if (now >= this.nextQuip && this.tip.hidden && ['idle', 'walk'].includes(this.state)) this.showQuip(this.state === 'walk' ? 'walk' : 'idle');
-        if (this.state === 'jump') {
+        if(this.state==='spin'){
+          this.position();
+        } else if (this.state === 'jump') {
           this.jumpElapsed += dt * 1000;
           this.jumpHeight = Math.min(this.jumpHeight, Math.max(0, innerHeight - size.height - size.ground - 6));
           const jump = M.jumpAtTime(this.jumpElapsed, this.jumpHeight);
@@ -169,9 +192,9 @@
           if (now >= this.turnUntil) {
             const next = M.walkStep({ x: this.x, target: this.targetX, velocity: this.velocity, distance: this.walkDistance }, dt, size);
             this.x = next.x; this.velocity = next.velocity; this.walkDistance = next.distance;
-            this.frame = M.frameAtDistance(this.walkDistance, size.stride);
+            this.frame = M.frameAtDistance(this.walkDistance, this.walkStride||size.stride,size.frames);
             if (next.arrived) {
-              this.x = this.targetX; this.velocity = 0; this.setState('idle'); this.nextWalk = now + 2500 + Math.random() * 3500;
+              this.x = this.targetX; this.velocity = 0; this.setState(this.isSkater()?'skate-stop':'idle'); this.nextWalk = now + 2500 + Math.random() * 3500;
               this.tipCount = (this.tipCount || 0) + 1; if (this.tipCount % 3 === 0) this.showTip();
             }
             this.position();
@@ -211,7 +234,7 @@
       if (!this.quips || !this.pack || this.destroyed || document.hidden || this.opened || this.hidden || this.drag || (this.paused && !userInitiated) || (!this.tip.hidden && !replace)) return false;
       this.cancelLater(this.greetingTimer);
       const line = this.quips.next(kind);
-      this.showBubble(line, 'Anklicken · Fragen an Jimmy');
+      this.showBubble(line, 'Anklicken · Fragen an '+this.displayName());
       this.nextQuip = performance.now() + 18000 + Math.random() * 10000;
       if (animate && !this.paused && !this.motion.matches && this.state === 'idle') this.setState('talk');
       if (this.voice) this.speak(line);
@@ -228,7 +251,7 @@
     render() {
       if (!this.pack) return;
       const K = window.JimmyKnowledge, pack = this.pack; this.panel.replaceChildren();
-      const head = el('header', 'head'), who = el('div', 'who'); who.append(el('strong', '', pack.avatar.name), el('small', '', pack.avatar.subtitle)); head.append(el('div', 'badge', pack.organization.shortName.slice(0, 4)), who);
+      const head = el('header', 'head'), who = el('div', 'who'); who.append(el('strong', '', this.displayName()), el('small', '', this.asset?.subtitle||pack.avatar.subtitle)); head.append(el('div', 'badge', pack.organization.shortName.slice(0, 4)), who);
       const minimize = el('button', 'icon', '−'); minimize.title = 'Figur ausblenden'; minimize.setAttribute('aria-label', 'Figur ausblenden'); minimize.onclick = () => this.minimize();
       const close = el('button', 'icon close', '×'); close.setAttribute('aria-label', 'Antwortfenster schließen'); close.onclick = () => this.close(); head.append(minimize, close);
       const body = el('div', 'body');
@@ -245,7 +268,7 @@
         const follow = current.suggestions.map(id => pack.entries.find(e => e.id === id && K.active(e))).filter(Boolean);
         if (follow.length) { body.append(el('p', 'eyebrow', 'Das könnte euch auch interessieren')); const choices = el('div', 'choices'); follow.forEach(e => choices.append(this.buttonFor(e))); body.append(choices); }
       } else {
-        body.append(el('p', 'greeting', pack.organization.greeting)); const cats = el('div', 'cats');
+        body.append(el('p', 'greeting', this.isSkater()?'Hallo, ich bin '+this.displayName()+'! Ich begleite dich durch das hinterlegte Parkwissen. Was möchtest du entdecken?':pack.organization.greeting)); const cats = el('div', 'cats');
         const all = [{ id: '', label: 'Alle Themen', icon: '✦' }, ...pack.categories];
         for (const c of all) { if (c.id && !pack.entries.some(e => e.category === c.id && K.active(e))) continue; const b = el('button', 'cat', c.icon + ' ' + c.label); b.setAttribute('aria-pressed', String(this.category === c.id)); b.onclick = () => { this.category = c.id; this.render(); }; cats.append(b); } body.append(cats);
         const form = el('form', 'search'), input = el('input'); input.type = 'search'; input.placeholder = 'Suchen: Öffnungszeiten, Geburtstag, Socken …'; input.setAttribute('aria-label', 'Hinterlegtes Wissen durchsuchen'); input.maxLength = 200; const go = el('button', '', 'Suchen'); go.type = 'submit'; go.setAttribute('aria-label', 'Suchen'); form.append(input, go); body.append(form);
@@ -260,6 +283,7 @@
     destroy() { this.destroyed = true; cancelAnimationFrame(this.raf); this.timers.forEach(clearTimeout); document.removeEventListener('keydown', this.onKey); window.removeEventListener('resize', this.onResize); document.removeEventListener('visibilitychange', this.onVisibility); this.motion.removeEventListener('change', this.onMotion); if (this.voice && 'speechSynthesis' in window) speechSynthesis.cancel(); this.host.remove(); }
   }
   window.JimmyChatAvatar = { create: options => new Mascot(options), baseUrl: BASE, instance: null, ready: engineReady };
+  window.UniversalChatAvatar=window.JimmyChatAvatar;
   const auto = () => { if (script.dataset.manual !== 'true') window.JimmyChatAvatar.instance = new Mascot({ knowledgeUrl: script.dataset.knowledge || undefined }); };
   if (document.body) auto(); else document.addEventListener('DOMContentLoaded', auto, { once: true });
 })();

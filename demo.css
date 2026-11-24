@@ -7,3 +7,5 @@
 .hero-magician{width:348px;height:348px;left:calc(50% - 174px);top:62px;filter:drop-shadow(0 5px 5px #44334c15)}.walk-demo{border:0;background:none;color:var(--purple);font-size:11px;padding:0;margin-top:20px;border-bottom:1px solid #cbbacf}.walk-demo span{padding-left:9px}@media(min-width:1440px){.hero-magician{top:83px}}@media(max-width:1000px){.hero-magician{width:314px;height:314px;left:calc(50% - 157px);top:65px}}@media(max-width:700px){.hero-magician{width:300px;height:300px;left:calc(50% - 150px);top:50px}}
 
 .demo-actions{display:flex;flex-wrap:wrap;gap:6px 20px;margin-top:14px}.demo-actions .walk-demo{margin-top:0;font-size:14px;line-height:1.5}
+
+.hero-magician[data-asset=ice-skater]{width:339px;height:339px;left:calc(50% - 169.5px);top:66px}@media(max-width:700px){.hero-magician[data-asset=ice-skater]{width:307px;height:307px;left:calc(50% - 153.5px);top:45px}}
