@@ -15,3 +15,4 @@
 .asset-status{flex-basis:100%;min-height:1.5em;margin:0;color:#61776d;font-size:11px;line-height:1.5}
 
 .hero-magician[data-asset=ice-skater]{width:256px;height:256px;left:calc(50% - 128px);top:107px;filter:none}@media(max-width:700px){.hero-magician[data-asset=ice-skater]{width:240px;height:240px;left:calc(50% - 120px);top:79px}}
+.hero-magician[data-asset=ice-pair]{width:276px;height:276px;left:calc(50% - 138px);top:87px;filter:none}@media(max-width:700px){.hero-magician[data-asset=ice-pair]{width:256px;height:256px;left:calc(50% - 128px);top:70px}}

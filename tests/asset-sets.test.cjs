@@ -1,6 +1,7 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const Assets=require('../asset-sets.js'),Motion=require('../motion-core.js'),P=require('../personality-core.js');
+const solo=Assets.get('ice-skater');
 
 test('A single active selection resolves complete sets while preserving the monkey set',()=>{
   assert.equal(Assets.active,Assets.get(Assets.activeId));assert.equal(Assets.get('ice-skater').name,'Lumi');assert.equal(Assets.get('jimmy').motion.kind,'walk');
@@ -81,7 +82,7 @@ test('The master atlas maps every logical frame to one of 64 aligned cells',()=>
 
 test('Glide, approach and footwork perform one eight-pose motion instead of restarting it halfway',()=>{
  for(const [sheet,first] of [['glide',8],['speed',16],['footwork',56]]){
-   const frames=Assets.active.master.frames[sheet],changes=frames.filter((cell,i)=>!i||cell!==frames[i-1]);
+   const frames=solo.master.frames[sheet],changes=frames.filter((cell,i)=>!i||cell!==frames[i-1]);
    assert.equal(changes.length,8,'Each full motion is performed once.');
    assert.equal(new Set(changes).size,changes.length,'A completed pose sequence does not restart inside the same motion.');
    assert.equal(changes[0],first);assert.equal(changes.at(-1),first+7);
@@ -90,17 +91,17 @@ test('Glide, approach and footwork perform one eight-pose motion instead of rest
 
 test('The master atlas is loaded once and uses a single full-frame draw',async()=>{
  const calls=[],urls=[];function canvas(){return {style:{},dataset:{},width:0,height:0,setAttribute(){},getContext(){return {clearRect(){},drawImage(...args){calls.push(args);}};}};}
- class Image{constructor(){this.naturalWidth=this.naturalHeight=Assets.active.master.width;}set src(value){urls.push(value);queueMicrotask(()=>this.onload());}}
+ class Image{constructor(){this.naturalWidth=this.naturalHeight=solo.master.width;}set src(value){urls.push(value);queueMicrotask(()=>this.onload());}}
  const window={UniversalAvatarAssets:{...Assets,active:Assets.get('ice-skater')},devicePixelRatio:1};
  vm.runInNewContext(fs.readFileSync(require.resolve('../mascot.js'),'utf8'),{window,document:{currentScript:{src:'https://example.test/mascot.js'},createElement:canvas},Image,URL,setTimeout,clearTimeout});
  await window.JimmyMascot.preload();const element=window.JimmyMascot.create();calls.length=0;window.JimmyMascot.paint(element,'spin',0,1,{elapsed:.2});
- assert.equal(urls.length,1);assert.ok(urls[0].endsWith(Assets.active.master.file));assert.equal(calls.length,1);const cell=Assets.active.master.width/8;assert.deepEqual(calls[0].slice(1,5),[0,4*cell,cell,cell]);
+ assert.equal(urls.length,1);assert.ok(urls[0].endsWith(solo.master.file));assert.equal(calls.length,1);const cell=solo.master.width/8;assert.deepEqual(calls[0].slice(1,5),[0,4*cell,cell,cell]);
 });
 
 test('Hero and moving canvases draw directly at their CSS size and device ratio, including after resize',async()=>{
  const calls=[];let cssWidth=256;
  function canvas(){return {style:{},dataset:{},width:0,height:0,setAttribute(){},getBoundingClientRect(){return {width:cssWidth};},getContext(){return {clearRect(){},drawImage(...args){calls.push(args);}};}};}
- class Image{constructor(){this.naturalWidth=this.naturalHeight=Assets.active.master.width;}set src(value){queueMicrotask(()=>this.onload());}}
+ class Image{constructor(){this.naturalWidth=this.naturalHeight=solo.master.width;}set src(value){queueMicrotask(()=>this.onload());}}
  const window={UniversalAvatarAssets:{...Assets,active:Assets.get('ice-skater')},devicePixelRatio:1};
  vm.runInNewContext(fs.readFileSync(require.resolve('../mascot.js'),'utf8'),{window,document:{currentScript:{src:'https://example.test/mascot.js'},createElement:canvas},Image,URL,setTimeout,clearTimeout});
  await window.JimmyMascot.preload();const element=window.JimmyMascot.create();
@@ -110,14 +111,14 @@ test('Hero and moving canvases draw directly at their CSS size and device ratio,
    if(css===256&&ratio===1){element.width=1;}
    window.JimmyMascot.paint(element);
    assert.equal(element.width,css*ratio);assert.equal(element.height,css*ratio);assert.equal(calls.length,1);
-   const cell=Assets.active.master.width/8;assert.deepEqual(calls[0].slice(1,5),[0,0,cell,cell]);assert.deepEqual(calls[0].slice(5),[0,0,css*ratio,css*ratio]);
+   const cell=solo.master.width/8;assert.deepEqual(calls[0].slice(1,5),[0,0,cell,cell]);assert.deepEqual(calls[0].slice(5),[0,0,css*ratio,css*ratio]);
    calls.length=0;window.JimmyMascot.paint(element);assert.equal(calls.length,0,'An unchanged frame reuses the bitmap.');
  }
 });
 
 test('Renderers cache both characters independently and switching back does not fetch the same illustrations again',async()=>{
  const urls=[];function element(tag){return {tagName:tag,style:{},dataset:{},width:0,height:0,setAttribute(){},getContext(){return {clearRect(){},drawImage(){}};}};}
- class Image{constructor(){this.naturalWidth=this.naturalHeight=Assets.active.master.width;}set src(url){urls.push(url);queueMicrotask(()=>this.onload());}}
+ class Image{constructor(){this.naturalWidth=this.naturalHeight=solo.master.width;}set src(url){urls.push(url);queueMicrotask(()=>this.onload());}}
  const window={UniversalAvatarAssets:Assets,devicePixelRatio:1};
  vm.runInNewContext(fs.readFileSync(require.resolve('../mascot.js'),'utf8'),{window,document:{currentScript:{src:'https://example.test/mascot.js'},createElement:element},Image,URL,setTimeout,clearTimeout});
  const lumi=window.JimmyMascot.forAsset('ice-skater'),jimmy=window.JimmyMascot.forAsset('jimmy');

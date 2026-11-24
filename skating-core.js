@@ -11,7 +11,7 @@
   const phase = (name, duration, extra = {}) => ({ name, duration, ...extra });
 
   function createPlan({ mode = 'routine', startX = 0, facing = 1, viewportWidth, viewportHeight, size }) {
-    if (!['routine', 'jump', 'spin'].includes(mode)) throw Error('Unbekannte Eiskunstlauf-Folge.');
+    if (!['routine', 'jump', 'spin', 'duet'].includes(mode)||mode==='duet'&&!size.duet) throw Error('Unbekannte Eiskunstlauf-Folge.');
     const max = Math.max(0, viewportWidth - size.width), margin = Math.min(12, max / 2);
     const left = margin, right = max - margin;
     const tempo = clamp(size.tempo || 1, .25, 2), topSpeed = Math.max(1, size.performanceSpeed || size.width * 1.2);
@@ -41,23 +41,58 @@
       if (reverse) direction = -direction;
     };
     const edge = () => direction > 0 ? right : left;
-    if(mode!=='spin'&&direction!==travelDirection)turn(850,1,true,300,350);
-    if (mode === 'spin') {
-      direction = facing < 0 ? -1 : 1;
-      turn(1950, 2, false, 500, 550);
-    } else if (mode === 'jump') {
-      pass([phase('speed', 1200), phase('jump', 1470, { turns: 1 }), phase('landing', 500)],
-        x + direction * Math.min(right - left, size.width * 3.3));
-    } else {
-      pass([phase('speed', 1900),
-        phase('jump', 1470, { turns: 1 }), phase('landing', 350)], edge());
-      turn(1500, 2);
-      pass([phase('spiral', 2300), phase('footwork', 1100), phase('glide', 300)], edge());
-      turn(1000, 1, true, 350, 400);
-      pass([phase('speed', 1500), phase('jump', 1550, { turns: 2 }), phase('landing', 400)], edge());
-      turn(1750, 2);
-      pass([phase('glide', 1000)], x + direction * Math.min(size.width * 1.3, (right - left) * .35));
-      add({ kind: 'bow', from: x, to: x, facing: direction, duration: 1050 / tempo });
+    const duet = ({spin=true,jump=true}={}) => {
+      const center=(left+right)/2;
+      pass([phase('glide',950)],center);
+      // On very narrow windows the intact pair remains together. A separated
+      // dancer needs a full hit target and room for their uncut illustration.
+      if(right-left<size.width*.65){turn(1800,2,false,500,550);return;}
+      const centers=size.joinedCenters||[.32,.65];
+      const joined=[center+(centers[0]-.5)*size.width,center+(centers[1]-.5)*size.width];
+      const outer=[left,right],travel=Math.max(...joined.map((value,i)=>Math.abs(value-outer[i])));
+      const pacedTravel=Math.max(1900/tempo,1875*travel/topSpeed);
+      const addDuet=(part,fromActors,toActors,duration,extra={})=>add({kind:'duet',part,from:center,to:center,
+        facing:1,fromActors,toActors,duration,centerBias:(.5-(centers[0]+centers[1])/2)*size.width,...extra});
+      addDuet('open',joined,outer,pacedTravel);
+      if(spin)addDuet('spin',outer,outer,2800/spinTempo);
+      const air=1470/jumpTempo,landing=600/tempo;
+      const approach=Math.max(1700/tempo,pacedTravel-(jump?air+landing:0));
+      addDuet('converge',outer,joined,approach+(jump?air+landing:0),{approach,air,landing,jump});
+      addDuet('rejoin',joined,joined,650/tempo);
+      direction=1;
+    };
+    if(size.duet){
+      direction=travelDirection;
+      if(mode==='routine'){
+        pass([phase('glide',1600),phase('footwork',1100)],edge());
+        turn(1300,2);
+      }
+      duet({spin:mode!=='jump',jump:mode!=='spin'});
+      if(mode==='routine'){
+        pass([phase('glide',700),phase('spiral',2700),phase('footwork',1500)],edge());
+        turn(1500,2);
+        pass([phase('glide',1000)],x+direction*Math.min(size.width*1.2,(right-left)*.35));
+      }
+      add({kind:'bow',from:x,to:x,facing:direction,duration:1050/tempo});
+    }else{
+      if(mode!=='spin'&&direction!==travelDirection)turn(850,1,true,300,350);
+      if (mode === 'spin') {
+        direction = facing < 0 ? -1 : 1;
+        turn(1950, 2, false, 500, 550);
+      } else if (mode === 'jump') {
+        pass([phase('speed', 1200), phase('jump', 1470, { turns: 1 }), phase('landing', 500)],
+          x + direction * Math.min(right - left, size.width * 3.3));
+      } else {
+        pass([phase('speed', 1900),
+          phase('jump', 1470, { turns: 1 }), phase('landing', 350)], edge());
+        turn(1500, 2);
+        pass([phase('spiral', 2300), phase('footwork', 1100), phase('glide', 300)], edge());
+        turn(1000, 1, true, 350, 400);
+        pass([phase('speed', 1500), phase('jump', 1550, { turns: 2 }), phase('landing', 400)], edge());
+        turn(1750, 2);
+        pass([phase('glide', 1000)], x + direction * Math.min(size.width * 1.3, (right - left) * .35));
+        add({ kind: 'bow', from: x, to: x, facing: direction, duration: 1050 / tempo });
+      }
     }
     return { mode, blocks, duration: time, size: size.width,stride:size.stride||size.width*1.3,approachStride:size.approachStride||size.stride||size.width*1.3,maxLift:Math.max(0,viewportHeight-size.height-22),
       jumpHeight: Math.min(size.height * .43, Math.max(0, viewportHeight - size.height - 22)) };
@@ -131,11 +166,49 @@
       index: Math.min(15, 8 + Math.floor((elapsed - block.entry - block.spinDuration) / block.exit * 8)), phase: 'spin-exit' };
   }
 
+  function sampleDuet(block,elapsed,plan){
+    const p=clamp(elapsed/block.duration,0,1),eased=smooth(p);
+    const positions=block.fromActors.map((from,i)=>from+(block.toActors[i]-from)*eased);
+    const travel=Math.max(...block.fromActors.map((from,i)=>Math.abs(block.toActors[i]-from)));
+    const base={x:positions.reduce((sum,value)=>sum+value,0)/2+block.centerBias,
+      facing:1,lift:0,velocity:travel*30*p*p*(1-p)*(1-p)/(block.duration/1000)};
+    let frame,actorFacing=1;
+    if(block.part==='open'){
+      actorFacing=-1;
+      frame={sheet:'jumpBridge',index:12+Math.min(3,Math.floor(p*4)),phase:'duet-open'};
+    }else if(block.part==='spin'){
+      frame={sheet:'spin',index:wrap(32*smooth(p)),phase:'duet-spin'};
+    }else if(block.part==='rejoin'){
+      frame={sheet:'jumpBridge',index:15,phase:'duet-rejoin',safeExit:p>.9};
+    }else if(!block.jump){
+      frame={sheet:'jumpBridge',index:12+Math.min(3,Math.floor(p*4)),phase:'duet-return'};
+    }else if(elapsed<block.approach){
+      const distance=Math.abs(positions[0]-block.fromActors[0]);
+      const settle=450,remaining=block.approach-elapsed;
+      const cycle=wrap(distance/Math.max(1,plan.approachStride)*16);
+      let index=cycle;
+      if(remaining<settle){
+        const startP=(block.approach-settle)/block.duration;
+        const startDistance=Math.abs(block.toActors[0]-block.fromActors[0])*smooth(startP);
+        const from=wrap(startDistance/Math.max(1,plan.approachStride)*16);
+        index=Math.floor(from+(15-from)*smooth(1-remaining/settle));
+      }
+      frame={sheet:'speed',index,phase:'duet-speed'};
+    }else if(elapsed<block.approach+block.air){
+      const move=jumpAt((elapsed-block.approach)/block.air,Math.min(plan.maxLift,plan.jumpHeight),1);
+      frame={...move,phase:'duet-'+move.phase};
+    }else{
+      frame={sheet:'jumpBridge',index:15,phase:'duet-landing-exit',safeExit:true};
+    }
+    return {...base,...frame,actors:positions.map(x=>({x,facing:actorFacing})),finished:false};
+  }
+
   function atTime(plan, milliseconds) {
     const time = Math.max(0, milliseconds), last = plan.blocks.at(-1);
     if (time >= plan.duration) return { x: last.to, facing: last.toFacing || last.facing, lift: 0, velocity: 0,
       sheet: 'poses', index: 0, phase: 'finished', finished: true };
     const block = plan.blocks.find(block => time < block.end), elapsed = time - block.start;
+    if(block.kind==='duet')return sampleDuet(block,elapsed,plan);
     if (block.kind === 'pass') return { ...samplePass(block, elapsed, plan), finished: false };
     if (block.kind === 'turn') return { ...sampleTurn(block, elapsed), finished: false };
     return { x: block.from, facing: block.facing, lift: 0, velocity: 0,

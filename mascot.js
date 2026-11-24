@@ -89,13 +89,19 @@
       }
       fitCanvas(element);
       if(masterImage){
-        const cell=asset.master.frames[sheet][index],key='master:'+cell+':'+facing;
+        const cell=asset.master.frames[sheet][index],actor=details.actor;
+        const isolated=actor===0||actor===1,key='master:'+cell+':'+facing+':'+(isolated?actor:'pair');
+        if(isolated&&(!asset.master.isolatedCells||cell<asset.master.isolatedCells[0]||cell>asset.master.isolatedCells[1]))throw Error('Diese Pose ist nur als vollständiges Paar verfügbar.');
         if(element._frameKey===key)return;
         const ctx=element.getContext('2d');if(!ctx)return;
         const w=element.width,cw=masterImage.naturalWidth/asset.master.columns,ch=masterImage.naturalHeight/asset.master.rows;
         ctx.clearRect(0,0,w,w);ctx.globalAlpha=1;ctx.filter='none';ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
         // The source has already been cleaned and aligned to a common baseline.
-        ctx.drawImage(masterImage,(cell%asset.master.columns)*cw,Math.floor(cell/asset.master.columns)*ch,cw,ch,0,0,w,w);
+        // A separated dancer is one intact full-body illustration from the same
+        // source cell and animation phase as their partner. Never assemble limbs.
+        const sx=(cell%asset.master.columns)*cw,sy=Math.floor(cell/asset.master.columns)*ch;
+        if(isolated)ctx.drawImage(masterImage,sx+actor*cw/2,sy,cw/2,ch,w/4,0,w/2,w);
+        else ctx.drawImage(masterImage,sx,sy,cw,ch,0,0,w,w);
         element._frameKey=key;return;
       }
       const key=[sheet,index,facing].join(':');if(element._frameKey===key||!decoded[sheet])return;
@@ -122,7 +128,7 @@
             image.onload=()=>{clearTimeout(timeout);if(image.naturalWidth!==(asset.master.width||1536)||image.naturalHeight!==(asset.master.height||1536)){reject(Error('Ungültiges Master-Raster.'));return;}masterImage=image;resolve();};
             image.onerror=()=>{clearTimeout(timeout);reject(Error('Master-Atlas nicht verfügbar.'));};
             if(/^https?:/.test(url))image.crossOrigin='anonymous';image.src=url;
-          }).catch(legacy):legacy()).catch(error=>{loaded=undefined;throw error;});
+          }).catch(error=>{if(asset.master.required)throw error;return legacy();}):legacy()).catch(error=>{loaded=undefined;throw error;});
         }
         return loaded;
       },

@@ -3,11 +3,12 @@
 Die Standardfigur wird in **`asset-sets.js`** ausgewählt:
 
 ```js
-const ACTIVE_ASSET_SET = 'ice-skater';
+const ACTIVE_ASSET_SET = 'ice-pair';
 ```
 
 | Kennung | Figur | Bewegung |
 | --- | --- | --- |
+| `ice-pair` | Aurora & Noel, Eiskunstlauf-Paar | Gemeinsamer Paartanz, getrennte synchrone Pirouetten, Sprung aufeinander zu und gemeinsamer Abschluss |
 | `ice-skater` | Lumi, Eiskunstläuferin | Ruhiger tiefer Anlauf, Drehsprünge, Überkreuzschritte, Ausfallschritt, Spirale, aufrechte Pirouetten und komplette Kür |
 | `jimmy` | Jimmy, Park-Affe | Laufen und kleine Hüpfer |
 
@@ -21,7 +22,11 @@ Die Eiskunstläuferin ist eine transparente Figur. Es wird keine Eisfläche oder
 
 Die neue Schnittstelle ist `await JimmyChatAvatar.instance.setAsset('jimmy')` bzw. `await JimmyChatAvatar.instance.setAsset('ice-skater')`. Der Renderer stellt mit `JimmyMascot.forAsset(id)` pro Figur einen eigenen zwischengespeicherten Bildsatz bereit. Wiederholte Wechsel nutzen bereits geladene Bilder. Das Ereignis `jimmy:asset-change` meldet den erfolgreichen Austausch an die Vorschau. `ACTIVE_ASSET_SET` bleibt die veröffentlichte Voreinstellung; eine Besucherauswahl verändert diese Datei nicht.
 
-## Master-Atlas (64 Posen)
+## Paarlauf in einer PNG
+
+`assets/ice-pair-master-v1.png` enthält 64 Felder mit beiden Tänzern und echtem Alpha (1254 × 1254 Pixel, 8 × 8). `ice-pair` ist die neue Voreinstellung. Die Tänzer trennen sich während des Synchronteils räumlich, drehen im gleichen Takt und springen gleichzeitig aufeinander zu. Danach finden sie wieder zusammen und setzen die gestützten Paarfiguren fort. Ganze Figuren, Größenregeln, Ablauf, Einzelfunktionen und beide Bildprompts sind in [PAIR-SKATING.md](PAIR-SKATING.md) beschrieben. `JimmyChatAvatar.instance.duet()` startet den Synchronteil; `perform()` zeigt die gesamte Kür. Der Figurenschalter erhält Lumi und Jimmy.
+
+## Lumi-Master-Atlas (64 Posen)
 
 Aktiv ist `assets/lumi-master-v2.webp` (1254 × 1254 Pixel, 8 × 8 gleich große Felder, Alpha), eine konservativ restaurierte Fassung mit klareren Gesichtsdetails und Konturen. `width` und `height` in `asset-sets.js` benennen die tatsächlichen Quelldimensionen; auch nicht ganzzahlige Feldbreiten werden direkt aus dem Master gelesen. Der ursprüngliche Master `assets/lumi-master-v1.webp` bleibt archiviert. Die logischen 16-Frame-Bewegungen greifen über die Zuordnung in `asset-sets.js` auf 64 vollständige Posen zu. Maßstab und Kufenlinie sind im Bild festgelegt. Nur wenn der aktive Master nicht geladen werden kann, verwendet der Renderer die unten dokumentierten alten Einzeltafeln.
 

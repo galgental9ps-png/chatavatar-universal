@@ -12,9 +12,9 @@
     const asset=instance.asset,name=instance.displayName();
     document.title=name+' · Dein digitaler Parkbegleiter';
     document.querySelector('meta[name="description"]').content=name+' – dein animierter Chatavatar für Jimmy’s Fun Park mit Besuchsinfos, Geburtstagsplanung und eigenem Wissensstudio.';
-    $('discover-title').textContent='Wobei darf '+name+' helfen?';
-    document.querySelector('.knowledge-section .eyebrow').textContent=name.toUpperCase()+'S KLEINE WISSENSWELT';
-    const invitation=document.querySelector('.invitation h2');invitation.replaceChildren(name+' kommt',document.createElement('br'),'auch ');const emphasis=document.createElement('em');emphasis.textContent='zu euch.';invitation.append(emphasis);
+    $('discover-title').textContent='Wobei '+(asset.plural?'dürfen ':'darf ')+name+' helfen?';
+    document.querySelector('.knowledge-section .eyebrow').textContent=asset.plural?'UNSERE KLEINE WISSENSWELT':name.toUpperCase()+'S KLEINE WISSENSWELT';
+    const invitation=document.querySelector('.invitation h2');invitation.replaceChildren(name+(asset.plural?' kommen':' kommt'),document.createElement('br'),'auch ');const emphasis=document.createElement('em');emphasis.textContent='zu euch.';invitation.append(emphasis);
     document.querySelector('.page-footer > span').textContent=name+' · Eigenständiges Demo-Konzept für Jimmy’s Fun Park';
     $('hero-magician').dataset.asset=asset.id;
     heroRenderer=instance.renderer;heroFigure=heroRenderer.create();$('hero-magician').replaceChildren(heroFigure);
@@ -23,8 +23,12 @@
     document.querySelector('.name-tag small').textContent=asset.role;
     const intro=document.querySelector('.intro');intro.replaceChildren();const strong=document.createElement('strong');strong.textContent=name;intro.append('Darf ich vorstellen? ',strong,'. '+asset.introduction+' Ein Klick auf die Figur genügt.');
     $('start-avatar').textContent=name+' ausprobieren';
-    $('walk-demo').textContent=name+(instance.isSkater()?' gleiten lassen':' eine Runde laufen lassen');
-    $('hop-demo').textContent=instance.isSkater()?'Pirouette':name+' springen lassen';
+    $('walk-demo').textContent=asset.plural?'Gemeinsam gleiten':name+(instance.isSkater()?' gleiten lassen':' eine Runde laufen lassen');
+    $('hop-demo').textContent=asset.motion.duet?'Synchrone Pirouetten':instance.isSkater()?'Pirouette':name+' springen lassen';
+    $('routine-demo').textContent=asset.motion.duet?'Paartanz vorführen':'Kür vorführen';
+    $('jump-demo').textContent=asset.motion.duet?'Aufeinander zuspringen':'Drehsprung';
+    $('spiral-demo').textContent=asset.motion.duet?'Gemeinsame Gleitfigur':'Gleitfigur';
+    $('duet-demo').hidden=!asset.motion.duet;
     $('quip-demo').textContent=instance.isSkater()?'Ein kleiner Gruß':'Ein Affenspruch';
     $('spiral-demo').hidden=!instance.isSkater();
     $('routine-demo').hidden=$('jump-demo').hidden=!instance.isSkater();
@@ -38,7 +42,7 @@
   instance.host.addEventListener('jimmy:asset-change',renderAsset);
   picker.addEventListener('change',async()=>{
     picker.disabled=true;picker.closest('.asset-switch').setAttribute('aria-busy','true');assetStatus.textContent='Figur wird geladen …';
-    try{await instance.setAsset(picker.value);assetStatus.textContent=instance.displayName()+' ist jetzt da.';}
+    try{await instance.setAsset(picker.value);assetStatus.textContent=instance.displayName()+(instance.asset.plural?' sind jetzt da.':' ist jetzt da.');}
     catch(error){picker.value=instance.asset.id;assetStatus.textContent='Die Figur konnte nicht geladen werden. Bitte erneut versuchen.';}
     finally{picker.disabled=false;picker.closest('.asset-switch').removeAttribute('aria-busy');}
   });
@@ -69,6 +73,7 @@
   $('hop-demo').onclick = () => { if (prepareDemo()) instance.isSkater()?instance.spin():instance.hop(); };
   $('routine-demo').onclick=()=>{if(prepareDemo())instance.perform();};
   $('jump-demo').onclick=()=>{if(prepareDemo())instance.skateJump();};
+  $('duet-demo').onclick=()=>{if(prepareDemo())instance.duet();};
   $('spiral-demo').onclick=()=>{if(!prepareDemo())return;const max=Math.max(0,innerWidth-instance.size().width-8);instance.walkTo(instance.x>max/2?8:max,{style:'spiral'});};
   $('quip-demo').onclick = () => { if (prepareDemo(false)) instance.showQuip('idle', { replace: true, userInitiated: true }); };
   function draw() {

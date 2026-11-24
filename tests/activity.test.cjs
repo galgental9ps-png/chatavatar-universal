@@ -39,6 +39,18 @@ async function mascot(assetId='jimmy'){
   return {avatar,context,media,timers,advance,setClock:value=>{clock=value;}};
 }
 
+test('The separated pair shares one clock, rejoins when interrupted and leaves no partner after an asset switch',async()=>{
+  const {avatar,advance,media}=await mascot('ice-pair');
+  assert.equal(avatar.duet(),true);const opening=avatar.program.blocks.find(b=>b.kind==='duet'&&b.part==='open');
+  advance(opening.start+500);assert.equal(avatar.partner.hidden,false);assert.equal(avatar.programFrame.actors.length,2);
+  avatar.open();assert.equal(avatar.program,null);assert.equal(avatar.partner.hidden,true);assert.equal(avatar.y,10);
+  avatar.close();assert.equal(avatar.duet(),true);advance(avatar.program.blocks.find(b=>b.kind==='duet').start+200);
+  await avatar.setAsset('ice-skater');assert.equal(avatar.partner.hidden,true);assert.equal(avatar.program,null);assert.equal(avatar.asset.id,'ice-skater');
+  assert.equal(avatar.duet(),false);
+  await avatar.setAsset('ice-pair');media.matches=true;assert.equal(avatar.duet(),false);assert.equal(avatar.partner.hidden,true);
+  media.matches=false;avatar.destroy();assert.equal(avatar.destroyed,true);
+});
+
 test('A full hop uses all four action frames and lands inside the viewport',async()=>{
   const {avatar,advance}=await mascot();const frames=new Set();
   avatar.x=1000;avatar.nextQuip=avatar.nextWalk=avatar.nextGesture=Infinity;

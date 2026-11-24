@@ -5,7 +5,7 @@
   else root.UniversalAvatarAssets=api;
 })(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
-  const ACTIVE_ASSET_SET = 'ice-skater';
+  const ACTIVE_ASSET_SET = 'ice-pair';
   const poses={idle:0,wave:1,talk:2,point:3,think:13,held:14,rest:15,celebrate:12,fall:10,land:11};
   const sets={
     jimmy:{
@@ -73,6 +73,54 @@
           'Achte mal auf die Landung – die soll ganz weich sein.'
         ]
       }
+    }
+  };
+  sets['ice-pair']={
+    id:'ice-pair',name:'Aurora & Noel',role:'Eiskunstlauf-Paar',plural:true,
+    subtitle:'Zwei Kufenpaare. Eine gemeinsame Kür.',
+    introduction:'Die blonde Aurora und ihr Partner Noel zeigen einen glamourösen Paartanz: gemeinsame Gleitfiguren, getrennte synchrone Pirouetten und Sprünge aufeinander zu. Danach finden sie wieder zusammen.',
+    renderer:'canvas',environment:'none',poses,
+    master:{file:'assets/ice-pair-master-v1.png',width:1254,height:1254,columns:8,rows:8,required:true,
+      // Each cell contains both complete dancers. Only these four rows have
+      // non-overlapping whole figures in the left and right half of the cell.
+      isolatedCells:[16,47],
+      frames:{...sets['ice-skater'].master.frames,poses:[0,1,2,3,0,5,6,7,24,29,40,44,2,4,3,7],
+        flow:[47,46,45,44,43,42,41,40,40,41,42,43,44,45,46,47]}},
+    motion:{...sets['ice-skater'].motion,duet:true,desktop:208,mobile:176,
+      joinedCenters:[.32,.65],speed:.72,performanceSpeed:1.15},
+    // Logical movements all address the same PNG through master.frames.
+    sheets:Object.fromEntries(Object.keys(sets['ice-skater'].sheets).map(key=>[key,{file:'assets/ice-pair-master-v1.png',columns:8,rows:8}])),
+    personality:{
+      idle:[
+        'Zwei Kufenpaare, ein gemeinsamer Takt.',
+        'Ein Lächeln für dich – von uns beiden!',
+        'Unser schönster Trick? Aufeinander achten.',
+        'Ein kleiner Knicks und eine Verbeugung für dich.',
+        'Heute glitzert unser Paartanz ein bisschen heller.',
+        'Wir sammeln schöne gemeinsame Momente.'
+      ],
+      walk:[
+        'Ein Schwung, zwei Spuren – wir gleiten gemeinsam.',
+        'Unsere Kufen zeichnen einen kleinen Tanz.',
+        'Hand in Hand geht es sanft durch die Kurve.',
+        'Wir haben den gleichen Rhythmus im Herzen.'
+      ],
+      jump:[
+        'Wir nehmen gemeinsam Anlauf und springen aufeinander zu!',
+        'Gleichzeitig abheben, weich landen und wieder zusammenfinden.',
+        'Ein kleiner Flug für uns beide!'
+      ],
+      spin:[
+        'Zwei Pirouetten, genau im selben Takt.',
+        'Wir drehen getrennt und bleiben trotzdem ein Team.',
+        'Einmal rundherum – und dann wieder zueinander.'
+      ],
+      routine:[
+        'Erst gemeinsam, dann im gleichen Takt aufeinander zu!',
+        'Unsere Kür beginnt: zwei Tänzer, eine kleine Geschichte.',
+        'Achte auf unsere synchronen Pirouetten!',
+        'Wir gleiten auseinander und finden tänzerisch wieder zusammen.'
+      ]
     }
   };
   function freeze(value){if(value&&typeof value==='object'){Object.values(value).forEach(freeze);Object.freeze(value);}return value;}

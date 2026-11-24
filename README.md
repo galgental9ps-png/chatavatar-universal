@@ -1,14 +1,20 @@
 # Chatavatar Universal · austauschbare Figuren
 
-Aktiv ist **Lumi, die Eiskunstläuferin**: eine ruhiger abgespielte Kür mit tiefem Anlauf, einfachem und doppeltem Drehsprung, weichen Landungen, Überkreuzschritten, tiefem Ausfallschritt, Spirale und aufrechten Pirouetten. Alle Bewegungen verwenden den gemeinsamen Master-Atlas mit 64 vollständigen Posen. Auf üblichen Desktop-Fenstern dauert die Kür etwa 35–55 Sekunden; breite Fenster verlängern den Anlauf statt das Fahrtempo. Die frei laufende Figur benötigt keine eigene Eisfläche. Jimmy bleibt als vollständiges zweites Asset-Set erhalten.
+Aktiv ist **Aurora & Noel**, ein glamouröses Eiskunstlauf-Paar mit blonder Tänzerin und dunkelhaarigem Partner. Alle 64 gemeinsamen Actionframes liegen in einer einzigen transparenten PNG: `assets/ice-pair-master-v1.png`. Die Kür verbindet gemeinsame Figuren mit getrennten synchronen Pirouetten, einem gleichzeitigen Sprung aufeinander zu und dem anschließenden Zusammenfinden. **„Synchronfolge vorführen“** spielt den getrennten Teil einzeln ab. **„Paartanz vorführen“** zeigt die gesamte Folge. Bildaufbau und Bildprompts: [docs/PAIR-SKATING.md](docs/PAIR-SKATING.md).
+
+Die Voreinstellung steht in `asset-sets.js`: `const ACTIVE_ASSET_SET = 'ice-pair';`. Die drei vollständigen Sets `ice-pair`, `ice-skater` und `jimmy` bleiben im Figurenschalter auswählbar. Beim getrennten Paarlauf wird jeder Tänzer als eine vollständige Figur aus derselben Bildphase gezeichnet. Beide bewegen sich im selben Takt und kehren anschließend zur gemeinsamen Paardarstellung zurück.
+
+## Lumi als weiteres Asset
+
+**Lumi, die Eiskunstläuferin**, bleibt erhalten: eine ruhiger abgespielte Kür mit tiefem Anlauf, einfachem und doppeltem Drehsprung, weichen Landungen, Überkreuzschritten, tiefem Ausfallschritt, Spirale und aufrechten Pirouetten. Alle Bewegungen verwenden den gemeinsamen Master-Atlas mit 64 vollständigen Posen. Auf üblichen Desktop-Fenstern dauert die Kür etwa 35–55 Sekunden; breite Fenster verlängern den Anlauf statt das Fahrtempo. Die frei laufende Figur benötigt keine eigene Eisfläche. Jimmy bleibt als vollständiges zweites Asset-Set erhalten.
 
 Die bewegte Figur ist auf dem Desktop 192 Pixel, mobil 160 Pixel breit. Die Vorschau verwendet 256 bzw. 240 Pixel und zeichnet direkt in der tatsächlichen Bildschirmauflösung. Dadurch entfällt das nachträgliche Strecken eines zu kleinen Canvas. Der restaurierte Master `assets/lumi-master-v2.webp` erhält alle 64 vollständigen Posen und hat klarere Gesichtsdetails und Konturen. Er wird verlustfrei mit Transparenz gespeichert; der ursprüngliche Master bleibt erhalten.
 
 Der Anlauf verwendet die acht Quellposen einmal je Bewegungszyklus. Überkreuzschritte liegen im verbindenden Gleitabschnitt. Vor jedem Sprung schließt Lumi ihre Haltung ohne eine zweite schnelle Anlauffolge. Das Antreten verwendet mit `approachStride: 1.22` eine etwas schnellere Schrittfolge. `tempo: .675`, `jumpTempo: .895` und `spinTempo: .79` stimmen den übrigen Ablauf behutsam darauf ab. Das Antreten läuft gegenüber der vorherigen Fassung etwa 11 % schneller, die übrigen Bewegungen etwa 4 %.
 
-Auf der Demoseite wechselt **„Figur auswählen“** direkt zwischen **Lumi · Eiskunstläuferin** und **Jimmy · Park-Affe**. Die laufende Figur, die große Vorschau, Namen, Bewegungsbuttons und Sprüche wechseln zusammen. Die Seite wird dabei nicht neu geladen; die Musik kann weiterspielen. Die Auswahl verwendet die vollständig vorhandenen Figuren aus `asset-sets.js`.
+Auf der Demoseite wechselt **„Figur auswählen“** direkt zwischen **Aurora & Noel · Eiskunstlauf-Paar**, **Lumi · Eiskunstläuferin** und **Jimmy · Park-Affe**. Die laufende Figur, die große Vorschau, Namen, Bewegungsbuttons und Sprüche wechseln zusammen. Die Seite wird dabei nicht neu geladen; die Musik kann weiterspielen. Die Auswahl verwendet die vollständig vorhandenen Figuren aus `asset-sets.js`.
 
-Die Standardfigur steht weiterhin zentral in `asset-sets.js`: `const ACTIVE_ASSET_SET = 'ice-skater';`. Für Jimmy genügt der Wert `'jimmy'`. Diese Voreinstellung gilt beim Laden der Seite und für bestehende Einbindungen. Details und Dateiliste: [docs/ASSET-SETS.md](docs/ASSET-SETS.md).
+Die Standardfigur steht zentral in `asset-sets.js`. Für Lumi genügt der Wert `'ice-skater'`, für Jimmy `'jimmy'`. Diese Voreinstellung gilt beim Laden der Seite und für bestehende Einbindungen. Details und Dateiliste: [docs/ASSET-SETS.md](docs/ASSET-SETS.md).
 
 Die vorhandenen Antworten und das Wissensstudio beziehen sich weiterhin auf Jimmy’s Fun Park. Der Einbindungscode bleibt gleich.
 

@@ -4,7 +4,7 @@
   if (window.JimmyChatAvatar) return;
   const script = document.currentScript;
   const BASE = new URL('.', script.src).href;
-  const VERSION = 'asset-switch-13';
+  const VERSION = 'ice-pair-15';
   const deps = new Map();
   function loadScript(url) {
     if (!deps.has(url)) deps.set(url, new Promise((resolve, reject) => { const s = document.createElement('script'); s.src = url; s.onload = resolve; s.onerror = () => reject(Error('Datei konnte nicht geladen werden: ' + url)); document.head.append(s); }));
@@ -53,7 +53,7 @@
         this.renderer=window.JimmyMascot.forAsset?.(this.asset.id)||window.JimmyMascot;
         await this.renderer.preload(); if (this.destroyed) return;
         this.quips = window.JimmyPersonality.createDeck(Math.random,this.asset.personality);
-        this.visual = this.renderer.create(); this.sprite.replaceChildren(this.visual); this.drawFrame();
+        this.visual = this.renderer.create(); this.sprite.replaceChildren(this.visual); this.preparePartner();this.drawFrame();
         this.position();
         const K = window.JimmyKnowledge; let data = this.options.knowledge;
         if (!data) {
@@ -98,7 +98,7 @@
       this.asset=asset;this.renderer=renderer;this.quips=window.JimmyPersonality.createDeck(Math.random,asset.personality);
       this.drag=null;this.frame=0;this.walkDistance=0;this.velocity=0;this.fallVelocity=0;this.targetX=this.x;this.y=this.size().ground;
       this.host.dataset.asset=this.character.dataset.asset=asset.id;
-      this.visual=renderer.create();this.sprite.replaceChildren(this.visual);
+      this.visual=renderer.create();this.sprite.replaceChildren(this.visual);this.preparePartner();
       this.character.setAttribute('aria-label',asset.name+' öffnen. Zum Versetzen ziehen.');this.launcher.textContent=asset.name+' rufen';
       this.panel.setAttribute('aria-label','Antworten von '+asset.name);
       const now=performance.now();this.nextRoutine=now+3500;this.nextWalk=now+4500;this.nextHop=now+12000;this.nextGesture=now+9000;this.nextQuip=now+9500;
@@ -107,13 +107,24 @@
       return true;
     }
     isSkater(){return this.asset?.motion.kind==='ice';}
+    preparePartner(){
+      if(!this.asset?.motion.duet){if(this.partner)this.partner.hidden=true;return;}
+      if(!this.partner){
+        this.partner=el('button','character duet-partner');this.partner.type='button';this.partner.hidden=true;
+        this.partner.setAttribute('aria-label','Noel öffnen. Zum Versetzen ziehen.');this.partner.setAttribute('aria-expanded','false');
+        this.partnerSprite=el('span','sprite');this.partnerSprite.setAttribute('aria-hidden','true');
+        this.partner.append(this.partnerSprite);this.shadow.append(this.partner);this.bindDrag(this.partner);
+      }
+      this.partner.dataset.asset=this.asset.id;this.partnerVisual=this.renderer.create();this.partnerSprite.replaceChildren(this.partnerVisual);
+      this.partner.hidden=true;
+    }
     size(){return window.JimmyMotion?window.JimmyMotion.dimensions(innerWidth,this.asset?.motion,innerHeight):{width:innerWidth<=540?152:192,height:innerWidth<=540?152:192,ground:10};}
-    bindDrag() {
-      this.character.addEventListener('pointerdown', e => {
+    bindDrag(character=this.character) {
+      character.addEventListener('pointerdown', e => {
         if (e.button !== 0) return;
-        this.drag = { pointer: e.pointerId, startX: e.clientX, startY: e.clientY, x: this.x, y: this.y, moved: false }; this.character.setPointerCapture(e.pointerId);
+        this.drag = { pointer: e.pointerId, startX: e.clientX, startY: e.clientY, x: this.x, y: this.y, moved: false }; character.setPointerCapture(e.pointerId);
       });
-      this.character.addEventListener('pointermove', e => {
+      character.addEventListener('pointermove', e => {
         if (!this.drag || e.pointerId !== this.drag.pointer) return;
         const dx = e.clientX - this.drag.startX, dy = e.clientY - this.drag.startY;
         if (Math.hypot(dx, dy) > 6) this.drag.moved = true;
@@ -124,8 +135,8 @@
         this.ignoreClick = this.drag.moved; const moved = this.drag.moved; this.drag = null; this.fallVelocity = 0; this.velocity = 0;
         this.setState(moved && this.y > 10 ? 'fall' : 'idle'); this.nextWalk = performance.now() + 5500;this.nextRoutine=this.nextWalk;
       };
-      this.character.addEventListener('pointerup', release); this.character.addEventListener('pointercancel', release);
-      this.character.addEventListener('click', () => { if (this.ignoreClick) { this.ignoreClick = false; return; } this.opened ? this.close() : this.open(); });
+      character.addEventListener('pointerup', release); character.addEventListener('pointercancel', release);character.addEventListener('lostpointercapture',release);
+      character.addEventListener('click', () => { if (this.ignoreClick) { this.ignoreClick = false; return; } this.opened ? this.close() : this.open(); });
     }
     setState(state) {
       if (state !== this.state) { this.state = state; this.frame = 0; this.stateStarted = performance.now(); }
@@ -134,7 +145,14 @@
       this.character.dataset.state = state; this.drawFrame();
     }
     drawFrame() {
-      if (this.visual) this.renderer.paint(this.visual, this.state, this.motion.matches ? 0 : this.frame, this.facing,{elapsed:Math.max(0,performance.now()-this.stateStarted)/1000,style:this.skateStyle,selection:this.programFrame,remaining:Math.abs((this.targetX??this.x)-this.x)/Math.max(1,this.size().speed)});
+      const actors=this.asset?.motion.duet&&this.programFrame?.actors;
+      const details={elapsed:Math.max(0,performance.now()-this.stateStarted)/1000,style:this.skateStyle,selection:this.programFrame,remaining:Math.abs((this.targetX??this.x)-this.x)/Math.max(1,this.size().speed)};
+      if (this.visual) this.renderer.paint(this.visual, this.state, this.motion.matches ? 0 : this.frame,actors?actors[0].facing:this.facing,{...details,...(actors?{actor:0}:{})});
+      if(this.partner){
+        this.partner.hidden=!actors||this.hidden||this.opened;
+        if(actors&&this.partnerVisual)this.renderer.paint(this.partnerVisual,this.state,this.frame,actors[1].facing,{...details,actor:1});
+        this.partner.dataset.state=this.state;this.partner.dataset.paused=String(this.paused);
+      }
       this.character.dataset.paused = String(this.paused);
     }
     position() {
@@ -142,7 +160,10 @@
       this.character.style.width=this.character.style.height=size+'px';
       this.x = Math.max(0, Math.min(Math.max(0, innerWidth - width), this.x)); this.y = Math.max(5, Math.min(Math.max(5, innerHeight - size), this.y));
       const ratio=window.devicePixelRatio||1;
-      this.character.style.transform = 'translate(' + Math.round(this.x*ratio)/ratio + 'px,' + (-Math.round(this.y*ratio)/ratio) + 'px)'; this.character.style.bottom = '0';
+      const actors=this.asset?.motion.duet&&this.programFrame?.actors;
+      const place=(element,x)=>{element.style.width=element.style.height=size+'px';element.style.bottom='0';element.style.transform='translate('+Math.round(x*ratio)/ratio+'px,'+(-Math.round(this.y*ratio)/ratio)+'px)';};
+      place(this.character,actors?actors[0].x:this.x);
+      if(actors&&this.partner)place(this.partner,actors[1].x);
       this.tip.style.left = Math.max(10, Math.min(innerWidth - (innerWidth <= 540 ? 220 : 246), this.x - 25)) + 'px';
       this.tip.style.bottom = Math.min(innerHeight - 110, this.y + size - 12) + 'px';
     }
@@ -171,7 +192,7 @@
     canPerform(){return this.isSkater()&&this.pack&&!this.destroyed&&!document.hidden&&!this.paused&&!this.motion.matches&&!this.opened&&!this.hidden&&!this.drag&&(this.program||this.y<=11)&&!['jump','fall','held'].includes(this.state);}
     cancelProgram(settle=true){
       if(!this.program)return;
-      this.program=null;this.programFrame=null;this.programElapsed=0;this.pendingProgram=null;this.velocity=0;
+      this.program=null;this.programFrame=null;this.programElapsed=0;this.pendingProgram=null;this.velocity=0;if(this.partner)this.partner.hidden=true;
       if(settle)this.y=this.size().ground;
       this.character.dataset.move='';this.character.dataset.program='';
       this.nextRoutine=performance.now()+4500;this.setState('idle');if(settle)this.position();
@@ -186,11 +207,12 @@
       this.facing=this.programFrame.facing;this.character.dataset.program=mode;
       this.nextRoutine=Infinity;this.nextGesture=performance.now()+this.program.duration+8000;
       this.setState('skate-performance');
-      this.showQuip(mode==='routine'?'routine':mode==='jump'?'jump':'spin',{animate:false,replace:true});
+      this.showQuip(mode==='routine'||mode==='duet'?'routine':mode==='jump'?'jump':'spin',{animate:false,replace:true});
       return true;
     }
     spin(){return this.perform('spin');}
     skateJump(){return this.perform('jump');}
+    duet(){return this.asset?.motion.duet?this.perform('duet'):false;}
     walkTo(target,{style='auto'}={}) {
       if (!this.pack || this.destroyed || this.motion.matches || this.paused || this.hidden || this.drag || this.y > 11) return false;
       this.cancelProgram();
@@ -210,7 +232,7 @@
       if (this.destroyed) return;
       const elapsed=this.last?Math.max(0,now-this.last):0;
       const dt = Math.min(.05, elapsed / 1000); this.last = now;
-      if (!document.hidden && !this.paused && !this.opened && !this.hidden && !this.drag && this.pack && !this.character.matches(':focus-visible')) {
+      if (!document.hidden && !this.paused && !this.opened && !this.hidden && !this.drag && this.pack && !this.character.matches(':focus-visible')&&!this.partner?.matches(':focus-visible')) {
         const M = window.JimmyMotion, size = this.size();
         if (now >= this.nextQuip && this.tip.hidden && ['idle', 'walk'].includes(this.state)) this.showQuip(this.state === 'walk' ? 'walk' : 'idle');
         if(this.program){
@@ -219,7 +241,7 @@
           this.programFrame=move;this.frame=move.index;this.facing=move.facing;this.x=move.x;
           this.y=size.ground+move.lift;this.velocity=move.velocity;this.character.dataset.move=move.phase;
           const requested=this.pendingProgram;
-          if(requested&&(move.finished||move.phase==='landing-exit'||move.sheet==='flow'&&move.index>=14)){
+          if(requested&&(move.finished||move.safeExit||move.phase==='landing-exit'||move.sheet==='flow'&&move.index>=14)){
             this.cancelProgram();this.perform(requested);
           }else if(move.finished){this.cancelProgram();this.nextRoutine=now+4500+Math.random()*2500;this.nextWalk=this.nextRoutine;}
           this.position();
@@ -323,7 +345,7 @@
         const follow = current.suggestions.map(id => pack.entries.find(e => e.id === id && K.active(e))).filter(Boolean);
         if (follow.length) { body.append(el('p', 'eyebrow', 'Das könnte euch auch interessieren')); const choices = el('div', 'choices'); follow.forEach(e => choices.append(this.buttonFor(e))); body.append(choices); }
       } else {
-        body.append(el('p', 'greeting', this.isSkater()?'Hallo, ich bin '+this.displayName()+'! Ich begleite dich durch das hinterlegte Parkwissen. Was möchtest du entdecken?':pack.organization.greeting)); const cats = el('div', 'cats');
+        body.append(el('p', 'greeting', this.asset?.plural?'Hallo, wir sind '+this.displayName()+'! Wir begleiten dich durch das hinterlegte Parkwissen. Was möchtest du entdecken?':this.isSkater()?'Hallo, ich bin '+this.displayName()+'! Ich begleite dich durch das hinterlegte Parkwissen. Was möchtest du entdecken?':pack.organization.greeting)); const cats = el('div', 'cats');
         const all = [{ id: '', label: 'Alle Themen', icon: '✦' }, ...pack.categories];
         for (const c of all) { if (c.id && !pack.entries.some(e => e.category === c.id && K.active(e))) continue; const b = el('button', 'cat', c.icon + ' ' + c.label); b.setAttribute('aria-pressed', String(this.category === c.id)); b.onclick = () => { this.category = c.id; this.render(); }; cats.append(b); } body.append(cats);
         const form = el('form', 'search'), input = el('input'); input.type = 'search'; input.placeholder = 'Suchen: Öffnungszeiten, Geburtstag, Socken …'; input.setAttribute('aria-label', 'Hinterlegtes Wissen durchsuchen'); input.maxLength = 200; const go = el('button', '', 'Suchen'); go.type = 'submit'; go.setAttribute('aria-label', 'Suchen'); form.append(input, go); body.append(form);
