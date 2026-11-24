@@ -28,7 +28,9 @@
         speed:{file:'assets/ice-skater-speed-v2.webp',columns:4,rows:4,height:.68,reference:0},
         jump:{file:'assets/ice-skater-jump-v2.webp',columns:4,rows:4,height:.88,reference:15},
         flow:{file:'assets/ice-skater-flow-v2.webp',columns:4,rows:4,height:.88,reference:0},
-        footwork:{file:'assets/ice-skater-footwork-v2.webp',columns:4,rows:4,height:.88,reference:0}
+        footwork:{file:'assets/ice-skater-footwork-v2.webp',columns:4,rows:4,height:.88,reference:0},
+        jumpBridge:{file:'assets/ice-skater-jump-bridge-v3.webp',columns:4,rows:4,reference:8,
+          match:[{sheet:'jump',frame:11,source:8},{sheet:'speed',frame:0,source:0}],axis:'center'}
       },
       personality:{
         idle:[
@@ -87,7 +89,7 @@
     if(ice&&state==='skate-stop')return elapsed<.26?{sheet:'glide',index:elapsed<.13?15:0}:{sheet:'poses',index:0};
     if(state==='walk'){
       if(!ice)return {sheet:'walk',index:wrap(frame,8)};
-      if(details.style==='speed')return elapsed<.27?{sheet:'jump',index:Math.min(2,Math.floor(elapsed/.27*3))}:{sheet:'speed',index:wrap(frame,16)};
+      if(details.style==='speed')return elapsed<.27?{sheet:'jumpBridge',index:Math.min(2,Math.floor(elapsed/.27*3))}:{sheet:'speed',index:wrap(frame,16)};
       if(details.style==='footwork')return {sheet:'footwork',index:wrap(elapsed*12,16)};
       if(details.style==='spiral'){
         let index;
@@ -100,5 +102,32 @@
     }
     return {sheet:'poses',index:state==='jump'?[8,9,10,11][Math.min(3,Math.max(0,Math.floor(frame)))]:asset.poses[state]??0};
   }
-  return {activeId:ACTIVE_ASSET_SET,active:get(),sets,get,frameFor};
+  function layoutFor(asset,sheet,index,width,anchors){
+    const spec=asset.sheets[sheet],frames=anchors[sheet];
+    if(!frames)return {x:0,y:0,width,height:width,scale:1};
+    function scaleFor(key,seen=new Set()){
+      if(seen.has(key))throw Error('Zirkuläre Größenreferenz.');
+      seen.add(key);
+      const info=asset.sheets[key],reference=anchors[key][info.reference||0];
+      const span=Math.max(.3,reference.bottom-reference.top);
+      const matches=(Array.isArray(info.match)?info.match:info.match?[info.match]:[]).filter(match=>anchors[match.sheet]);
+      if(matches.length){
+        const sum=matches.reduce((total,match)=>{
+          const target=anchors[match.sheet][match.frame],from=anchors[key][match.source??info.reference??0];
+          const ratio=(target.bottom-target.top)*scaleFor(match.sheet,new Set(seen))/Math.max(.3,from.bottom-from.top);
+          return total+Math.log(ratio);
+        },0);
+        return Math.exp(sum/matches.length);
+      }
+      return (info.height||.88)/span;
+    }
+    // One fixed anatomical scale per atlas. A bent pose must never be enlarged
+    // to the height of a standing pose. References compare like-for-like crouched
+    // and closed airborne poses; their geometric mean avoids favoring one atlas.
+    const scale=scaleFor(sheet),anchor=frames[index];
+    const centered=spec.axis==='center'||sheet==='spin'||sheet==='jump';
+    return {x:(centered?.5-.5*scale:.52-anchor.head*scale)*width,
+      y:(.945-anchor.bottom*scale)*width,width:width*scale,height:width*scale,scale};
+  }
+  return {activeId:ACTIVE_ASSET_SET,active:get(),sets,get,frameFor,layoutFor};
 });

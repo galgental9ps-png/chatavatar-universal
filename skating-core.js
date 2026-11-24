@@ -55,13 +55,14 @@
 
   function jumpAt(progress, height, turns = 1) {
     const p = clamp(progress, 0, 1);
-    if (p < .2) return { sheet: 'jump', index: Math.min(3, Math.floor(p / .2 * 4)), lift: 0, phase: 'takeoff' };
-    if (p < .78) {
-      const air = (p - .2) / .58;
-      return { sheet: 'jump', index: 4 + Math.floor(air * 8 * turns) % 8,
-        lift: 4 * height * air * (1 - air), phase: turns > 1 ? 'double-turn' : 'air-turn' };
+    if (p < .24) return { sheet: 'jumpBridge', index: Math.min(7, Math.floor(p / .24 * 8)), lift: 0, phase: 'takeoff' };
+    if (p < .82) {
+      const air = (p - .24) / .58,lift=4 * height * air * (1 - air);
+      if(air>=.78)return {sheet:'jumpBridge',index:Math.min(10,8+Math.floor((air-.78)/.22*3)),lift,phase:'landing-preparation'};
+      return { sheet: 'jump', index: 4 + Math.floor(air / .78 * 8 * turns) % 8,
+        lift, phase: turns > 1 ? 'double-turn' : 'air-turn' };
     }
-    return { sheet: 'jump', index: Math.min(15, 12 + Math.floor((p - .78) / .22 * 4)), lift: 0, phase: 'landing' };
+    return { sheet: 'jumpBridge', index: Math.min(15, 11 + Math.floor((p - .82) / .18 * 5)), lift: 0, phase: 'landing' };
   }
 
   function samplePass(block, elapsed, plan) {
@@ -74,11 +75,11 @@
     const strideFrame = wrap(distance / Math.max(1, plan.size * 1.3) * 16);
     let frame;
     switch (item.name) {
-      case 'gather': frame = { sheet: 'jump', index: Math.min(2, Math.floor(p * 3)), phase: 'gather' }; break;
+      case 'gather': frame = { sheet: 'jumpBridge', index: Math.min(2, Math.floor(p * 3)), phase: 'gather' }; break;
       case 'speed': frame = { sheet: 'speed', index: strideFrame, phase: 'speed' }; break;
       case 'footwork': frame = { sheet: 'footwork', index: Math.min(15, Math.floor(p * 16)), phase: p > .45 && p < .8 ? 'lunge' : 'crossovers' }; break;
       case 'jump': frame = jumpAt(p, Math.min(plan.maxLift,plan.jumpHeight * (item.turns > 1 ? 1.08 : 1)), item.turns); break;
-      case 'landing': frame = { sheet: 'jump', index: 15, phase: 'landing-exit' }; break;
+      case 'landing': frame = { sheet: 'jumpBridge', index: 15, phase: 'landing-exit' }; break;
       case 'spiral': {
         let index;
         if (p < .24) index = Math.min(5, Math.floor(p / .24 * 6));

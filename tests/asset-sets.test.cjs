@@ -54,3 +54,20 @@ test('Each pirouette view renders one opaque complete illustration without rotat
     assert.equal(element.style.transform,undefined);
   }
 });
+
+test('Atlas cleanup removes a detached neighboring sliver while preserving the body and a fine nearby skate blade',async()=>{
+  const saved=[],raw=new Uint8ClampedArray(80*80*4);
+  function fill(x,y,width,height){for(let py=y;py<y+height;py++)for(let px=x;px<x+width;px++){const i=(py*80+px)*4;raw[i]=raw[i+1]=raw[i+2]=raw[i+3]=255;}}
+  for(let row=0;row<4;row++)for(let col=0;col<4;col++){
+    fill(col*20+6,row*20+5,8,12);fill(col*20+7,row*20,4,1);fill(col*20+7,row*20+18,6,1);
+  }
+  function canvas(){return {width:0,height:0,getContext(){return {drawImage(){},getImageData(){return {data:new Uint8ClampedArray(raw)};},putImageData(pixels){saved.push(pixels.data.slice());}};}};}
+  class Image{constructor(){this.width=this.height=this.naturalWidth=this.naturalHeight=80;}set src(url){queueMicrotask(()=>this.onload());}}
+  const window={UniversalAvatarAssets:{...Assets,active:Assets.get('ice-skater')}};
+  vm.runInNewContext(fs.readFileSync(require.resolve('../mascot.js'),'utf8'),{window,document:{currentScript:{src:'https://example.test/mascot.js'},createElement:canvas},Image,URL,setTimeout,clearTimeout});
+  await window.JimmyMascot.preload();assert.equal(saved.length,9);
+  for(const pixels of saved)for(let row=0;row<4;row++)for(let col=0;col<4;col++){
+    const alpha=(x,y)=>pixels[((row*20+y)*80+col*20+x)*4+3];
+    assert.equal(alpha(8,0),0);assert.equal(alpha(8,6),255);assert.equal(alpha(8,18),255);
+  }
+});

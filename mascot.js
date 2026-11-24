@@ -7,6 +7,31 @@
   const images = Object.fromEntries(Object.entries(asset.sheets).map(([key,sheet])=>[key,base+sheet.file]));
   const decoded = {};
   let loaded;
+  function removeFragments(p,stride,ox,oy,w,h,labels,queue){
+    labels.fill(0);const parts=[null];let largest=0;
+    const alpha=index=>p[((oy+Math.floor(index/w))*stride+ox+index%w)*4+3];
+    for(let start=0;start<w*h;start++){
+      if(labels[start]||alpha(start)<32)continue;
+      const id=parts.length,part={area:0,left:w,right:0,top:h,bottom:0};let read=0,tail=1;
+      labels[start]=id;queue[0]=start;
+      const visit=index=>{if(!labels[index]&&alpha(index)>=32){labels[index]=id;queue[tail++]=index;}};
+      while(read<tail){
+        const index=queue[read++],x=index%w,y=Math.floor(index/w);part.area++;
+        part.left=Math.min(part.left,x);part.right=Math.max(part.right,x);part.top=Math.min(part.top,y);part.bottom=Math.max(part.bottom,y);
+        if(x)visit(index-1);if(x+1<w)visit(index+1);if(y)visit(index-w);if(y+1<h)visit(index+w);
+      }
+      parts.push(part);if(!largest||part.area>parts[largest].area)largest=id;
+    }
+    if(!largest)return;
+    const body=parts[largest],discard=new Set();
+    for(let id=1;id<parts.length;id++){
+      const part=parts[id],gapX=Math.max(0,body.left-part.right-1,part.left-body.right-1),gapY=Math.max(0,body.top-part.bottom-1,part.top-body.bottom-1);
+      // Reject isolated slivers from a neighboring cell. Keep fine blades and
+      // hair details near the body, even when anti-aliasing separates them.
+      if(part.area<body.area*.1&&Math.max(gapX,gapY)>3)discard.add(id);
+    }
+    if(discard.size)for(let index=0;index<w*h;index++)if(discard.has(labels[index]))p[((oy+Math.floor(index/w))*stride+ox+index%w)*4+3]=0;
+  }
   function prepare(image,spec){
     const canvas=document.createElement('canvas');canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;
     const ctx=canvas.getContext('2d');if(!ctx?.getImageData)return {image,anchors:null};
@@ -14,10 +39,11 @@
     const pixels=ctx.getImageData(0,0,canvas.width,canvas.height),p=pixels.data;
     // Remove weak extraction matte, preserving the generated RGB colors.
     for(let i=3;i<p.length;i+=4)p[i]=Math.round(Math.max(0,Math.min(1,(p[i]-48)/174))*255);
-    ctx.putImageData(pixels,0,0);
     const cw=canvas.width/spec.columns,ch=canvas.height/spec.rows,anchors=[];
+    const labels=new Int32Array(Math.floor(cw)*Math.floor(ch)),queue=new Int32Array(labels.length);
     for(let index=0;index<spec.columns*spec.rows;index++){
       const ox=index%spec.columns*cw,oy=Math.floor(index/spec.columns)*ch;
+      removeFragments(p,canvas.width,Math.floor(ox),Math.floor(oy),Math.floor(cw),Math.floor(ch),labels,queue);
       let top=ch,bottom=0;
       for(let y=0;y<Math.floor(ch);y++){
         let count=0;
@@ -32,6 +58,7 @@
       }
       anchors.push({top:top/ch,bottom:bottom/ch,head:mass?sum/mass/cw:.52});
     }
+    ctx.putImageData(pixels,0,0);
     return {image:canvas,anchors};
   }
   function paint(element, state = 'idle', frame = 0, facing = 1, details = {}) {
@@ -47,15 +74,10 @@
     const key=[sheet,index,facing].join(':');if(element._frameKey===key||!decoded[sheet])return;
     const source=decoded[sheet],image=source.image,ctx=element.getContext('2d');if(!ctx)return;
     const width=element.width,cw=image.width/spec.columns,ch=image.height/spec.rows;
-    let scale=1,dx=0,dy=0;
-    if(source.anchors){
-      const ref=source.anchors[spec.reference||0],anchor=source.anchors[index];
-      scale=spec.height/Math.max(.3,ref.bottom-ref.top);
-      dx=(sheet==='spin'||sheet==='jump'?.5-.5*scale:.52-anchor.head*scale)*width;
-      dy=(.945-anchor.bottom*scale)*width;
-    }
+    const anchors=Object.fromEntries(Object.entries(decoded).map(([key,value])=>[key,value.anchors]));
+    const layout=catalog.layoutFor(asset,sheet,index,width,anchors);
     ctx.clearRect(0,0,width,width);ctx.globalAlpha=1;ctx.filter='none';ctx.imageSmoothingQuality='high';
-    ctx.drawImage(image,index%spec.columns*cw,Math.floor(index/spec.columns)*ch,cw,ch,dx,dy,width*scale,width*scale);
+    ctx.drawImage(image,index%spec.columns*cw,Math.floor(index/spec.columns)*ch,cw,ch,layout.x,layout.y,layout.width,layout.height);
     element._frameKey=key;
   }
   window.JimmyMascot = {

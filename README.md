@@ -8,6 +8,8 @@ Die vorhandenen Antworten und das Wissensstudio beziehen sich weiterhin auf Jimm
 
 **Kür vorführen**, **Drehsprung** und **Pirouette** starten die zusammenhängende Folge bzw. einzelne Elemente. Automatisch führt Lumi ihre Kür nach kurzen Pausen erneut auf. Beim Öffnen einer Antwort, bei Pause, reduzierter Bewegung und beim Ziehen wird sie unterbrochen. Ein während eines Sprungs angefordertes anderes Element wartet auf einen sicheren Ausstieg.
 
+Die Sprungübergänge verwenden zusätzlich 16 vollständige Zwischenposen: schrittweises Strecken beim Absprung, Öffnen der Haltung vor dem Aufsetzen und anschließendes Abfedern. Anlauf, Flughaltung und Landung werden an denselben anatomischen Maßstäben ausgerichtet; eine gebeugte Haltung wird dabei nicht künstlich vergrößert.
+
 ---
 
 # Jimmy · Chatavatar für Jimmy’s Fun Park

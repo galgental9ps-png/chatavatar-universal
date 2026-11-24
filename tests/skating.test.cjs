@@ -17,7 +17,7 @@ test('The routine links full-body acceleration, two airborne jumps, footwork, sp
       assert.ok(asset.sheets[move.sheet]);assert.ok(Number.isInteger(move.index)&&move.index>=0&&move.index<16);
       assert.deepEqual(Assets.frameFor(asset,'skate-performance',0,{selection:move}),{sheet:move.sheet,index:move.index});
     }
-    for(const phase of ['speed','takeoff','air-turn','double-turn','landing','crossovers','lunge','spiral','spin-entry','spin','spin-exit','bow'])assert.ok(seen.has(phase),phase);
+    for(const phase of ['speed','takeoff','air-turn','double-turn','landing-preparation','landing','crossovers','lunge','spiral','spin-entry','spin','spin-exit','bow'])assert.ok(seen.has(phase),phase);
     if(width===1200)assert.ok(peak>218*.62*2,'The routine should move at least twice as fast as the earlier glide.');
     const end=Skating.atTime(choreography,choreography.duration+1000);assert.equal(end.finished,true);assert.equal(end.lift,0);assert.equal(end.index,0);
   }
@@ -43,11 +43,33 @@ test('Passes keep position and velocity continuous across trick changes and turn
 test('Jump anticipation stays grounded, the upright turn lifts the whole figure and the landing absorbs at the baseline',()=>{
   const indices=new Set();let maximum=0;
   for(let i=0;i<1000;i++){
-    const p=i/1000,move=Skating.jumpAt(p,96,2);indices.add(move.index);maximum=Math.max(maximum,move.lift);
-    if(p<=.2||p>=.78)assert.equal(move.lift,0);else assert.ok(move.lift>0);
-    assert.equal(move.sheet,'jump');assert.equal(move.rotation,undefined);
+    const p=i/1000,move=Skating.jumpAt(p,96,2);indices.add(move.sheet+':'+move.index);maximum=Math.max(maximum,move.lift);
+    if(p<=.24||p>=.82)assert.equal(move.lift,0);else assert.ok(move.lift>0);
+    assert.ok(['jump','jumpBridge'].includes(move.sheet));assert.equal(move.rotation,undefined);
   }
-  assert.equal(indices.size,16);assert.ok(maximum>95.9);assert.equal(Skating.jumpAt(1,96).index,15);
+  assert.equal(indices.size,24);assert.ok(maximum>95.9);assert.equal(Skating.jumpAt(1,96).index,15);
+});
+
+test('The descent opens the landing pose before contact, then cushions through the knee bend',()=>{
+  const descent=Skating.jumpAt(.78,96),contact=Skating.jumpAt(.82,96),absorb=Skating.jumpAt(.9,96),exit=Skating.jumpAt(1,96);
+  assert.equal(descent.sheet,'jumpBridge');assert.equal(descent.phase,'landing-preparation');assert.ok(descent.index>=8&&descent.index<=10);assert.ok(descent.lift>0);
+  assert.equal(contact.sheet,'jumpBridge');assert.equal(contact.index,11);assert.equal(contact.lift,0);
+  assert.equal(absorb.index,13);assert.equal(absorb.lift,0);assert.equal(exit.index,15);
+  for(let i=0;i<8;i++)assert.equal(Skating.jumpAt((i+.1)/8*.24,96).index,i);
+});
+
+test('Matching crouched and airborne reference poses keeps one fixed anatomical scale for the whole bridge',()=>{
+  const jump=Array.from({length:16},()=>({top:.05,bottom:.93,head:.5}));jump[11]={top:.04,bottom:.94,head:.5};
+  const bridge=Array.from({length:16},()=>({top:.94-.68/(.9/.84),bottom:.94,head:.5}));bridge[8]={top:.1,bottom:.94,head:.5};
+  const speed=Array.from({length:16},()=>({top:.12,bottom:.94,head:.5}));
+  const anchors={jump,jumpBridge:bridge,speed},width=218;
+  const air=Assets.layoutFor(asset,'jump',11,width,anchors),closed=Assets.layoutFor(asset,'jumpBridge',8,width,anchors),crouch=Assets.layoutFor(asset,'jumpBridge',0,width,anchors);
+  const span=(frame,layout)=>(frame.bottom-frame.top)*layout.width;
+  assert.ok(Math.abs(span(jump[11],air)-span(bridge[8],closed))<1e-8);
+  assert.ok(Math.abs(span(speed[0],Assets.layoutFor(asset,'speed',0,width,anchors))-span(bridge[0],crouch))<1e-8);
+  for(let i=0;i<16;i++)assert.equal(Assets.layoutFor(asset,'jumpBridge',i,width,anchors).scale,closed.scale);
+  assert.ok(span(bridge[0],crouch)<span(bridge[8],closed)*.8);
+  assert.equal(crouch.width,crouch.height);assert.ok(Math.abs(crouch.x+crouch.width/2-width/2)<1e-8);
 });
 
 test('Both standalone tricks finish after a skipped interval and a spin remains on its original baseline',()=>{
