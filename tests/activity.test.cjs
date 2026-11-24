@@ -190,3 +190,17 @@ test('A slow earlier selection cannot overwrite a newer selection or revive a de
   assert.equal(await pending,false);assert.equal(avatar.asset.id,'ice-skater');
   const later=avatar.setAsset('jimmy');await Promise.resolve();avatar.destroy();finish();assert.equal(await later,false);assert.equal(avatar.asset.id,'ice-skater');
 });
+
+test('The fine pair alternates both routines and cancels the orbit cleanly when reading or switching assets',async()=>{
+  const {avatar,advance,media}=await mascot('ice-pair-fine');avatar.nextRoutine=0;advance(20);
+  assert.equal(avatar.partner.attributes['aria-label'],'Elio öffnen. Zum Versetzen ziehen.');
+  assert.equal(avatar.program.mode,'feature');const duration=avatar.program.duration;
+  advance(duration+100);assert.equal(avatar.program,null);assert.equal(avatar.y,10);
+  avatar.nextRoutine=0;advance(20);assert.equal(avatar.program.mode,'routine');
+  avatar.open();assert.equal(avatar.program,null);assert.equal(avatar.partner.hidden,false);avatar.close();
+  assert.equal(avatar.encore(),true);advance(avatar.program.blocks.find(b=>b.part==='orbit').start+500);
+  assert.equal(avatar.programFrame.atlas,'encore');assert.equal(avatar.partner.hidden,false);
+  await avatar.setAsset('ice-pair');assert.equal(avatar.program,null);assert.equal(avatar.encore(),false);assert.equal(avatar.partner.hidden,false);
+  assert.equal(avatar.partner.attributes['aria-label'],'Noel öffnen. Zum Versetzen ziehen.');
+  await avatar.setAsset('ice-pair-fine');media.matches=true;assert.equal(avatar.encore(),false);avatar.minimize();assert.equal(avatar.partner.hidden,true);
+});

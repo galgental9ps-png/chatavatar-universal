@@ -3,11 +3,12 @@
 Die Standardfigur wird in **`asset-sets.js`** ausgewählt:
 
 ```js
-const ACTIVE_ASSET_SET = 'ice-pair';
+const ACTIVE_ASSET_SET = 'ice-pair-fine';
 ```
 
 | Kennung | Figur | Bewegung |
 | --- | --- | --- |
+| `ice-pair-fine` | Lina & Elio, feines Eiskunstlauf-Paar | Feine Paarkür mit kleinen Sprüngen; zweite Folge mit stationären Solopirouetten, Umkreisen und synchronem Abschluss |
 | `ice-pair` | Aurora & Noel, Eiskunstlauf-Paar | Gemeinsamer Paartanz, getrennte synchrone Pirouetten, Sprung aufeinander zu und gemeinsamer Abschluss |
 | `ice-skater` | Lumi, Eiskunstläuferin | Ruhiger tiefer Anlauf, Drehsprünge, Überkreuzschritte, Ausfallschritt, Spirale, aufrechte Pirouetten und komplette Kür |
 | `jimmy` | Jimmy, Park-Affe | Laufen und kleine Hüpfer |
@@ -21,6 +22,10 @@ Die Eiskunstläuferin ist eine transparente Figur. Es wird keine Eisfläche oder
 „Figur auswählen“ zeigt alle vollständigen Sets aus dem Katalog und tauscht die Figur direkt aus. Vorschau, Name, Sprüche und passende Bewegungsbuttons wechseln gemeinsam. Wissen, aktuelle Antwort sowie Pause-, Sichtbarkeits- und Vorleseeinstellungen bleiben erhalten. Ein laufender Sprung wird beim Wechsel am Boden beendet. Während die neue Bilddatei lädt, bleibt die bisherige Figur aktiv; bei einem Ladefehler kann der Wechsel erneut versucht werden.
 
 Die neue Schnittstelle ist `await JimmyChatAvatar.instance.setAsset('jimmy')` bzw. `await JimmyChatAvatar.instance.setAsset('ice-skater')`. Der Renderer stellt mit `JimmyMascot.forAsset(id)` pro Figur einen eigenen zwischengespeicherten Bildsatz bereit. Wiederholte Wechsel nutzen bereits geladene Bilder. Das Ereignis `jimmy:asset-change` meldet den erfolgreichen Austausch an die Vorschau. `ACTIVE_ASSET_SET` bleibt die veröffentlichte Voreinstellung; eine Besucherauswahl verändert diese Datei nicht.
+
+## Feiner Paarlauf mit zusätzlicher Bildfolge
+
+Lina und Elio haben je eine eigene Haupt- und Zusatz-PNG mit zusammen 64 vollständigen Posen pro Person. `encore()` startet die zweite Folge: drei Pirouetten von Lina am selben Ort, während Elio sie zweimal umkreist. Danach folgen synchrone Tanzschritte und ein ruhiger gemeinsamer Abschluss. Die Demo bietet dafür „Pirouetten & Umkreisen“. Beide Folgen wechseln automatisch ab. Alle vier PNGs werden vor dem Figurenwechsel gemeinsam geladen; Wiederholungen verwenden den Bildcache. Einzelheiten und Bildvorgaben: [FINE-PAIR-SKATING.md](FINE-PAIR-SKATING.md).
 
 ## Paarlauf mit zwei eigenen Action-PNGs
 

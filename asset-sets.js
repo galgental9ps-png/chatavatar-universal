@@ -5,7 +5,7 @@
   else root.UniversalAvatarAssets=api;
 })(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
-  const ACTIVE_ASSET_SET = 'ice-pair';
+  const ACTIVE_ASSET_SET = 'ice-pair-fine';
   const poses={idle:0,wave:1,talk:2,point:3,think:13,held:14,rest:15,celebrate:12,fall:10,land:11};
   const sets={
     jimmy:{
@@ -131,13 +131,50 @@
       ]
     }
   };
+  const fineFrames={...sets['ice-pair'].master.frames};
+  sets['ice-pair-fine']={
+    id:'ice-pair-fine',name:'Lina & Elio',role:'Feines Eiskunstlauf-Paar',plural:true,
+    subtitle:'Leichte Schritte. Ein gemeinsamer Rhythmus.',
+    introduction:'Lina mit blondem Dutt und Elio mit blond-rotem Haar zeigen eine feine Kür in Perlmutt, Flieder und Taubenblau: sanfte Gleitfiguren, kleine Drehsprünge und eine zweite Folge mit Solopirouetten und tänzerischem Umkreisen.',
+    renderer:'canvas',environment:'none',poses,
+    master:{columns:4,rows:8,required:true,normalize:true,
+      actors:[
+        {id:'lina',name:'Lina',file:'assets/lina-action-v1.png',width:887,height:1774,heightRatio:.83,
+          frames:{...fineFrames,poses:[0,1,2,2,20,21,22,3,24,25,26,31,2,20,21,23],
+            jump:[24,25,26,27,12,13,14,15,16,17,18,19,28,29,30,31],
+            jumpBridge:[24,24,25,25,26,26,27,27,28,28,29,29,30,30,31,31],
+            flow:[31,31,30,30,29,29,28,28,28,28,29,29,30,30,31,31],
+            spiral:[27,27,28,28,29,29,30,30,30,30,30,30,31,31,27,27]}},
+        {id:'elio',name:'Elio',file:'assets/elio-action-v1.png',width:887,height:1774,heightRatio:.85,
+          rowBounds:[0,257,502,729,960,1183,1400,1602,1774]}
+      ],frames:fineFrames,
+      variants:{encore:{columns:4,rows:8,normalize:true,
+        actors:[
+          {id:'lina',name:'Lina',file:'assets/lina-encore-v1.png',width:887,height:1774,heightRatio:.83,reference:31},
+          {id:'elio',name:'Elio',file:'assets/elio-encore-v1.png',width:887,height:1774,heightRatio:.85,reference:31}
+        ],frames:{spin:Array.from({length:16},(_,i)=>i),
+          glide:[16,16,17,17,18,18,19,19,20,20,21,21,22,22,23,23],
+          flow:[24,24,25,25,26,26,27,27,28,28,29,29,30,30,31,31],
+          poses:[31,31,27,31,31,31,31,31,31,31,31,31,31,31,31,31]}}}},
+    motion:{...sets['ice-pair'].motion,encore:true,tempo:.74,jumpTempo:1.04,spinTempo:.74,
+      speed:.66,performanceSpeed:1.05,stride:1.6,approachStride:1.45,jumpHeight:.28,softJump:true,edgeLean:1.1,arcDepth:.04},
+    sheets:Object.fromEntries(Object.keys(sets['ice-skater'].sheets).map(key=>[key,{file:'assets/lina-action-v1.png',columns:4,rows:8}])),
+    personality:{
+      idle:['Ein leiser Schwung, ein gemeinsames Lächeln.','Kleine Bewegungen können viel erzählen.','Wir bringen dir einen stillen Moment voller Leichtigkeit.','Ein freundlicher Gruß von Lina und Elio.'],
+      walk:['Zwei feine Spuren im selben Takt.','Ganz leicht abstoßen und miteinander weitergleiten.','Unsere Schritte passen aufeinander auf.'],
+      jump:['Ein kleiner Sprung, eine weiche Landung.','Zusammen abheben und sanft wieder ankommen.','Ein kurzer Flug für uns beide.'],
+      spin:['Lina dreht sich, Elio tanzt um sie herum.','Eine Pirouette, noch eine – und dann wieder gemeinsam.','Wir finden nach jeder Drehung wieder zusammen.'],
+      routine:['Jetzt tanzen wir unsere feine kleine Kür.','Heute wechseln sich Paartanz und Solopirouetten ab.','Ein wenig Leichtigkeit, nur für euch.']
+    }
+  };
   function freeze(value){if(value&&typeof value==='object'){Object.values(value).forEach(freeze);Object.freeze(value);}return value;}
   freeze(sets);
   function get(id=ACTIVE_ASSET_SET){if(!Object.hasOwn(sets,id))throw Error('Unbekanntes Asset-Set: '+id);return sets[id];}
   const wrap=(frame,count)=>((Math.floor(frame)%count)+count)%count;
   function frameFor(asset,state='idle',frame=0,details={}){
     const ice=asset.motion.kind==='ice',elapsed=Math.max(0,details.elapsed||0)*(ice?asset.motion.tempo||1:1);
-    if(ice&&details.selection&&Object.hasOwn(asset.sheets,details.selection.sheet))return {sheet:details.selection.sheet,index:wrap(details.selection.index,16)};
+    if(ice&&details.selection&&Object.hasOwn(asset.sheets,details.selection.sheet))return {sheet:details.selection.sheet,index:wrap(details.selection.index,16),
+      ...(asset.master?.variants?.[details.selection.atlas]?.frames?.[details.selection.sheet]?{atlas:details.selection.atlas}:{})};
     if(ice&&state==='spin'){
       const spinElapsed=Math.max(0,details.elapsed||0)*(asset.motion.spinTempo||asset.motion.tempo||1);
       if(spinElapsed<.2)return {sheet:'spin',index:0};

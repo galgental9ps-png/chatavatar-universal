@@ -13,7 +13,8 @@
     return { width: size*factor, height: size,actorWidth:size,spacing:size*(factor-1), ground: 10, stride: size * (profile.stride || .43), approachStride: size * (profile.approachStride || profile.stride || .43), speed: size * (profile.speed || .44), acceleration: profile.acceleration || 3.2, frames: profile.frames || 8,
       tempo: profile.tempo || 1, jumpTempo: profile.jumpTempo || profile.tempo || 1, spinTempo: profile.spinTempo || profile.tempo || 1,
       performanceSpeed: size * (profile.performanceSpeed || profile.speed || .44),
-      duet:!!profile.duet };
+      duet:!!profile.duet,encore:!!profile.encore,softJump:!!profile.softJump,
+      jumpHeight:profile.jumpHeight??.43,edgeLean:profile.edgeLean??2.4,arcDepth:profile.arcDepth??.14 };
   }
   function frameAtDistance(distance, stride, frames = 8) {
     return Math.floor(((Math.max(0, distance) / Math.max(1, stride)) % 1) * frames) % frames;

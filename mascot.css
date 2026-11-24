@@ -10,3 +10,5 @@
 
 .character[data-asset=ice-skater][data-state=idle] .jimmy-frame,[data-asset=ice-skater][data-state=idle]>.jimmy-frame{animation:none}.jimmy-frame[data-asset=ice-skater]{background:none;image-rendering:auto}
 .character[data-asset=ice-pair][data-state=idle] .jimmy-frame,[data-asset=ice-pair][data-state=idle]>.jimmy-frame{animation:none}.jimmy-frame[data-asset=ice-pair]{background:none;image-rendering:auto}
+
+.character[data-asset=ice-pair-fine][data-state=idle] .jimmy-frame,[data-asset=ice-pair-fine][data-state=idle]>.jimmy-frame{animation:none}.jimmy-frame[data-asset=ice-pair-fine]{background:none;image-rendering:auto}

@@ -17,7 +17,7 @@ Ein gemeinsamer Takt steuert die Animationsphase, Sprunghöhe und Bewegung beide
 
 `Paartanz vorführen` zeigt beide Abfolgen. `Synchronfolge vorführen`, `Aufeinander zuspringen` und `Synchrone Pirouetten` starten einzelne Varianten. Lesen, Ziehen, Pause, reduzierte Bewegung und Asset-Wechsel beenden die laufende Folge. Beide Avatare bleiben als ruhende Figuren getrennt erhalten; Ausblenden verbirgt beide. Ein ausgeblendeter Tab hält den gemeinsamen Takt an. Ein Wechsel zu Lumi oder Jimmy entfernt die zweite Darstellung.
 
-Die Voreinstellung bleibt `const ACTIVE_ASSET_SET = 'ice-pair';`. Bildquellen und die gemeinsame Zuordnung stehen in `asset-sets.js` unter `master.actors` bzw. `master.frames`. Die weiße Winterlandschaft und die Musik werden durch diese Änderung nicht verändert.
+Aurora & Noel werden mit `const ACTIVE_ASSET_SET = 'ice-pair';` als Standard gewählt; aktuell zeigt die Demo das zusätzliche Set `ice-pair-fine`. Bildquellen und die gemeinsame Zuordnung stehen in `asset-sets.js` unter `master.actors` bzw. `master.frames`. Die weiße Winterlandschaft und die Musik werden durch diese Änderung nicht verändert.
 
 ## Gleich angeordnete Posen in beiden Dateien
 

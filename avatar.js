@@ -4,7 +4,7 @@
   if (window.JimmyChatAvatar) return;
   const script = document.currentScript;
   const BASE = new URL('.', script.src).href;
-  const VERSION = 'atelier-glass-18';
+  const VERSION = 'fine-duet-19';
   const deps = new Map();
   function loadScript(url) {
     if (!deps.has(url)) deps.set(url, new Promise((resolve, reject) => { const s = document.createElement('script'); s.src = url; s.onload = resolve; s.onerror = () => reject(Error('Datei konnte nicht geladen werden: ' + url)); document.head.append(s); }));
@@ -111,10 +111,11 @@
       if(!this.asset?.motion.duet){if(this.partner)this.partner.hidden=true;return;}
       if(!this.partner){
         this.partner=el('button','character duet-partner');this.partner.type='button';this.partner.hidden=true;
-        this.partner.setAttribute('aria-label','Noel öffnen. Zum Versetzen ziehen.');this.partner.setAttribute('aria-expanded','false');
+        this.partner.setAttribute('aria-expanded','false');
         this.partnerSprite=el('span','sprite');this.partnerSprite.setAttribute('aria-hidden','true');
         this.partner.append(this.partnerSprite);this.shadow.append(this.partner);this.bindDrag(this.partner);
       }
+      this.partner.setAttribute('aria-label',(this.asset.master?.actors[1]?.name||this.displayName())+' öffnen. Zum Versetzen ziehen.');
       this.partner.dataset.asset=this.asset.id;this.partnerVisual=this.renderer.create(1);this.partnerSprite.replaceChildren(this.partnerVisual);
       this.partner.hidden=this.hidden;
     }
@@ -172,6 +173,7 @@
           // slow curved glides. Lean around the blades, never rotate a pirouette.
           const y=this.y+(actor.depth||0),lean=actor.lean||0;
           element.style.transformOrigin='50% 94%';
+          element.style.zIndex=actor.layer?String(actor.layer):'';
           element.style.transform='translate3d('+x.toFixed(3)+'px,'+(-y).toFixed(3)+'px,0) rotate('+lean.toFixed(3)+'deg)';
         }else element.style.transform='translate('+Math.round(x*ratio)/ratio+'px,'+(-Math.round(this.y*ratio)/ratio)+'px)';
       };
@@ -216,6 +218,7 @@
       if(this.program){if(this.program.mode===mode)return false;this.pendingProgram=mode;return true;}
       this.cancelProgram();this.hideTip();this.cancelLater(this.greetingTimer);
       this.program=window.UniversalSkating.createPlan({mode,startX:this.x,facing:this.facing,viewportWidth:innerWidth,viewportHeight:innerHeight,size:this.size()});
+      this.lastProgramMode=mode;
       this.programElapsed=0;this.velocity=0;this.fallVelocity=0;
       this.programFrame=window.UniversalSkating.atTime(this.program,0);
       this.facing=this.programFrame.facing;this.character.dataset.program=mode;
@@ -227,6 +230,7 @@
     spin(){return this.perform('spin');}
     skateJump(){return this.perform('jump');}
     duet(){return this.asset?.motion.duet?this.perform('duet'):false;}
+    encore(){return this.asset?.motion.encore?this.perform('feature'):false;}
     walkTo(target,{style='auto'}={}) {
       if (!this.pack || this.destroyed || this.motion.matches || this.paused || this.hidden || this.drag || this.y > 11) return false;
       this.cancelProgram();
@@ -289,7 +293,8 @@
             this.position();
           }
         } else if(this.isSkater()&&this.state==='idle'&&now>=this.nextRoutine){
-          if(!this.perform())this.nextRoutine=now+3000;
+          const mode=this.asset.motion.encore&&this.lastProgramMode!=='feature'?'feature':'routine';
+          if(!this.perform(mode))this.nextRoutine=now+3000;
         } else if (!this.isSkater()&&this.state === 'idle' && now >= this.nextHop) {
           if (!this.hop()) this.nextHop = now + 5000;
         } else if (!this.isSkater()&&this.state === 'idle' && this.tip.hidden && now >= this.nextGesture) {

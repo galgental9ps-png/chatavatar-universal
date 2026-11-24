@@ -29,6 +29,7 @@
     $('jump-demo').textContent=asset.motion.duet?'Aufeinander zuspringen':'Drehsprung';
     $('spiral-demo').textContent=asset.motion.duet?'Gemeinsame Gleitfigur':'Gleitfigur';
     $('duet-demo').hidden=!asset.motion.duet;
+    $('encore-demo').hidden=!asset.motion.encore;
     $('quip-demo').textContent=instance.isSkater()?'Ein kleiner Gruß':'Ein Affenspruch';
     $('spiral-demo').hidden=!instance.isSkater();
     $('routine-demo').hidden=$('jump-demo').hidden=!instance.isSkater();
@@ -74,6 +75,7 @@
   $('routine-demo').onclick=()=>{if(prepareDemo())instance.perform();};
   $('jump-demo').onclick=()=>{if(prepareDemo())instance.skateJump();};
   $('duet-demo').onclick=()=>{if(prepareDemo())instance.duet();};
+  $('encore-demo').onclick=()=>{if(prepareDemo())instance.encore();};
   $('spiral-demo').onclick=()=>{if(!prepareDemo())return;const max=Math.max(0,innerWidth-instance.size().width-8);instance.walkTo(instance.x>max/2?8:max,{style:'spiral'});};
   $('quip-demo').onclick = () => { if (prepareDemo(false)) instance.showQuip('idle', { replace: true, userInitiated: true }); };
   function draw() {

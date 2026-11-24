@@ -11,7 +11,7 @@
   const phase = (name, duration, extra = {}) => ({ name, duration, ...extra });
 
   function createPlan({ mode = 'routine', startX = 0, facing = 1, viewportWidth, viewportHeight, size }) {
-    if (!['routine', 'jump', 'spin', 'duet'].includes(mode)||mode==='duet'&&!size.duet) throw Error('Unbekannte Eiskunstlauf-Folge.');
+    if (!['routine', 'jump', 'spin', 'duet','feature'].includes(mode)||mode==='duet'&&!size.duet||mode==='feature'&&(!size.duet||!size.encore)) throw Error('Unbekannte Eiskunstlauf-Folge.');
     const max = Math.max(0, viewportWidth - size.width), margin = Math.min(12, max / 2);
     const left = margin, right = max - margin;
     const tempo = clamp(size.tempo || 1, .25, 2), topSpeed = Math.max(1, size.performanceSpeed || size.width * 1.2);
@@ -63,6 +63,22 @@
     };
     if(size.duet){
       direction=travelDirection;
+      if(mode==='feature'){
+        const center=(left+right)/2,aw=size.actorWidth||size.height;
+        pass([phase('glide',1200)],center);
+        const joined=[center,center+(size.spacing||0)],woman=(viewportWidth-aw)/2;
+        const radius=Math.max(0,Math.min(aw*.86,(viewportWidth-aw)/2-margin));
+        const depth=Math.min(aw*.12,Math.max(0,viewportHeight-size.height-22)/2);
+        const orbit=[woman,woman+radius];
+        const addFeature=(part,fromActors,toActors,duration,extra={})=>add({kind:'feature',part,
+          from:part==='finish'?x:center,to:part==='finish'?x:center,facing:part==='finish'?direction:1,fromActors,toActors,depth,duration,...extra});
+        addFeature('entry',joined,orbit,1100/tempo);
+        addFeature('orbit',orbit,orbit,Math.max(9000/tempo,4*Math.PI*radius*1000/topSpeed),{woman,radius});
+        addFeature('exit',orbit,joined,1100/tempo);
+        direction=travelDirection;
+        pass([phase('glide',2200,{atlas:'encore'})],edge());
+        addFeature('finish',[x,x+(size.spacing||0)],[x,x+(size.spacing||0)],1800/tempo);
+      }else{
       if(mode==='routine'){
         pass([phase('glide',1600),phase('footwork',1100)],edge());
         turn(1300,2);
@@ -74,6 +90,7 @@
         pass([phase('glide',1000)],x+direction*Math.min(size.width*1.2,(right-left)*.35));
       }
       add({kind:'bow',from:x,to:x,facing:direction,duration:1050/tempo});
+      }
     }else{
       if(mode!=='spin'&&direction!==travelDirection)turn(850,1,true,300,350);
       if (mode === 'spin') {
@@ -95,16 +112,17 @@
       }
     }
     return { mode, blocks, duration: time, size: size.width,duet:!!size.duet,spacing:size.spacing||0,actorWidth:size.actorWidth||size.width,
-      arcDepth:Math.min((size.actorWidth||size.width)*.14,32,Math.max(0,viewportHeight-size.height-22)*.25),
+      edgeLean:size.edgeLean??2.4,softJump:!!size.softJump,
+      arcDepth:Math.min((size.actorWidth||size.width)*(size.arcDepth??.14),32,Math.max(0,viewportHeight-size.height-22)*.25),
       stride:size.stride||size.width*1.3,approachStride:size.approachStride||size.stride||size.width*1.3,maxLift:Math.max(0,viewportHeight-size.height-22),
-      jumpHeight: Math.min(size.height * .43, Math.max(0, viewportHeight - size.height - 22)) };
+      jumpHeight: Math.min(size.height * (size.jumpHeight??.43), Math.max(0, viewportHeight - size.height - 22)) };
   }
 
-  function jumpAt(progress, height, turns = 1) {
+  function jumpAt(progress, height, turns = 1, soft = false) {
     const p = clamp(progress, 0, 1);
     if (p < .24) return { sheet: 'jumpBridge', index: Math.min(7, Math.floor(p / .24 * 8)), lift: 0, phase: 'takeoff' };
     if (p < .82) {
-      const air = (p - .24) / .58,lift=4 * height * air * (1 - air);
+      const air = (p - .24) / .58,lift=soft?height*Math.sin(Math.PI*air)**2:4 * height * air * (1 - air);
       if(air>=.78)return {sheet:'jumpBridge',index:Math.min(10,8+Math.floor((air-.78)/.22*3)),lift,phase:'landing-preparation'};
       return { sheet: 'jump', index: 4 + Math.floor(air / .78 * 8 * turns) % 8,
         lift, phase: turns > 1 ? 'double-turn' : 'air-turn' };
@@ -138,7 +156,7 @@
         frame={sheet:'speed',index,phase:'speed'};break;
       }
       case 'footwork': frame = { sheet: 'footwork', index: Math.min(15, Math.floor(p * 16)), phase: p > .45 && p < .8 ? 'lunge' : 'crossovers' }; break;
-      case 'jump': frame = jumpAt(p, Math.min(plan.maxLift,plan.jumpHeight * (item.turns > 1 ? 1.08 : 1)), item.turns); break;
+      case 'jump': frame = jumpAt(p, Math.min(plan.maxLift,plan.jumpHeight * (item.turns > 1 ? 1.08 : 1)), item.turns,plan.softJump); break;
       case 'landing': frame = { sheet: 'jumpBridge', index: 15, phase: 'landing-exit' }; break;
       case 'spiral': {
         let index;
@@ -149,7 +167,7 @@
       }
       default: frame = { sheet: 'glide', index: strideFrame, phase: 'glide' };
     }
-    return { ...base, ...frame };
+    return { ...base, ...frame,...(item.atlas?{atlas:item.atlas}:{}) };
   }
 
   function sampleTurn(block, elapsed) {
@@ -206,7 +224,7 @@
       }
       frame={sheet:'speed',index,phase:'duet-speed'};
     }else if(elapsed<block.approach+block.air){
-      const move=jumpAt((elapsed-block.approach)/block.air,Math.min(plan.maxLift,plan.jumpHeight),1);
+      const move=jumpAt((elapsed-block.approach)/block.air,Math.min(plan.maxLift,plan.jumpHeight),1,plan.softJump);
       frame={...move,phase:'duet-'+move.phase};
     }else{
       frame={sheet:'jumpBridge',index:15,phase:'duet-landing-exit',safeExit:true};
@@ -215,8 +233,29 @@
     const arc=curved?Math.sin(Math.PI*smooth(p))**2:0;
     const depth=block.part==='open'?0:Math.min((plan.arcDepth||0)*arc,Math.max(0,plan.maxLift-(frame.lift||0)));
     return {...base,...frame,actors:positions.map((x,i)=>({x,facing:facings[i],depth,
-      lean:Math.sign(block.toActors[i]-block.fromActors[i])*2.4*arc,
+      lean:Math.sign(block.toActors[i]-block.fromActors[i])*(plan.edgeLean??2.4)*arc,
       ...(i===1&&partnerSelection?{selection:partnerSelection}:{})})),finished:false};
+  }
+
+  function sampleFeature(block,elapsed,plan){
+    const p=clamp(elapsed/block.duration,0,1),eased=smooth(p);
+    const base={x:block.from,facing:block.facing,lift:0,velocity:0,atlas:'encore',finished:false};
+    if(block.part==='orbit'){
+      // Three axial turns for Lina; Elio completes two actual oval circuits.
+      // Depth ordering makes the far half pass behind her, rather than through her.
+      const angle=4*Math.PI*p,depth=block.depth*Math.sin(angle);
+      return {...base,lift:block.depth,sheet:'spin',index:wrap(48*p),phase:'feature-orbit',
+        actors:[{x:block.woman,facing:1,layer:2},
+          {x:block.woman+block.radius*Math.cos(angle),facing:1,depth,layer:depth>0?1:3,
+            selection:{atlas:'encore',sheet:'spin',index:wrap(32*p)}}]};
+    }
+    const finish=block.part==='finish';
+    const positions=block.fromActors.map((from,i)=>from+(block.toActors[i]-from)*eased);
+    const index=finish?Math.min(15,8+Math.floor(8*eased)):block.part==='entry'?Math.max(0,7-Math.floor(8*eased)):Math.min(7,Math.floor(8*eased));
+    return {...base,sheet:'flow',index,phase:'feature-'+block.part,safeExit:finish&&p>.9,
+      lift:finish?0:block.depth*(block.part==='entry'?eased:1-eased),
+      actors:positions.map((x,i)=>({x,facing:finish?block.facing:1,
+        ...(finish&&i===1?{selection:{atlas:'encore',sheet:'poses',index:0}}:{})}))};
   }
 
   function atTime(plan, milliseconds) {
@@ -226,6 +265,7 @@
       sheet: 'poses', index: 0, phase: 'finished', finished: true });
     const block = plan.blocks.find(block => time < block.end), elapsed = time - block.start;
     if(block.kind==='duet')return sampleDuet(block,elapsed,plan);
+    if(block.kind==='feature')return sampleFeature(block,elapsed,plan);
     if (block.kind === 'pass') return joined({ ...samplePass(block, elapsed, plan), finished: false });
     if (block.kind === 'turn') return joined({ ...sampleTurn(block, elapsed), finished: false });
     return joined({ x: block.from, facing: block.facing, lift: 0, velocity: 0,

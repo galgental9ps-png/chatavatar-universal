@@ -12,7 +12,7 @@
   function createRenderer(asset) {
     const images = Object.fromEntries(Object.entries(asset.sheets).map(([key,sheet])=>[key,base+sheet.file]));
     const decoded = {};
-    let loaded, masterImage,actorImages;
+    let loaded, masterImage,actorImages,actorVariants={};
     function removeFragments(p,stride,ox,oy,w,h,labels,queue){
       labels.fill(0);const parts=[null];let largest=0;
       const alpha=index=>p[((oy+Math.floor(index/w))*stride+ox+index%w)*4+3];
@@ -77,6 +77,39 @@
         element._frameKey = null;
       }
     }
+    function prepareActions(image,spec,atlas){
+      if(!atlas.normalize)return {image};
+      const canvas=document.createElement('canvas');canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;
+      const ctx=canvas.getContext('2d');if(!ctx?.getImageData)return {image};
+      ctx.drawImage(image,0,0);
+      const pixels=ctx.getImageData(0,0,canvas.width,canvas.height),p=pixels.data;
+      // The same extraction-matte cleanup as the existing Lumi renderer, once
+      // at decode time. Complete illustrated people remain indivisible frames.
+      for(let i=3;i<p.length;i+=4)p[i]=Math.round(Math.max(0,Math.min(1,(p[i]-48)/174))*255);
+      const rects=[],anchors=[];
+      for(let cell=0;cell<atlas.columns*atlas.rows;cell++){
+        const col=cell%atlas.columns,row=Math.floor(cell/atlas.columns);
+        const x=Math.round(col*canvas.width/atlas.columns),right=Math.round((col+1)*canvas.width/atlas.columns);
+        const y=spec.rowBounds?.[row]??Math.round(row*canvas.height/atlas.rows);
+        const bottom=spec.rowBounds?.[row+1]??Math.round((row+1)*canvas.height/atlas.rows);
+        const w=right-x,h=bottom-y,labels=new Int32Array(w*h),queue=new Int32Array(w*h);
+        removeFragments(p,canvas.width,x,y,w,h,labels,queue);
+        let top=h,feet=0;
+        for(let py=0;py<h;py++){
+          let count=0;for(let px=0;px<w;px++)if(p[((y+py)*canvas.width+x+px)*4+3]>128)count++;
+          if(count>=2){top=Math.min(top,py);feet=py+1;}
+        }
+        if(feet<=top){top=h*.1;feet=h*.94;}
+        let sum=0,mass=0;
+        for(let py=Math.ceil(top);py<Math.min(h,top+(feet-top)*.18);py++)for(let px=0;px<w;px++){
+          const a=p[((y+py)*canvas.width+x+px)*4+3];if(a>128){sum+=px*a;mass+=a;}
+        }
+        rects.push({x,y,w,h});anchors.push({top,feet,head:mass?sum/mass:w/2});
+      }
+      ctx.putImageData(pixels,0,0);
+      const ref=anchors[spec.reference||0];
+      return {image:canvas,rects,anchors,unitScale:(spec.heightRatio||.84)/Math.max(1,ref.feet-ref.top)};
+    }
     function paint(element, state = 'idle', frame = 0, facing = 1, details = {}) {
       const selection=catalog.frameFor(asset,state,frame,details),sheet=selection.sheet,index=selection.index,spec=asset.sheets[sheet];
       element.dataset.sheet=sheet;element.dataset.frame=String(index);element.dataset.pose=state;element.dataset.asset=asset.id;
@@ -89,19 +122,27 @@
       }
       fitCanvas(element);
       if(actorImages){
-        const cell=asset.master.frames[sheet][index],actor=details.actor;
-        const individual=actor===0||actor===1,key='actors:'+cell+':'+facing+':'+(individual?actor:'preview');
+        const variant=selection.atlas&&asset.master.variants?.[selection.atlas],atlas=variant||asset.master;
+        const sources=variant?actorVariants[selection.atlas]:actorImages,actor=details.actor;
+        const individual=actor===0||actor===1,key='actors:'+(selection.atlas||'main')+':'+sheet+':'+index+':'+facing+':'+(individual?actor:'preview');
         if(element._frameKey===key)return;
         const ctx=element.getContext('2d');if(!ctx)return;
         const w=element.width;ctx.clearRect(0,0,w,w);ctx.globalAlpha=1;ctx.filter='none';ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
         const draw=(id,x,y,size)=>{
-          const source=actorImages[id],cw=source.naturalWidth/asset.master.columns,ch=source.naturalHeight/asset.master.rows;
+          const prepared=sources[id],source=prepared.image,spec=atlas.actors[id],cell=(spec.frames||atlas.frames)[sheet][index];
           // Each source cell contains exactly one complete person. Never crop
           // halves of a paired illustration or compose separate body parts.
-          ctx.drawImage(source,cell%asset.master.columns*cw,Math.floor(cell/asset.master.columns)*ch,cw,ch,x,y,size,size);
+          if(prepared.rects){
+            const r=prepared.rects[cell],a=prepared.anchors[cell],scale=size*prepared.unitScale;
+            ctx.drawImage(source,r.x,r.y,r.w,r.h,x+size*.5-a.head*scale,y+size*.945-a.feet*scale,r.w*scale,r.h*scale);
+          }else{
+            const cw=source.naturalWidth/atlas.columns,ch=source.naturalHeight/atlas.rows;
+            ctx.drawImage(source,cell%atlas.columns*cw,Math.floor(cell/atlas.columns)*ch,cw,ch,x,y,size,size);
+          }
         };
-        if(individual){draw(actor,0,0,w);element.dataset.sourceFile=asset.master.actors[actor].file;}
-        else{draw(0,0,w*.25,w*.66);draw(1,w*.34,w*.25,w*.66);element.dataset.sourceFile=asset.master.actors.map(a=>a.file).join(' ');}
+        if(individual){draw(actor,0,0,w);element.dataset.sourceFile=atlas.actors[actor].file;}
+        else{draw(0,0,w*.25,w*.66);draw(1,w*.34,w*.25,w*.66);element.dataset.sourceFile=atlas.actors.map(a=>a.file).join(' ');}
+        element.dataset.atlas=selection.atlas||'main';
         element.dataset.actor=individual?String(actor):'preview';element._frameKey=key;return;
       }
       if(masterImage){
@@ -129,12 +170,18 @@
       preload() {
         if (!loaded) {
           if(asset.master?.actors){
-            loaded=Promise.all(asset.master.actors.map(spec=>new Promise((resolve,reject)=>{
+            const atlases={main:asset.master,...asset.master.variants};
+            const loadActor=(spec,atlas)=>new Promise((resolve,reject)=>{
               const image=new Image(),timer=setTimeout(()=>reject(Error('Action-PNG nicht verfügbar.')),12000);
-              image.onload=()=>{clearTimeout(timer);if(image.naturalWidth!==spec.width||image.naturalHeight!==spec.height){reject(Error('Ungültiges Action-Raster.'));return;}resolve(image);};
+              image.onload=()=>{clearTimeout(timer);if(image.naturalWidth!==spec.width||image.naturalHeight!==spec.height){reject(Error('Ungültiges Action-Raster.'));return;}try{resolve(prepareActions(image,spec,atlas));}catch(error){reject(error);}};
               image.onerror=()=>{clearTimeout(timer);reject(Error('Action-PNG nicht verfügbar.'));};
               const url=base+spec.file;if(/^https?:/.test(url))image.crossOrigin='anonymous';image.src=url;
-            }))).then(images=>{actorImages=images;}).catch(error=>{loaded=undefined;throw error;});
+            });
+            loaded=Promise.all(Object.entries(atlases).map(async([key,atlas])=>{
+              const actors=await Promise.all(atlas.actors.map(spec=>loadActor(spec,atlas)));
+              return [key,actors];
+            })).then(entries=>{const all=Object.fromEntries(entries);actorImages=all.main;actorVariants=all;})
+              .catch(error=>{loaded=undefined;throw error;});
             return loaded;
           }
           const legacy=()=>Promise.all(Object.entries(images).map(([key,url]) => new Promise((resolve,reject) => {
