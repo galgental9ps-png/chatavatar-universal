@@ -1,6 +1,6 @@
 # Chatavatar Universal · austauschbare Figuren
 
-Aktiv ist **Lumi, die Eiskunstläuferin**: eine ruhiger abgespielte Kür mit tiefem Anlauf, einfachem und doppeltem Drehsprung, weichen Landungen, Überkreuzschritten, tiefem Ausfallschritt, Spirale und aufrechten Pirouetten. Alle Bewegungen verwenden den gemeinsamen Master-Atlas mit 64 vollständigen Posen. Auf üblichen Desktop-Fenstern dauert die Kür etwa 35–55 Sekunden; breite Fenster verlängern den Anlauf statt das Fahrtempo. Es wird keine Eisfläche eingeblendet. Jimmy bleibt als vollständiges zweites Asset-Set erhalten.
+Aktiv ist **Lumi, die Eiskunstläuferin**: eine ruhiger abgespielte Kür mit tiefem Anlauf, einfachem und doppeltem Drehsprung, weichen Landungen, Überkreuzschritten, tiefem Ausfallschritt, Spirale und aufrechten Pirouetten. Alle Bewegungen verwenden den gemeinsamen Master-Atlas mit 64 vollständigen Posen. Auf üblichen Desktop-Fenstern dauert die Kür etwa 35–55 Sekunden; breite Fenster verlängern den Anlauf statt das Fahrtempo. Die frei laufende Figur benötigt keine eigene Eisfläche. Jimmy bleibt als vollständiges zweites Asset-Set erhalten.
 
 Die bewegte Figur ist auf dem Desktop 192 Pixel, mobil 160 Pixel breit. Die Vorschau verwendet 256 bzw. 240 Pixel und zeichnet direkt in der tatsächlichen Bildschirmauflösung. Dadurch entfällt das nachträgliche Strecken eines zu kleinen Canvas. Der restaurierte Master `assets/lumi-master-v2.webp` erhält alle 64 vollständigen Posen und hat klarere Gesichtsdetails und Konturen. Er wird verlustfrei mit Transparenz gespeichert; der ursprüngliche Master bleibt erhalten.
 
@@ -12,7 +12,7 @@ Die Standardfigur steht weiterhin zentral in `asset-sets.js`: `const ACTIVE_ASSE
 
 Die vorhandenen Antworten und das Wissensstudio beziehen sich weiterhin auf Jimmy’s Fun Park. Der Einbindungscode bleibt gleich.
 
-Unten auf der Demoseite liegt eine dekorative Winterlandschaft mit Mondlicht, Bäumen und einer schimmernden Eisfläche als durchgehender Streifen über die gesamte Seitenbreite. In der Landschaft wird kein zusätzlicher Avatar erzeugt. Die vorhandene frei laufende Figur bleibt sichtbar. Die dezente Sternenanimation berücksichtigt reduzierte Bewegung.
+Unten auf der Demoseite liegt eine helle, minimalistische Winterlandschaft als eigene PNG: `assets/glass-ice-scene-v1.png` (2172 × 724 Pixel). Die weiße Eisfläche in Glasoptik reicht ohne umlaufenden Rand über die gesamte Seitenbreite. Auf schmalen Bildschirmen füllt ein mittiger Ausschnitt den Streifen. In der Landschaft wird kein zusätzlicher Avatar erzeugt; die vorhandene frei laufende Figur bleibt sichtbar. Bildbeschreibung und Entstehung: [docs/GLASS-ICE-SCENE.md](docs/GLASS-ICE-SCENE.md).
 
 `Bittersweet Beauty.mp3` ist die Hintergrundmusik der Demo, mit leiser Lautstärke und Wiederholung. Die Seite versucht, sie beim Besuch zu starten; blockiert der Browser den hörbaren Autostart, beginnt sie nach dem ersten Klick oder über „Musik einschalten“. Der Musikschalter steht oben in der Navigation und direkt an der Winterbühne. Eine manuelle Pause bleibt erhalten; beim Wechsel in einen anderen Tab pausiert die Musik. Audiodatei, `winter-scene.css` und `winter-scene.js` werden im Seitenpaket veröffentlicht. Die normale Avatar-Einbindung lädt keine Musik und keine Winterlandschaft.
 
