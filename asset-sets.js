@@ -78,18 +78,26 @@
   sets['ice-pair']={
     id:'ice-pair',name:'Aurora & Noel',role:'Eiskunstlauf-Paar',plural:true,
     subtitle:'Zwei Kufenpaare. Eine gemeinsame Kür.',
-    introduction:'Die blonde Aurora und ihr Partner Noel zeigen einen glamourösen Paartanz: gemeinsame Gleitfiguren, getrennte synchrone Pirouetten und Sprünge aufeinander zu. Danach finden sie wieder zusammen.',
+    introduction:'Die blonde Aurora und Noel mit blond-rotem Haar tanzen in bunten Glitzerkostümen: zwei eigenständige Eiskunstläufer mit synchronen Pirouetten, Gleitfiguren und Sprüngen aufeinander zu.',
     renderer:'canvas',environment:'none',poses,
-    master:{file:'assets/ice-pair-master-v1.png',width:1254,height:1254,columns:8,rows:8,required:true,
-      // Each cell contains both complete dancers. Only these four rows have
-      // non-overlapping whole figures in the left and right half of the cell.
-      isolatedCells:[16,47],
-      frames:{...sets['ice-skater'].master.frames,poses:[0,1,2,3,0,5,6,7,24,29,40,44,2,4,3,7],
-        flow:[47,46,45,44,43,42,41,40,40,41,42,43,44,45,46,47]}},
-    motion:{...sets['ice-skater'].motion,duet:true,desktop:208,mobile:176,
-      joinedCenters:[.32,.65],speed:.72,performanceSpeed:1.15},
-    // Logical movements all address the same PNG through master.frames.
-    sheets:Object.fromEntries(Object.keys(sets['ice-skater'].sheets).map(key=>[key,{file:'assets/ice-pair-master-v1.png',columns:8,rows:8}])),
+    master:{columns:4,rows:8,required:true,
+      actors:[
+        {id:'aurora',name:'Aurora',file:'assets/aurora-action-v1.png',width:887,height:1774},
+        {id:'noel',name:'Noel',file:'assets/noel-action-v1.png',width:887,height:1774}
+      ],
+      frames:{
+        poses:[0,1,2,2,0,0,0,3,20,21,22,27,2,0,0,3],
+        glide:[4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11],
+        speed:[4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11],
+        spin:[12,12,13,13,14,14,15,15,16,16,17,17,18,18,19,19],
+        jump:[20,21,22,23,12,13,14,15,16,17,18,19,24,25,26,27],
+        jumpBridge:[20,20,21,21,22,22,23,23,24,24,25,25,26,26,27,27],
+        flow:[27,27,26,26,25,25,24,24,24,24,25,25,26,26,27,27],
+        spiral:[28,28,29,29,30,30,30,30,30,30,30,30,31,31,28,28],
+        footwork:[4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11]
+      }},
+    motion:{...sets['ice-skater'].motion,duet:true,desktop:192,mobile:160,spacing:.58},
+    sheets:Object.fromEntries(Object.keys(sets['ice-skater'].sheets).map(key=>[key,{file:'assets/aurora-action-v1.png',columns:4,rows:8}])),
     personality:{
       idle:[
         'Zwei Kufenpaare, ein gemeinsamer Takt.',

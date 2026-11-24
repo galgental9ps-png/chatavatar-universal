@@ -4,14 +4,18 @@ const Assets=require('../asset-sets.js'),Motion=require('../motion-core.js'),Ska
 const pair=Assets.get('ice-pair');
 const makePlan=(mode,width=1200,height=800)=>Skating.createPlan({mode,viewportWidth:width,viewportHeight:height,startX:width-240,facing:1,size:Motion.dimensions(width,pair.motion,height)});
 
-test('One alpha PNG supplies the complete pair and all isolated whole-body poses',()=>{
-  const png=fs.readFileSync(path.join(__dirname,'..',pair.master.file));
-  assert.deepEqual([...png.subarray(0,8)],[137,80,78,71,13,10,26,10]);
-  assert.equal(png.readUInt32BE(16),pair.master.width);assert.equal(png.readUInt32BE(20),pair.master.height);assert.equal(png[25],6);
-  assert.equal(pair.master.columns,8);assert.equal(pair.master.rows,8);
+test('Two distinct alpha PNGs supply 32 complete single-person poses each, with larger source cells',()=>{
+  assert.equal(pair.master.actors.length,2);assert.equal(new Set(pair.master.actors.map(a=>a.file)).size,2);
+  for(const actor of pair.master.actors){
+    const png=fs.readFileSync(path.join(__dirname,'..',actor.file));
+    assert.deepEqual([...png.subarray(0,8)],[137,80,78,71,13,10,26,10]);
+    assert.equal(png.readUInt32BE(16),actor.width);assert.equal(png.readUInt32BE(20),actor.height);assert.equal(png[25],6);
+    assert.equal(actor.width/4,actor.height/8);assert.ok(actor.width/4>200);
+  }
+  assert.equal(pair.master.columns,4);assert.equal(pair.master.rows,8);assert.equal(pair.master.file,undefined);
   const used=new Set();
-  for(const key of Object.keys(pair.sheets))for(const cell of pair.master.frames[key]){assert.ok(cell>=0&&cell<64);used.add(cell);}
-  assert.equal(used.size,64);assert.equal(new Set(Object.values(pair.sheets).map(s=>s.file)).size,1);
+  for(const key of Object.keys(pair.sheets))for(const cell of pair.master.frames[key]){assert.ok(cell>=0&&cell<32);used.add(cell);}
+  assert.equal(used.size,32);assert.ok(!JSON.stringify(pair).includes('ice-pair-master-v1.png'));
 });
 
 test('The pair alternates joined dancing, separate synchronous spins, inward jumps and a joined finale',()=>{
@@ -22,8 +26,8 @@ test('The pair alternates joined dancing, separate synchronous spins, inward jum
       assert.ok(m.x>=0&&m.x+size.width<=width);assert.ok(m.lift>=0&&m.lift+size.height+10<=height);
       assert.ok(m.velocity<=size.performanceSpeed+.01);
       if(m.actors){
-        const [a,b]=m.actors;assert.ok(a.x>=0&&b.x+size.width<=width);assert.ok(a.x<b.x);
-        const cell=pair.master.frames[m.sheet][m.index];assert.ok(cell>=16&&cell<=47,'Only non-overlapping full bodies may be separated.');
+        const [a,b]=m.actors;assert.ok(a.x>=0&&b.x+size.actorWidth<=width+.001);assert.ok(a.x<b.x);
+        const cell=pair.master.frames[m.sheet][m.index];assert.ok(cell>=0&&cell<32);
       }
     }
     if(width>200){
@@ -32,18 +36,18 @@ test('The pair alternates joined dancing, separate synchronous spins, inward jum
       const duet=plan.blocks.find(b=>b.kind==='duet'&&b.part==='converge');
       const t=duet.start+duet.approach+duet.air*.5,first=Skating.atTime(plan,t),later=Skating.atTime(plan,t+10);
       assert.ok(first.lift>0&&later.lift>0);assert.ok(later.actors[0].x>first.actors[0].x);assert.ok(later.actors[1].x<first.actors[1].x);
-      assert.equal(first.actors[0].facing,first.actors[1].facing,'The source already contains opposite inward-facing bodies.');
+      assert.equal(first.actors[0].facing,1);assert.equal(first.actors[1].facing,-1,'The two independent people face toward one another.');
       const spin=plan.blocks.find(b=>b.kind==='duet'&&b.part==='spin'),m=Skating.atTime(plan,spin.start+spin.duration*.5);
-      assert.equal(m.lift,0);assert.ok(m.actors[1].x-m.actors[0].x>size.width*.8);
-    }else assert.ok(!phases.some(p=>p.startsWith('duet-')),'Very narrow screens keep the entire pair together.');
-    const end=Skating.atTime(plan,plan.duration+1000);assert.equal(end.finished,true);assert.equal(end.actors,undefined);assert.equal(end.index,0);
+      assert.equal(m.lift,0);assert.ok(m.actors[1].x-m.actors[0].x>size.spacing);
+    }else assert.ok(!phases.some(p=>p.startsWith('duet-')),'Very narrow screens reduce separation without merging the people.');
+    const end=Skating.atTime(plan,plan.duration+1000);assert.equal(end.finished,true);assert.equal(end.actors.length,2);assert.equal(end.index,0);
   }
 });
 
 test('Separate spins and inward jumps finish, and skipped frames cannot strand either partner',()=>{
   for(const mode of ['duet','spin','jump']){
     const plan=makePlan(mode),end=Skating.atTime(plan,plan.duration+60000);
-    assert.equal(end.finished,true);assert.equal(end.lift,0);assert.equal(end.actors,undefined);
+    assert.equal(end.finished,true);assert.equal(end.lift,0);assert.equal(end.actors.length,2);
     const separate=plan.blocks.filter(b=>b.kind==='duet');
     assert.equal(separate.some(b=>b.part==='spin'),mode!=='jump');
     assert.equal(separate.some(b=>b.part==='converge'&&b.jump),mode!=='spin');
@@ -55,23 +59,25 @@ test('Separate spins and inward jumps finish, and skipped frames cannot strand e
   }
 });
 
-test('Both partners use the same source cell and scale, each drawn as one complete figure',async()=>{
+test('Each avatar loads its own PNG and draws a whole source cell at the same phase and scale',async()=>{
   const calls=[],urls=[];
   const canvas=()=>({style:{},dataset:{},width:0,height:0,setAttribute(){},getBoundingClientRect(){return{width:208};},getContext(){return{clearRect(){},drawImage(...args){calls.push(args);}};}});
-  class Image{constructor(){this.naturalWidth=this.naturalHeight=pair.master.width;}set src(url){urls.push(url);queueMicrotask(()=>this.onload());}}
+  class Image{constructor(){this.naturalWidth=887;this.naturalHeight=1774;}set src(url){this.url=url;urls.push(url);queueMicrotask(()=>this.onload());}}
   const window={UniversalAvatarAssets:Assets,devicePixelRatio:2};
   vm.runInNewContext(fs.readFileSync(require.resolve('../mascot.js'),'utf8'),{window,document:{currentScript:{src:'https://example.test/mascot.js'},createElement:canvas},Image,URL,setTimeout,clearTimeout});
-  const renderer=window.JimmyMascot.forAsset('ice-pair');await renderer.preload();const a=renderer.create(),b=renderer.create();calls.length=0;
+  const renderer=window.JimmyMascot.forAsset('ice-pair');await renderer.preload();const a=renderer.create(0),b=renderer.create(1);calls.length=0;
   for(const [actor,element] of [[0,a],[1,b]])renderer.paint(element,'skate-performance',0,1,{actor,selection:{sheet:'spin',index:4}});
-  assert.equal(urls.length,1);assert.equal(calls.length,2);assert.equal(a.dataset.frame,b.dataset.frame);
-  const cw=pair.master.width/8;assert.equal(calls[1][1]-calls[0][1],cw/2);assert.equal(calls[0][2],calls[1][2]);
-  for(const c of calls){assert.equal(c[3],cw/2);assert.equal(c[4],cw);assert.deepEqual(c.slice(5),[104,0,208,416]);}
-  assert.throws(()=>renderer.paint(a,'walk',0,1,{actor:0,selection:{sheet:'glide',index:0}}),/vollständiges Paar/);
+  assert.equal(urls.length,2);assert.equal(calls.length,2);assert.equal(a.dataset.frame,b.dataset.frame);
+  assert.ok(urls[0].endsWith('aurora-action-v1.png'));assert.ok(urls[1].endsWith('noel-action-v1.png'));
+  assert.notEqual(calls[0][0],calls[1][0]);const cw=887/4;
+  assert.equal(calls[0][1],calls[1][1]);assert.equal(calls[0][2],calls[1][2]);
+  for(const c of calls){assert.equal(c[3],cw);assert.equal(c[4],cw);assert.deepEqual(c.slice(5),[0,0,416,416]);}
+  await renderer.preload();assert.equal(urls.length,2,'Repeated selections reuse both decoded PNGs.');
 });
 
-test('An unavailable pair PNG rejects loading instead of substituting an unrelated atlas row',async()=>{
+test('An unavailable individual PNG rejects the pair load without substituting the old combined atlas',async()=>{
   const urls=[];class Image{set src(url){urls.push(url);queueMicrotask(()=>this.onerror());}}
   const window={UniversalAvatarAssets:Assets};
   vm.runInNewContext(fs.readFileSync(require.resolve('../mascot.js'),'utf8'),{window,document:{currentScript:{src:'https://example.test/mascot.js'}},Image,URL,setTimeout,clearTimeout});
-  await assert.rejects(window.JimmyMascot.forAsset('ice-pair').preload(),/Master-Atlas/);assert.equal(urls.length,1);
+  await assert.rejects(window.JimmyMascot.forAsset('ice-pair').preload(),/Action-PNG/);assert.equal(urls.length,2);assert.ok(urls.every(u=>!u.includes('ice-pair-master')));
 });

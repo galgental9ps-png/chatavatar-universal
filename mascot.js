@@ -12,7 +12,7 @@
   function createRenderer(asset) {
     const images = Object.fromEntries(Object.entries(asset.sheets).map(([key,sheet])=>[key,base+sheet.file]));
     const decoded = {};
-    let loaded, masterImage;
+    let loaded, masterImage,actorImages;
     function removeFragments(p,stride,ox,oy,w,h,labels,queue){
       labels.fill(0);const parts=[null];let largest=0;
       const alpha=index=>p[((oy+Math.floor(index/w))*stride+ox+index%w)*4+3];
@@ -88,20 +88,31 @@
         return;
       }
       fitCanvas(element);
-      if(masterImage){
+      if(actorImages){
         const cell=asset.master.frames[sheet][index],actor=details.actor;
-        const isolated=actor===0||actor===1,key='master:'+cell+':'+facing+':'+(isolated?actor:'pair');
-        if(isolated&&(!asset.master.isolatedCells||cell<asset.master.isolatedCells[0]||cell>asset.master.isolatedCells[1]))throw Error('Diese Pose ist nur als vollständiges Paar verfügbar.');
+        const individual=actor===0||actor===1,key='actors:'+cell+':'+facing+':'+(individual?actor:'preview');
+        if(element._frameKey===key)return;
+        const ctx=element.getContext('2d');if(!ctx)return;
+        const w=element.width;ctx.clearRect(0,0,w,w);ctx.globalAlpha=1;ctx.filter='none';ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+        const draw=(id,x,y,size)=>{
+          const source=actorImages[id],cw=source.naturalWidth/asset.master.columns,ch=source.naturalHeight/asset.master.rows;
+          // Each source cell contains exactly one complete person. Never crop
+          // halves of a paired illustration or compose separate body parts.
+          ctx.drawImage(source,cell%asset.master.columns*cw,Math.floor(cell/asset.master.columns)*ch,cw,ch,x,y,size,size);
+        };
+        if(individual){draw(actor,0,0,w);element.dataset.sourceFile=asset.master.actors[actor].file;}
+        else{draw(0,0,w*.25,w*.66);draw(1,w*.34,w*.25,w*.66);element.dataset.sourceFile=asset.master.actors.map(a=>a.file).join(' ');}
+        element.dataset.actor=individual?String(actor):'preview';element._frameKey=key;return;
+      }
+      if(masterImage){
+        const cell=asset.master.frames[sheet][index],key='master:'+cell+':'+facing;
         if(element._frameKey===key)return;
         const ctx=element.getContext('2d');if(!ctx)return;
         const w=element.width,cw=masterImage.naturalWidth/asset.master.columns,ch=masterImage.naturalHeight/asset.master.rows;
         ctx.clearRect(0,0,w,w);ctx.globalAlpha=1;ctx.filter='none';ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
         // The source has already been cleaned and aligned to a common baseline.
-        // A separated dancer is one intact full-body illustration from the same
-        // source cell and animation phase as their partner. Never assemble limbs.
         const sx=(cell%asset.master.columns)*cw,sy=Math.floor(cell/asset.master.columns)*ch;
-        if(isolated)ctx.drawImage(masterImage,sx+actor*cw/2,sy,cw/2,ch,w/4,0,w/2,w);
-        else ctx.drawImage(masterImage,sx,sy,cw,ch,0,0,w,w);
+        ctx.drawImage(masterImage,sx,sy,cw,ch,0,0,w,w);
         element._frameKey=key;return;
       }
       const key=[sheet,index,facing].join(':');if(element._frameKey===key||!decoded[sheet])return;
@@ -117,6 +128,15 @@
       images, asset,
       preload() {
         if (!loaded) {
+          if(asset.master?.actors){
+            loaded=Promise.all(asset.master.actors.map(spec=>new Promise((resolve,reject)=>{
+              const image=new Image(),timer=setTimeout(()=>reject(Error('Action-PNG nicht verfügbar.')),12000);
+              image.onload=()=>{clearTimeout(timer);if(image.naturalWidth!==spec.width||image.naturalHeight!==spec.height){reject(Error('Ungültiges Action-Raster.'));return;}resolve(image);};
+              image.onerror=()=>{clearTimeout(timer);reject(Error('Action-PNG nicht verfügbar.'));};
+              const url=base+spec.file;if(/^https?:/.test(url))image.crossOrigin='anonymous';image.src=url;
+            }))).then(images=>{actorImages=images;}).catch(error=>{loaded=undefined;throw error;});
+            return loaded;
+          }
           const legacy=()=>Promise.all(Object.entries(images).map(([key,url]) => new Promise((resolve,reject) => {
           const image = new Image(),timeout=setTimeout(()=>reject(Error('Die Figur konnte nicht geladen werden.')),20000);
           image.onload = () => {try{decoded[key]=asset.renderer==='canvas'?prepare(image,asset.sheets[key]):{image};clearTimeout(timeout);resolve();}catch(error){clearTimeout(timeout);reject(error);}};
@@ -132,11 +152,11 @@
         }
         return loaded;
       },
-      create() {
+      create(actor) {
         const element = document.createElement(asset.renderer==='canvas'?'canvas':'span');
         element.className = 'jimmy-frame';
         element.setAttribute('aria-hidden','true');
-        paint(element);
+        paint(element,'idle',0,1,{actor});
         return element;
       },
       paint

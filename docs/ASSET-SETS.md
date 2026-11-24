@@ -22,9 +22,11 @@ Die Eiskunstläuferin ist eine transparente Figur. Es wird keine Eisfläche oder
 
 Die neue Schnittstelle ist `await JimmyChatAvatar.instance.setAsset('jimmy')` bzw. `await JimmyChatAvatar.instance.setAsset('ice-skater')`. Der Renderer stellt mit `JimmyMascot.forAsset(id)` pro Figur einen eigenen zwischengespeicherten Bildsatz bereit. Wiederholte Wechsel nutzen bereits geladene Bilder. Das Ereignis `jimmy:asset-change` meldet den erfolgreichen Austausch an die Vorschau. `ACTIVE_ASSET_SET` bleibt die veröffentlichte Voreinstellung; eine Besucherauswahl verändert diese Datei nicht.
 
-## Paarlauf in einer PNG
+## Paarlauf mit zwei eigenen Action-PNGs
 
-`assets/ice-pair-master-v1.png` enthält 64 Felder mit beiden Tänzern und echtem Alpha (1254 × 1254 Pixel, 8 × 8). `ice-pair` ist die neue Voreinstellung. Die Tänzer trennen sich während des Synchronteils räumlich, drehen im gleichen Takt und springen gleichzeitig aufeinander zu. Danach finden sie wieder zusammen und setzen die gestützten Paarfiguren fort. Ganze Figuren, Größenregeln, Ablauf, Einzelfunktionen und beide Bildprompts sind in [PAIR-SKATING.md](PAIR-SKATING.md) beschrieben. `JimmyChatAvatar.instance.duet()` startet den Synchronteil; `perform()` zeigt die gesamte Kür. Der Figurenschalter erhält Lumi und Jimmy.
+Aurora und Noel verwenden `assets/aurora-action-v1.png` und `assets/noel-action-v1.png`. Jede transparente PNG enthält nur eine Figur in 32 vollständigen Posen, mit 4 × 8 Feldern bei 887 × 1774 Pixel. Die frühere gemeinsame Bildtafel wird nicht mehr geladen. Beide bleiben während aller Bewegungen zwei getrennte Avatare mit eigenem Canvas. Ein gemeinsamer Takt synchronisiert die Bildphasen, Pirouetten und Sprünge aufeinander zu; die Laufwege werden für beide separat berechnet. Nach dem Annähern gleiten sie in naher Formation weiter, weiterhin aus zwei eigenen PNGs.
+
+Aurora trägt ein pink-violettes Kristallkleid mit Türkisakzenten; Noel ein blau-violettes Glitzerkostüm und blond-rote Haare. Bildaufbau, Größenregeln und vollständige Bildvorgaben stehen in [PAIR-SKATING.md](PAIR-SKATING.md). `JimmyChatAvatar.instance.duet()` startet den Synchronteil; `perform()` die gesamte Kür. Lumi und Jimmy bleiben auswählbar.
 
 ## Lumi-Master-Atlas (64 Posen)
 

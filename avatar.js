@@ -4,7 +4,7 @@
   if (window.JimmyChatAvatar) return;
   const script = document.currentScript;
   const BASE = new URL('.', script.src).href;
-  const VERSION = 'ice-pair-15';
+  const VERSION = 'separate-pair-16';
   const deps = new Map();
   function loadScript(url) {
     if (!deps.has(url)) deps.set(url, new Promise((resolve, reject) => { const s = document.createElement('script'); s.src = url; s.onload = resolve; s.onerror = () => reject(Error('Datei konnte nicht geladen werden: ' + url)); document.head.append(s); }));
@@ -53,7 +53,7 @@
         this.renderer=window.JimmyMascot.forAsset?.(this.asset.id)||window.JimmyMascot;
         await this.renderer.preload(); if (this.destroyed) return;
         this.quips = window.JimmyPersonality.createDeck(Math.random,this.asset.personality);
-        this.visual = this.renderer.create(); this.sprite.replaceChildren(this.visual); this.preparePartner();this.drawFrame();
+        this.visual = this.renderer.create(this.asset.master?.actors?0:undefined); this.sprite.replaceChildren(this.visual); this.preparePartner();this.drawFrame();
         this.position();
         const K = window.JimmyKnowledge; let data = this.options.knowledge;
         if (!data) {
@@ -98,7 +98,7 @@
       this.asset=asset;this.renderer=renderer;this.quips=window.JimmyPersonality.createDeck(Math.random,asset.personality);
       this.drag=null;this.frame=0;this.walkDistance=0;this.velocity=0;this.fallVelocity=0;this.targetX=this.x;this.y=this.size().ground;
       this.host.dataset.asset=this.character.dataset.asset=asset.id;
-      this.visual=renderer.create();this.sprite.replaceChildren(this.visual);this.preparePartner();
+      this.visual=renderer.create(asset.master?.actors?0:undefined);this.sprite.replaceChildren(this.visual);this.preparePartner();
       this.character.setAttribute('aria-label',asset.name+' öffnen. Zum Versetzen ziehen.');this.launcher.textContent=asset.name+' rufen';
       this.panel.setAttribute('aria-label','Antworten von '+asset.name);
       const now=performance.now();this.nextRoutine=now+3500;this.nextWalk=now+4500;this.nextHop=now+12000;this.nextGesture=now+9000;this.nextQuip=now+9500;
@@ -115,8 +115,8 @@
         this.partnerSprite=el('span','sprite');this.partnerSprite.setAttribute('aria-hidden','true');
         this.partner.append(this.partnerSprite);this.shadow.append(this.partner);this.bindDrag(this.partner);
       }
-      this.partner.dataset.asset=this.asset.id;this.partnerVisual=this.renderer.create();this.partnerSprite.replaceChildren(this.partnerVisual);
-      this.partner.hidden=true;
+      this.partner.dataset.asset=this.asset.id;this.partnerVisual=this.renderer.create(1);this.partnerSprite.replaceChildren(this.partnerVisual);
+      this.partner.hidden=this.hidden;
     }
     size(){return window.JimmyMotion?window.JimmyMotion.dimensions(innerWidth,this.asset?.motion,innerHeight):{width:innerWidth<=540?152:192,height:innerWidth<=540?152:192,ground:10};}
     bindDrag(character=this.character) {
@@ -145,22 +145,26 @@
       this.character.dataset.state = state; this.drawFrame();
     }
     drawFrame() {
-      const actors=this.asset?.motion.duet&&this.programFrame?.actors;
+      const actors=this.actorPositions();
       const details={elapsed:Math.max(0,performance.now()-this.stateStarted)/1000,style:this.skateStyle,selection:this.programFrame,remaining:Math.abs((this.targetX??this.x)-this.x)/Math.max(1,this.size().speed)};
       if (this.visual) this.renderer.paint(this.visual, this.state, this.motion.matches ? 0 : this.frame,actors?actors[0].facing:this.facing,{...details,...(actors?{actor:0}:{})});
       if(this.partner){
-        this.partner.hidden=!actors||this.hidden||this.opened;
-        if(actors&&this.partnerVisual)this.renderer.paint(this.partnerVisual,this.state,this.frame,actors[1].facing,{...details,actor:1});
+        this.partner.hidden=!actors||this.hidden;
+        if(actors&&this.partnerVisual)this.renderer.paint(this.partnerVisual,this.state,this.frame,actors[1].facing,{...details,actor:1,selection:actors[1].selection||details.selection});
         this.partner.dataset.state=this.state;this.partner.dataset.paused=String(this.paused);
       }
       this.character.dataset.paused = String(this.paused);
     }
+    actorPositions(){
+      if(!this.asset?.motion.duet)return null;
+      return this.programFrame?.actors||[{x:this.x,facing:this.facing},{x:this.x+this.size().spacing,facing:this.facing}];
+    }
     position() {
-      const size = this.size().width, width = size;
+      const dimensions=this.size(),size=dimensions.height,width=dimensions.width;
       this.character.style.width=this.character.style.height=size+'px';
       this.x = Math.max(0, Math.min(Math.max(0, innerWidth - width), this.x)); this.y = Math.max(5, Math.min(Math.max(5, innerHeight - size), this.y));
       const ratio=window.devicePixelRatio||1;
-      const actors=this.asset?.motion.duet&&this.programFrame?.actors;
+      const actors=this.actorPositions();
       const place=(element,x)=>{element.style.width=element.style.height=size+'px';element.style.bottom='0';element.style.transform='translate('+Math.round(x*ratio)/ratio+'px,'+(-Math.round(this.y*ratio)/ratio)+'px)';};
       place(this.character,actors?actors[0].x:this.x);
       if(actors&&this.partner)place(this.partner,actors[1].x);
@@ -319,7 +323,7 @@
     }
     open() { if (!this.pack) return; this.settleJump(); this.hideTip(); this.hidden = false; this.character.hidden = false; this.launcher.hidden = true; this.opened = true; this.panel.hidden = false; this.character.setAttribute('aria-expanded', 'true'); this.setState('wave'); this.render(); this.panel.querySelector('.close')?.focus({ preventScroll: true }); }
     close() { this.opened = false; this.panel.hidden = true; this.character.setAttribute('aria-expanded', 'false'); this.nextWalk = performance.now() + 5000;this.nextRoutine=this.nextWalk; this.setState('idle'); this.character.focus({ preventScroll: true }); }
-    minimize() { this.settleJump(); this.hideTip(); this.opened = false; this.hidden = true; this.panel.hidden = true; this.character.hidden = true; this.launcher.hidden = false; this.character.setAttribute('aria-expanded', 'false'); this.launcher.focus(); }
+    minimize() { this.settleJump(); this.hideTip(); this.opened = false; this.hidden = true; this.panel.hidden = true; this.character.hidden = true;if(this.partner)this.partner.hidden=true; this.launcher.hidden = false; this.character.setAttribute('aria-expanded', 'false'); this.launcher.focus(); }
     buttonFor(entry) {
       const b = el('button', 'choice'); b.type = 'button'; b.append(el('span', '', entry.question)); b.onclick = () => this.answer(entry.id); return b;
     }

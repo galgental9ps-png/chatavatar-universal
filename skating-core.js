@@ -44,15 +44,15 @@
     const duet = ({spin=true,jump=true}={}) => {
       const center=(left+right)/2;
       pass([phase('glide',950)],center);
-      // On very narrow windows the intact pair remains together. A separated
-      // dancer needs a full hit target and room for their uncut illustration.
-      if(right-left<size.width*.65){turn(1800,2,false,500,550);return;}
-      const centers=size.joinedCenters||[.32,.65];
-      const joined=[center+(centers[0]-.5)*size.width,center+(centers[1]-.5)*size.width];
-      const outer=[left,right],travel=Math.max(...joined.map((value,i)=>Math.abs(value-outer[i])));
+      const actorWidth=size.actorWidth||size.height,spacing=size.spacing||0;
+      const joined=[center,center+spacing],outer=[margin,viewportWidth-actorWidth-margin];
+      // Both avatars remain independent on small screens; only their distance
+      // is reduced when the viewport cannot accommodate a wider separation.
+      if(outer[1]-outer[0]<=spacing+actorWidth*.15){turn(1800,2,false,500,550);return;}
+      const travel=Math.max(...joined.map((value,i)=>Math.abs(value-outer[i])));
       const pacedTravel=Math.max(1900/tempo,1875*travel/topSpeed);
       const addDuet=(part,fromActors,toActors,duration,extra={})=>add({kind:'duet',part,from:center,to:center,
-        facing:1,fromActors,toActors,duration,centerBias:(.5-(centers[0]+centers[1])/2)*size.width,...extra});
+        facing:1,fromActors,toActors,duration,centerBias:-spacing/2,...extra});
       addDuet('open',joined,outer,pacedTravel);
       if(spin)addDuet('spin',outer,outer,2800/spinTempo);
       const air=1470/jumpTempo,landing=600/tempo;
@@ -94,7 +94,7 @@
         add({ kind: 'bow', from: x, to: x, facing: direction, duration: 1050 / tempo });
       }
     }
-    return { mode, blocks, duration: time, size: size.width,stride:size.stride||size.width*1.3,approachStride:size.approachStride||size.stride||size.width*1.3,maxLift:Math.max(0,viewportHeight-size.height-22),
+    return { mode, blocks, duration: time, size: size.width,duet:!!size.duet,spacing:size.spacing||0,actorWidth:size.actorWidth||size.width,stride:size.stride||size.width*1.3,approachStride:size.approachStride||size.stride||size.width*1.3,maxLift:Math.max(0,viewportHeight-size.height-22),
       jumpHeight: Math.min(size.height * .43, Math.max(0, viewportHeight - size.height - 22)) };
   }
 
@@ -172,14 +172,16 @@
     const travel=Math.max(...block.fromActors.map((from,i)=>Math.abs(block.toActors[i]-from)));
     const base={x:positions.reduce((sum,value)=>sum+value,0)/2+block.centerBias,
       facing:1,lift:0,velocity:travel*30*p*p*(1-p)*(1-p)/(block.duration/1000)};
-    let frame,actorFacing=1;
+    let frame,facings=[1,-1],partnerSelection;
     if(block.part==='open'){
-      actorFacing=-1;
+      facings=[-1,1];
       frame={sheet:'jumpBridge',index:12+Math.min(3,Math.floor(p*4)),phase:'duet-open'};
     }else if(block.part==='spin'){
       frame={sheet:'spin',index:wrap(32*smooth(p)),phase:'duet-spin'};
     }else if(block.part==='rejoin'){
-      frame={sheet:'jumpBridge',index:15,phase:'duet-rejoin',safeExit:p>.9};
+      const index=Math.min(15,Math.floor(16*smooth(p)));
+      frame={sheet:'spin',index,phase:'duet-rejoin',safeExit:p>.9};
+      if(index>=8){facings=[1,1];partnerSelection={sheet:'spin',index:wrap(-index)};}
     }else if(!block.jump){
       frame={sheet:'jumpBridge',index:12+Math.min(3,Math.floor(p*4)),phase:'duet-return'};
     }else if(elapsed<block.approach){
@@ -200,20 +202,21 @@
     }else{
       frame={sheet:'jumpBridge',index:15,phase:'duet-landing-exit',safeExit:true};
     }
-    return {...base,...frame,actors:positions.map(x=>({x,facing:actorFacing})),finished:false};
+    return {...base,...frame,actors:positions.map((x,i)=>({x,facing:facings[i],...(i===1&&partnerSelection?{selection:partnerSelection}:{})})),finished:false};
   }
 
   function atTime(plan, milliseconds) {
     const time = Math.max(0, milliseconds), last = plan.blocks.at(-1);
-    if (time >= plan.duration) return { x: last.to, facing: last.toFacing || last.facing, lift: 0, velocity: 0,
-      sheet: 'poses', index: 0, phase: 'finished', finished: true };
+    const joined=move=>plan.duet?{...move,actors:move.actors||[{x:move.x,facing:move.facing},{x:move.x+plan.spacing,facing:move.facing}]}:move;
+    if (time >= plan.duration) return joined({ x: last.to, facing: last.toFacing || last.facing, lift: 0, velocity: 0,
+      sheet: 'poses', index: 0, phase: 'finished', finished: true });
     const block = plan.blocks.find(block => time < block.end), elapsed = time - block.start;
     if(block.kind==='duet')return sampleDuet(block,elapsed,plan);
-    if (block.kind === 'pass') return { ...samplePass(block, elapsed, plan), finished: false };
-    if (block.kind === 'turn') return { ...sampleTurn(block, elapsed), finished: false };
-    return { x: block.from, facing: block.facing, lift: 0, velocity: 0,
+    if (block.kind === 'pass') return joined({ ...samplePass(block, elapsed, plan), finished: false });
+    if (block.kind === 'turn') return joined({ ...sampleTurn(block, elapsed), finished: false });
+    return joined({ x: block.from, facing: block.facing, lift: 0, velocity: 0,
       ...(elapsed < block.duration * 2 / 3 ? { sheet: 'flow', index: Math.max(8, 15 - Math.floor(elapsed / (block.duration * 2 / 3) * 8)) } : { sheet: 'poses', index: 15 }),
-      phase: 'bow', finished: false };
+      phase: 'bow', finished: false });
   }
   return { createPlan, atTime, jumpAt, smooth };
 });
