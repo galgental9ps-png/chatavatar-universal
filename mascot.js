@@ -89,10 +89,14 @@
       const rects=[],anchors=[];
       for(let cell=0;cell<atlas.columns*atlas.rows;cell++){
         const col=cell%atlas.columns,row=Math.floor(cell/atlas.columns);
-        const x=Math.round(col*canvas.width/atlas.columns),right=Math.round((col+1)*canvas.width/atlas.columns);
-        const y=spec.rowBounds?.[row]??Math.round(row*canvas.height/atlas.rows);
-        const bottom=spec.rowBounds?.[row+1]??Math.round((row+1)*canvas.height/atlas.rows);
-        const w=right-x,h=bottom-y,labels=new Int32Array(w*h),queue=new Int32Array(w*h);
+        // A painted master may have slightly uneven spacing. Source rectangles
+        // enclose each complete person, including fingers beyond nominal cells.
+        const cellRect=spec.cellRects?.[cell];
+        const x=cellRect?.[0]??Math.round(col*canvas.width/atlas.columns);
+        const y=cellRect?.[1]??spec.rowBounds?.[row]??Math.round(row*canvas.height/atlas.rows);
+        const w=cellRect?.[2]??Math.round((col+1)*canvas.width/atlas.columns)-x;
+        const h=cellRect?.[3]??(spec.rowBounds?.[row+1]??Math.round((row+1)*canvas.height/atlas.rows))-y;
+        const labels=new Int32Array(w*h),queue=new Int32Array(w*h);
         removeFragments(p,canvas.width,x,y,w,h,labels,queue);
         let top=h,feet=0;
         for(let py=0;py<h;py++){

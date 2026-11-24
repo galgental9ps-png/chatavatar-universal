@@ -208,20 +208,16 @@
     id:'rave-grandpa',name:'Rave-Opa',role:'Hard-Techno-Opa',subtitle:'Ernster Blick. Großer Groove.',
     introduction:'Weißer Schnurrbart, schwarze Brille und riesige Sneaker: Der Rave-Opa tanzt schnellen Melbourne Shuffle, Heel-Toe, Charleston, kräftige Techno-Arm-Moves und ganze Drehungen. Sein Blick bleibt dabei herrlich ernst.',
     renderer:'canvas',environment:'none',poses,
-    master:{columns:4,rows:8,required:true,normalize:true,
-      actors:[{id:'rave-opa',name:'Rave-Opa',file:'assets/rave-opa-shuffle-v1.png',width:887,height:1774,heightRatio:.84,reference:0}],
-      frames:skeletonFrames,
-      variants:{encore:{columns:4,rows:8,normalize:true,
-        actors:[{id:'rave-opa',name:'Rave-Opa',file:'assets/rave-opa-tricks-v1.png',width:887,height:1774,heightRatio:.84,reference:24}],
-        frames:sets['shuffle-skeleton'].master.variants.encore.frames},
-        running:{columns:2,rows:4,normalize:true,
-          actors:[{id:'rave-opa',name:'Rave-Opa',file:'assets/rave-opa-running-v1.png',width:887,height:1774,heightRatio:.84,reference:2,mirrorCells:[5]}],
-          frames:{running:doubled(0)}},
-        moves:{columns:4,rows:8,normalize:true,
-          actors:[{id:'rave-opa',name:'Rave-Opa',file:'assets/rave-opa-moves-v1.png',width:887,height:1774,heightRatio:.84,reference:0}],
-          frames:sets['shuffle-skeleton'].master.variants.moves.frames}}},
+    master:{columns:8,rows:12,required:true,normalize:true,
+      actors:[{id:'rave-opa',name:'Rave-Opa',file:'assets/rave-opa-master-v2.png',width:1024,height:1536,heightRatio:.84,reference:32,
+        cellRects:[[35,7,87,126],[164,6,87,127],[291,6,89,127],[420,6,89,127],[545,6,86,127],[669,6,90,127],[796,6,92,127],[920,7,96,126],[27,137,91,125],[155,137,92,125],[283,137,93,126],[414,137,90,125],[542,137,91,126],[674,138,88,125],[805,137,88,126],[933,138,86,125],[29,269,91,128],[159,269,90,128],[291,269,86,127],[418,269,90,128],[542,269,95,128],[671,269,95,128],[799,269,93,127],[926,269,93,128],[26,400,94,128],[162,400,90,128],[285,401,95,127],[412,401,97,127],[542,401,98,127],[668,401,99,127],[799,401,96,127],[926,401,88,127],[34,533,86,126],[169,532,77,127],[302,533,64,127],[419,533,80,127],[541,533,90,127],[673,534,80,126],[801,533,69,127],[927,533,78,127],[32,663,86,120],[160,663,88,120],[289,663,87,120],[416,663,90,120],[545,663,86,121],[668,663,91,121],[802,663,86,120],[924,663,91,121],[37,786,83,122],[159,785,90,123],[292,786,86,121],[420,786,82,122],[547,786,86,122],[676,786,83,122],[804,786,86,122],[932,787,84,121],[31,911,88,120],[156,912,92,119],[277,912,104,120],[429,911,74,121],[557,912,68,120],[682,913,67,119],[799,912,93,120],[937,926,70,106],[7,1036,135,127],[156,1036,115,127],[302,1038,67,126],[408,1038,103,125],[523,1038,132,125],[674,1038,94,125],[795,1037,74,127],[897,1036,124,127],[31,1167,87,122],[162,1167,86,123],[290,1167,86,122],[419,1167,85,122],[549,1167,84,122],[673,1167,87,123],[799,1167,89,123],[933,1167,85,123],[32,1293,87,121],[159,1294,92,120],[270,1293,126,122],[416,1294,90,120],[555,1294,68,121],[670,1294,93,120],[796,1294,95,121],[929,1294,88,121],[26,1419,89,113],[157,1419,90,114],[289,1420,92,111],[417,1420,90,112],[539,1420,91,112],[668,1420,95,112],[798,1420,97,112],[931,1420,86,112]]}],
+      selectionSheets:{'moves:spin':'spin-open'},
+      frames:{running:Array.from({length:16},(_,i)=>i),tstep:doubled(16),slide:doubled(24),
+        spin:doubled(32),kicks:doubled(40),groove:doubled(48),
+        poses:[56,57,58,59,60,61,63,62,40,41,42,56,62,60,61,63],
+        'spin-open':doubled(64),heeltoe:doubled(72),hands:doubled(80),charleston:doubled(88)}},
     motion:{kind:'shuffle',desktop:192,mobile:160,stride:1.1,speed:.74,acceleration:2.6,frames:16,bpm:144,power:true},
-    sheets:Object.fromEntries(Object.keys(sets['shuffle-skeleton'].sheets).map(sheet=>[sheet,{file:'assets/rave-opa-shuffle-v1.png',columns:4,rows:8}])),
+    sheets:Object.fromEntries([...Object.keys(sets['shuffle-skeleton'].sheets),'spin-open'].map(sheet=>[sheet,{file:'assets/rave-opa-master-v2.png',columns:8,rows:12}])),
     personality:{
       idle:['Der Schnurrbart sitzt. Der Beat darf kommen.','Meine Sneaker haben heute Ausgang.','Ich habe den Groove schon vor dem Frühstück gefunden.','Ernster Blick, sehr gute Laune.','In dieser Weste steckt ordentlich Rhythmus.','Meine Brille bleibt auf. Ich möchte jeden Beat sehen.','Ein guter Takt wird mit den Jahren besser.','Heute steht Fußarbeit auf dem Stundenplan.'],
       walk:['Kleine Schritte, schwere Bässe.','Ein Heel-Toe nach links. Das läuft.','Die Sneaker übernehmen kurz die Führung.','Ein Schritt zur Seite, der Groove kommt mit.','Der Boden hat heute Tanzdienst.','Ich schiebe eine kleine Shuffle-Runde ein.'],
@@ -237,11 +233,15 @@
   const wrap=(frame,count)=>((Math.floor(frame)%count)+count)%count;
   function frameFor(asset,state='idle',frame=0,details={}){
     if(asset.motion.kind==='shuffle'){
-      if(details.selection&&Object.hasOwn(asset.sheets,details.selection.sheet))return {sheet:details.selection.sheet,index:wrap(details.selection.index,16),
-        ...(asset.master.variants[details.selection.atlas]?.frames[details.selection.sheet]?{atlas:details.selection.atlas}:{})};
+      if(details.selection&&Object.hasOwn(asset.sheets,details.selection.sheet)){
+        const sheet=asset.master.selectionSheets?.[details.selection.atlas+':'+details.selection.sheet]||details.selection.sheet;
+        return {sheet,index:wrap(details.selection.index,16),
+          ...(asset.master.variants?.[details.selection.atlas]?.frames[sheet]?{atlas:details.selection.atlas}:{})};
+      }
       if(state==='walk')return {sheet:'slide',index:wrap(frame,16)};
-      if(state==='idle')return {sheet:'groove',index:details.frozen?0:wrap(Math.max(0,details.elapsed||0)*(asset.motion.power?asset.motion.bpm/60*4:8),16),atlas:'encore'};
-      return {sheet:'poses',index:state==='jump'?[8,9,10,11][Math.min(3,Math.max(0,Math.floor(frame)))]:asset.poses[state]??0,atlas:'encore'};
+      const encore=asset.master.variants?.encore?{atlas:'encore'}:{};
+      if(state==='idle')return {sheet:'groove',index:details.frozen?0:wrap(Math.max(0,details.elapsed||0)*(asset.motion.power?asset.motion.bpm/60*4:8),16),...encore};
+      return {sheet:'poses',index:state==='jump'?[8,9,10,11][Math.min(3,Math.max(0,Math.floor(frame)))]:asset.poses[state]??0,...encore};
     }
     const ice=asset.motion.kind==='ice',elapsed=Math.max(0,details.elapsed||0)*(ice?asset.motion.tempo||1:1);
     if(ice&&details.selection&&Object.hasOwn(asset.sheets,details.selection.sheet))return {sheet:details.selection.sheet,index:wrap(details.selection.index,16),

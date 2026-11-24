@@ -27,7 +27,7 @@ Die neue Schnittstelle ist `await JimmyChatAvatar.instance.setAsset('jimmy')` bz
 
 ## Rave-Opa
 
-Vier eigene transparente Action-PNGs enthalten 104 vollständige Posen. `perform()` startet die Hard-Techno-Folge; `perform('freestyle')` den zweiten Rave-Mix. Alle bekannten Shuffle-Einzelknöpfe stehen ebenfalls bereit. Das eigene Profil verwendet 144 BPM, während Skelly bei seinem bisherigen Takt bleibt. Details: [RAVE-OPA.md](RAVE-OPA.md).
+Eine gemeinsame transparente Master-PNG (`assets/rave-opa-master-v2.png`) enthält 96 vollständige Posen für alle Moves und Gesten. Der Opa wechselt beim Tanzen keine Bildtafeln mehr; sämtliche Aktionen verwenden denselben Zeichenstil und dieselbe Größenreferenz. `perform()` startet die Hard-Techno-Folge; `perform('freestyle')` den zweiten Rave-Mix. Alle bekannten Shuffle-Einzelknöpfe stehen ebenfalls bereit. Das eigene Profil verwendet 144 BPM, während Skelly bei seinem bisherigen Takt bleibt. Details: [RAVE-OPA.md](RAVE-OPA.md).
 
 ## Melbourne-Shuffle-Skelett
 

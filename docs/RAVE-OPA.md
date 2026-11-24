@@ -2,17 +2,30 @@
 
 Ein eigenständiges sechstes Figurenset: stockiger alter Mann mit kurzem silberweißem Haar, weißem Schnurrbart, buschigen Augenbrauen, schwarzer rechteckiger Brille und ruhigem ernstem Gesicht. Er trägt eine orangefarbene Trainingsjacke mit hellen Streifen, eine petrolblaue Steppweste, eine dunkelblaue weite Trainingshose und sehr große grauweiße Sneaker mit Orange- und Limettenakzenten. Alle Figuren wurden mit der integrierten Bildgenerierung erstellt und als PNG-Quellen im Repository gespeichert.
 
-| Datei | Raster, Quelldimensionen | Posen |
+| Aktive Datei | Quelldimensionen | Inhalt |
 | --- | --- | --- |
-| `assets/rave-opa-shuffle-v1.png` | 4×8, 887×1774 Pixel | 16 Running-Man-Phasen, 8 T-Step- und 8 Slide-Phasen |
-| `assets/rave-opa-tricks-v1.png` | 4×8, 887×1774 Pixel | 8 geschlossene Drehansichten, 8 Kick-Phasen, 8 Groove- und 8 Gestenposen |
-| `assets/rave-opa-running-v1.png` | 2×4, 887×1774 Pixel | 8 größere frontale Running-Man-Schlüsselposen mit wechselndem Standbein |
-| `assets/rave-opa-moves-v1.png` | 4×8, 887×1774 Pixel | 8 Drehansichten mit offenen Armen, 8 Heel-Toe-, 8 Techno-Arm- und 8 Charleston-Posen |
-| `assets/rave-opa-warehouse-v1.png` | Panorama, 2172×724 Pixel | Leere anthrazitfarbene Warehouse-Halle mit Orange-/Limettenlicht |
+| `assets/rave-opa-master-v2.png` | 1024×1536 Pixel, RGBA | 96 vollständige Figuren in zwölf Zeilen mit je acht Posen |
+| `assets/rave-opa-warehouse-v1.png` | 2172×724 Pixel | Leere anthrazitfarbene Warehouse-Halle mit Orange-/Limettenlicht |
 
-Die vier Action-PNGs enthalten zusammen 104 vollständig gezeichnete Figuren. Arme, Schultern und Beine werden nicht aus Teilen zusammengesetzt. Die größere Frontalfolge wird für die tatsächlichen Running-Man-Abschnitte und die scharfe große Vorschau verwendet. Ein falschseitiges frontales Zwischenbild wird als vollständige Figur reflektiert, damit das Standbein korrekt wechselt; die allgemeine Kamerarichtung bleibt frontal. Pirouetten verwenden echte Vorder-, Seiten- und Rückenansichten in einer Richtung, ohne flache Papierdrehung oder rechts/links zu pendeln.
+Alle Moves wurden gemeinsam neu gezeichnet und stehen in **einer** PNG. Es gibt keine aktiven Zusatzatlanten mehr. Running Man, T-Steps, Slides, zwei volle Drehvarianten, Kicks, Groove, Gesprächsgesten, Heel-Toe, Techno-Arm-Moves und Charleston verwenden dieselbe Bildquelle. Die bisherigen vier Action-PNGs bleiben als frühere Quellen archiviert und werden vom Rave-Opa nicht mehr geladen.
 
-Dreh- und Armtafeln wurden zusätzlich mit sicheren Rändern neu gezeichnet. Jede Pose bleibt innerhalb ihres Feldes, einschließlich Finger, Haare und Sneaker. Pro Atlas wird eine feste anatomische Größenreferenz verwendet; Kniebeugen werden nicht zur Standhöhe aufgeblasen. Schwache Freistellungsreste werden beim Laden einmalig entfernt. Die frei bewegte Figur bleibt 192 Pixel auf dem Desktop und 160 Pixel mobil; die Renderauflösung folgt der Gerätepixeldichte.
+| Quellindizes | Bewegung |
+| --- | --- |
+| 0–15 | Frontaler Running Man mit beiden Beinen |
+| 16–23 | T-Steps |
+| 24–31 | Slides |
+| 32–39 | Vollständige Drehung mit angewinkelten Armen |
+| 40–47 | Kicks |
+| 48–55 | Ruhiger Groove |
+| 56–63 | Stand, Winken, Sprechen, Zeigen, Denken, Gehaltenwerden, Jubel, Verbeugung |
+| 64–71 | Vollständige Drehung mit offenen Armen |
+| 72–79 | Heel-Toe |
+| 80–87 | Techno-Arm-Moves |
+| 88–95 | Charleston |
+
+Jede Pose ist eine vollständig gezeichnete Figur. Arme, Schultern und Beine werden nicht aus Teilen zusammengesetzt. Pirouetten verwenden echte Vorder-, Seiten- und Rückenansichten. Die vorhandenen Choreografien wählen über `selectionSheets` die zweite Drehvariante innerhalb derselben Master-PNG aus, ohne eine andere Bilddatei zu laden.
+
+Die gemalte Anordnung hat leicht ungleichmäßige Abstände. Deshalb beschreibt `cellRects` die tatsächlichen Quellrechtecke der 96 ganzen Figuren, statt Köpfe oder ausgestreckte Hände an gedachten Rastergrenzen abzuschneiden. Die Rechtecke wurden durch reine Auswertung der Alpha-Maske vermessen; die erzeugte PNG bleibt unverändert. `mascot.js` richtet alle Posen an der Schuhlinie aus und verwendet **eine feste Größenreferenz** für den gesamten Master. Eine Hocke wird nicht zur Standhöhe aufgeblasen. Schwache Freistellungsreste werden beim Laden einmalig entfernt. Die frei bewegte Figur bleibt 192 Pixel auf dem Desktop und 160 Pixel mobil; die Renderauflösung folgt der Gerätepixeldichte. Die Datei wird in ihrer tatsächlichen Auflösung verwendet, ohne sie nachträglich als 2K- oder 4K-Quelle auszugeben.
 
 ## Bewegung und Auswahl
 
@@ -28,10 +41,10 @@ Die Seite wechselt zu Anthrazit, Orange und Limette, einschließlich der Sprechf
 
 ## Verwendete Bildvorgaben
 
-**Identität und Hauptatlas:** derselbe ernst blickende, liebenswerte ältere Mann mit weißem Schnurrbart, schwarzer Brille, orangefarbener Trainingsjacke, blauer Steppweste, dunkelblauer Hose und übergroßen grauweißen Sneakern. Scharfer, plastischer 3D-Cartoon-Stil. 32 ganze Figuren im gleichmäßigen Raster aus vier Spalten und acht Reihen: 16 Running-Man-Phasen mit hohem Knie, vorn aufsetzendem und zurückgleitendem Schuh, acht Heel-Toe-T-Steps und acht seitliche Gleitphasen. Unveränderte Identität, Kleidung, Körpergröße, Beleuchtung und Bodenlinie; echte Transparenz ohne Schrift, Szene, Raster, Schatten oder Bewegungsgeister.
+Der aktive Master wurde mit der integrierten Bildgenerierung erzeugt. Identitätsreferenz war `assets/rave-opa-running-v1.png`; anschließend wurde die gemeinsame Tafel im selben Verfahren überarbeitet. Die überarbeitete Gesamttafel ist die aktive Quelldatei; es gibt keine nachträgliche Bildmontage.
 
-**Trickatlas:** dieselbe Figur in acht tatsächlichen Winkeln einer vollständigen Drehung mit locker angewinkelten Armen: vorne, vorne rechts, rechts, hinten rechts, hinten, hinten links, links, vorne links. Danach acht wechselseitige Kick- und Erholungsphasen, acht ruhige Knie-/Schulter-Grooves sowie acht Gesten: Stehen, Winken, Sprechen, Zeigen, Nachdenken, sanftes Gehaltenwerden, Jubeln und Verbeugung. Der Hinterkopf und die Rückseite der Weste haben keine vorn aufgemalten Gesichtszüge.
+**Gemeinsamer Master:** Eine einzige transparente PNG mit genau acht Spalten und zwölf Reihen, 96 vollständigen Figuren. Derselbe ernst blickende stockige Rave-Opa mit silberweißem Haar, weißem Schnurrbart, schwarzer rechteckiger Brille, orangefarbener Trainingsjacke mit hellen Ärmelstreifen, petrolblauer Steppweste, dunkelblauer weiter Hose und sehr großen grauweißen Sneakern mit dezenten Orange-/Limettenakzenten. Über alle Posen gleiches Gesicht, gleiche Anatomie, Farben, Beleuchtung und Kameradistanz. Scharfer plastischer Cartoon-Stil, transparente Außenbereiche, keine Szene, Beschriftung, Bodenschatten, Bewegungsgeister oder separaten Körperteile.
 
-**Große Running-Man-Folge:** acht deutlich verschiedene frontale ganze Figuren in zwei Spalten und vier Reihen. Erste Hälfte: linkes Knie auf Bildseite hoch, der Schuh senkt sich nach vorn und setzt auf, der Standfuß gleitet zurück. Zweite Hälfte: die Beine wechseln mit sichtbar angehobenem Knie auf der anderen Bildseite und gegenläufigen Armen. Frontaler Kopf, symmetrische Brille und Schultern, konstante Kameraperspektive, feste Körpergröße und vollständig sichtbare Schuhe.
+**Bewegungsreihen:** Zwei Reihen mit 16 aufeinanderfolgenden Frontalphasen des Running Man und wechselndem Standbein; danach je acht T-Steps, Slides, tatsächliche 360-Grad-Drehansichten mit angewinkelten Armen, wechselseitige Kicks, kleine Knie-/Schulter-Grooves, Interaktionsgesten, 360-Grad-Drehansichten mit geöffneten Armen, Heel-Toe-Schritte, diagonale Techno-Arm-Pumps mit Öffnen/Kreuzen/Vorwärtsdrücken und Charleston-Schritte. Beide Drehreihen verlaufen von vorne über rechte Seite und Rücken zur linken Seite und zurück. Rückansichten zeigen Hinterkopf und Westenrücken.
 
-**Zusatzmoves:** acht volle Drehansichten mit geöffneten Armen, acht Heel-Toe-/Shuffle-Twist-Phasen, acht kraftvolle Techno-Hand-/Armphasen mit diagonalem Pumpen, Öffnen, Kreuzen und Vorwärtsdrücken sowie acht Charleston-/Kick-Step-Phasen. Derselbe Opa mit unverändert ernstem Gesicht. Dreh- und Armtafeln zusätzlich mit gleichmäßig vergrößerten freien Rändern innerhalb jedes Feldes neu zeichnen, sämtliche Finger und Sneaker vollständig erhalten und an den Nachbarfeldern keine Figurenteile abschneiden.
+**Überarbeitung:** Alle 96 Aktionen, Identität und Reihenfolge erhalten; sichere freie Ränder für Haare, Finger und Sneaker, einheitlichen anatomischen Maßstab, saubere Transparenz und klare Konturen anstreben. Der Größenwunsch im Erzeugungsbrief war 2048×3072 Pixel; das tatsächlich gelieferte und verwendete Bild hat 1024×1536 Pixel. Die Quelle wird nicht künstlich hochskaliert. Unregelmäßige Bildabstände werden über die Quellrechtecke im Code berücksichtigt.

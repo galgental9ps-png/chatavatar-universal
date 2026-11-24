@@ -7,7 +7,7 @@
   if (!instance.pack) { $('knowledge-count').textContent = 'Parkwissen konnte nicht geladen werden'; $('question-grid').textContent = 'Bitte laden Sie die Seite erneut.'; return; }
   const picker=$('asset-set'),assetStatus=$('asset-status');
   let heroFigure,heroRenderer;
-  const drawHero=()=>{if(heroFigure)heroRenderer.paint(heroFigure,'idle',0,1,heroRenderer.asset.motion.power?{selection:{atlas:'running',sheet:'running',index:4}}:{});};
+  const drawHero=()=>{if(heroFigure)heroRenderer.paint(heroFigure,'idle',0,1,heroRenderer.asset.motion.power?{selection:{sheet:'poses',index:0}}:{});};
   function renderAsset(){
     const asset=instance.asset,name=instance.displayName();
     DemoAvatarThemes.apply(asset.id,document);
