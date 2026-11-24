@@ -20,6 +20,7 @@
   $('hop-demo').textContent=instance.isSkater()?'Pirouette':name+' springen lassen';
   $('quip-demo').textContent=instance.isSkater()?'Ein kleiner Gruß':'Ein Affenspruch';
   $('spiral-demo').hidden=!instance.isSkater();
+  $('routine-demo').hidden=$('jump-demo').hidden=!instance.isSkater();
   if (!instance.pack) { $('knowledge-count').textContent = 'Parkwissen konnte nicht geladen werden'; $('question-grid').textContent = 'Bitte laden Sie die Seite erneut.'; return; }
   pack = instance.pack;
   $('knowledge-count').textContent = K.search(pack, '', { limit: 1500 }).length + ' hinterlegte Antworten';
@@ -43,9 +44,11 @@
   $('walk-demo').onclick = () => {
     if (!prepareDemo()) return;
     const max = Math.max(0, innerWidth - instance.size().width - 8);
-    instance.walkTo(instance.x > max / 2 ? 8 : max);
+    instance.walkTo(instance.x > max / 2 ? 8 : max,{style:instance.isSkater()?'speed':'auto'});
   };
-  $('hop-demo').onclick = () => { if (prepareDemo()) instance.hop(); };
+  $('hop-demo').onclick = () => { if (prepareDemo()) instance.isSkater()?instance.spin():instance.hop(); };
+  $('routine-demo').onclick=()=>{if(prepareDemo())instance.perform();};
+  $('jump-demo').onclick=()=>{if(prepareDemo())instance.skateJump();};
   $('spiral-demo').onclick=()=>{if(!prepareDemo())return;const max=Math.max(0,innerWidth-instance.size().width-8);instance.walkTo(instance.x>max/2?8:max,{style:'spiral'});};
   $('quip-demo').onclick = () => { if (prepareDemo(false)) instance.showQuip('idle', { replace: true, userInitiated: true }); };
   function draw() {

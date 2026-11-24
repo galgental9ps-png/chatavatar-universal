@@ -1,10 +1,12 @@
 # Chatavatar Universal · austauschbare Figuren
 
-Aktiv ist **Lumi, die Eiskunstläuferin**: transparentes Gleiten über den Bildschirm, elegante Gleitfiguren und aufrechte Pirouetten. Es wird keine Eisfläche eingeblendet. Jimmy bleibt als vollständiges zweites Asset-Set erhalten.
+Aktiv ist **Lumi, die Eiskunstläuferin**: eine zusammenhängende Kür von etwa 20–22 Sekunden mit tiefem, schnellem Anlauf, einfachem und doppeltem Drehsprung, weichen Landungen, Überkreuzschritten, tiefem Ausfallschritt, Spirale und aufrechten Pirouetten. 64 zusätzliche vollständige Actionframes zeigen die neuen Bewegungen und die Ein- und Ausstiege. Es wird keine Eisfläche eingeblendet. Jimmy bleibt als vollständiges zweites Asset-Set erhalten.
 
 Die Auswahl steht zentral in `asset-sets.js`: `const ACTIVE_ASSET_SET = 'ice-skater';`. Für Jimmy genügt der Wert `'jimmy'`. Bei einem späteren Wechsel braucht nur diese Auswahl geändert und veröffentlicht zu werden. Die Bilddateien, Bewegungen, Namen und Sprüche folgen der Auswahl. Details und Dateiliste: [docs/ASSET-SETS.md](docs/ASSET-SETS.md).
 
 Die vorhandenen Antworten und das Wissensstudio beziehen sich weiterhin auf Jimmy’s Fun Park. Der Einbindungscode bleibt gleich.
+
+**Kür vorführen**, **Drehsprung** und **Pirouette** starten die zusammenhängende Folge bzw. einzelne Elemente. Automatisch führt Lumi ihre Kür nach kurzen Pausen erneut auf. Beim Öffnen einer Antwort, bei Pause, reduzierter Bewegung und beim Ziehen wird sie unterbrochen. Ein während eines Sprungs angefordertes anderes Element wartet auf einen sicheren Ausstieg.
 
 ---
 
@@ -68,7 +70,7 @@ Die öffentliche Bearbeitungsoberfläche verleiht keine Schreibrechte. Für GitH
 
 ## Lokaler Start
 
-ZIP vollständig herunterladen und entpacken. Unter Windows `Start-Jimmy.cmd` oder `Start-Wissensstudio.cmd` öffnen. Auch ein Doppelklick auf `index.html` funktioniert mit dem mitgelieferten Offlinepaket.
+ZIP vollständig herunterladen und entpacken. Für Lumi die Dateien über einen lokalen HTTP-Server öffnen, damit die transparenten Canvas-Bilder verarbeitet werden können; beispielsweise den folgenden Server starten und `http://localhost:8080` öffnen. Das Wissenspaket liegt ebenfalls vollständig im Download.
 
 ```sh
 python -m http.server 8080

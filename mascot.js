@@ -51,10 +51,10 @@
     if(source.anchors){
       const ref=source.anchors[spec.reference||0],anchor=source.anchors[index];
       scale=spec.height/Math.max(.3,ref.bottom-ref.top);
-      dx=(sheet==='spin'?.5-.5*scale:.52-anchor.head*scale)*width;
+      dx=(sheet==='spin'||sheet==='jump'?.5-.5*scale:.52-anchor.head*scale)*width;
       dy=(.945-anchor.bottom*scale)*width;
     }
-    ctx.clearRect(0,0,width,width);ctx.globalAlpha=1;ctx.filter='none';
+    ctx.clearRect(0,0,width,width);ctx.globalAlpha=1;ctx.filter='none';ctx.imageSmoothingQuality='high';
     ctx.drawImage(image,index%spec.columns*cw,Math.floor(index/spec.columns)*ch,cw,ch,dx,dy,width*scale,width*scale);
     element._frameKey=key;
   }

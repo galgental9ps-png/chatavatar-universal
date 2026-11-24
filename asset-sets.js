@@ -17,14 +17,18 @@
     },
     'ice-skater':{
       id:'ice-skater',name:'Lumi',role:'Eiskunstläuferin',subtitle:'Deine anmutige Begleiterin',
-      introduction:'Die Eiskunstläuferin gleitet über deinen Bildschirm, dreht Pirouetten und hilft euch bei Fragen zum Park.',
+      introduction:'Die Eiskunstläuferin zeigt ihre kleine Kür: schneller Anlauf, Drehsprünge, Pirouetten und elegante Gleitfiguren. Bei Fragen zum Park hilft sie euch gerne.',
       renderer:'canvas',environment:'none',poses,
-      motion:{kind:'ice',desktop:218,mobile:174,stride:.95,speed:.62,acceleration:1.55,frames:16,spinDuration:2750,stopDuration:420},
+      motion:{kind:'ice',desktop:218,mobile:174,stride:1.3,speed:1.15,acceleration:2.4,frames:16,spinDuration:3000,stopDuration:600},
       sheets:{
         poses:{file:'assets/ice-skater-poses-v1.webp',columns:4,rows:4,height:.88,reference:0},
         glide:{file:'assets/ice-skater-glide-v1.webp',columns:4,rows:4,height:.88,reference:0},
         spin:{file:'assets/ice-skater-spin-v1.webp',columns:4,rows:4,height:.88,reference:0},
-        spiral:{file:'assets/ice-skater-spiral-v1.webp',columns:4,rows:4,height:.88,reference:0}
+        spiral:{file:'assets/ice-skater-spiral-v1.webp',columns:4,rows:4,height:.88,reference:0},
+        speed:{file:'assets/ice-skater-speed-v2.webp',columns:4,rows:4,height:.68,reference:0},
+        jump:{file:'assets/ice-skater-jump-v2.webp',columns:4,rows:4,height:.88,reference:15},
+        flow:{file:'assets/ice-skater-flow-v2.webp',columns:4,rows:4,height:.88,reference:0},
+        footwork:{file:'assets/ice-skater-footwork-v2.webp',columns:4,rows:4,height:.88,reference:0}
       },
       personality:{
         idle:[
@@ -46,14 +50,24 @@
           'Arme weich, Blick nach vorn – ich genieße die Runde.'
         ],
         jump:[
-          'Ein kleiner Schwung voller Vorfreude.',
-          'Gleich landen die Kufen wieder ganz sanft auf dem Eis.'
+          'Tief in die Knie, Schwung holen – und drehen!',
+          'Anlauf, ein kleiner Flug und eine weiche Landung.',
+          'Meine Kufen haben gerade kurz Pause. Ich drehe weiter!',
+          'Und jetzt ein Drehsprung für dich!'
         ],
         spin:[
           'Eine kleine Pirouette für dich!',
           'Einmal rundherum – und die Welt glitzert weiter.',
           'Mein Rock dreht eine kleine Ehrenrunde.',
           'Ein leiser Kreis auf einer schmalen Kufe.'
+        ],
+        routine:[
+          'Bereit für meine kleine Kür? Dann nehme ich jetzt Anlauf!',
+          'Erst Schwung, dann ein Sprung – und elegant weiter.',
+          'Ich tanze dir eine kleine Runde über den Bildschirm.',
+          'Heute gehört ein bisschen Tempo zu meiner Kür.',
+          'Kleine Kufen, große Vorfreude. Meine Kür beginnt!',
+          'Achte mal auf die Landung – die soll ganz weich sein.'
         ]
       }
     }
@@ -64,6 +78,7 @@
   const wrap=(frame,count)=>((Math.floor(frame)%count)+count)%count;
   function frameFor(asset,state='idle',frame=0,details={}){
     const elapsed=Math.max(0,details.elapsed||0),ice=asset.motion.kind==='ice';
+    if(ice&&details.selection&&Object.hasOwn(asset.sheets,details.selection.sheet))return {sheet:details.selection.sheet,index:wrap(details.selection.index,16)};
     if(ice&&state==='spin'){
       if(elapsed<.2)return {sheet:'spin',index:0};
       if(elapsed<2.35)return {sheet:'spin',index:wrap((elapsed-.2)*32/2.15,16)};
@@ -72,6 +87,8 @@
     if(ice&&state==='skate-stop')return elapsed<.26?{sheet:'glide',index:elapsed<.13?15:0}:{sheet:'poses',index:0};
     if(state==='walk'){
       if(!ice)return {sheet:'walk',index:wrap(frame,8)};
+      if(details.style==='speed')return elapsed<.27?{sheet:'jump',index:Math.min(2,Math.floor(elapsed/.27*3))}:{sheet:'speed',index:wrap(frame,16)};
+      if(details.style==='footwork')return {sheet:'footwork',index:wrap(elapsed*12,16)};
       if(details.style==='spiral'){
         let index;
         if(elapsed<.6)index=Math.min(5,Math.floor(elapsed/.6*6));
