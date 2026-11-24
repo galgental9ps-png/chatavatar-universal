@@ -8,7 +8,8 @@
   const trackLabels=Array.from(document.querySelectorAll('[data-music-track]'));
   const tracks=[
     {src:'Bittersweet%20Beauty.mp3',title:'Bittersweet Beauty'},
-    {src:'Glacial%20Arpeggios.mp3',title:'Glacial Arpeggios'}
+    {src:'Glacial%20Arpeggios.mp3',title:'Glacial Arpeggios'},
+    {src:'Hoffnungsvoll.mp3',title:'Hoffnungsvoll'}
   ];
   let index=0,mayAutoStart=true,starting=false,userPaused=false,resumeOnVisible=false,failed=false,playRequest=0;
   const unavailable=new Set();
