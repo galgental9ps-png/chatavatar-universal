@@ -178,7 +178,7 @@
     poses:Array(16).fill(0),groove:Array.from({length:16},(_,i)=>i)};
   sets['shuffle-skeleton']={
     id:'shuffle-skeleton',name:'Skelly',role:'Shuffle-Skelett',subtitle:'Kleine Knochen. Großer Groove.',
-    introduction:'Das freundliche Cartoon-Skelett mit großen Augen, Sonnenbrille und Neon-Sneakern tanzt Melbourne Shuffle: Running Man auf der Stelle, T-Steps, Slides, Kicks und ganze Drehungen.',
+    introduction:'Das freundliche Cartoon-Skelett mit großen Augen, Sonnenbrille und Neon-Sneakern tanzt Melbourne Shuffle: Running Man mit kleinen Seitenwegen, T-Steps, Heel-Toe, Charleston, Hand-Grooves und ganzen Drehungen.',
     renderer:'canvas',environment:'none',poses,
     master:{columns:4,rows:8,required:true,normalize:true,
       actors:[{id:'skelly',name:'Skelly',file:'assets/skelly-shuffle-v1.png',width:887,height:1774,heightRatio:.84,reference:0}],
@@ -186,9 +186,15 @@
       variants:{encore:{columns:4,rows:8,normalize:true,
         actors:[{id:'skelly',name:'Skelly',file:'assets/skelly-tricks-v1.png',width:887,height:1774,heightRatio:.84,reference:24}],
         frames:{spin:doubled(0),kicks:doubled(8),groove:doubled(16),
-          poses:[24,25,26,27,28,29,31,30,8,9,10,24,30,28,29,31]}}}},
+          poses:[24,25,26,27,28,29,31,30,8,9,10,24,30,28,29,31]}},
+        running:{columns:4,rows:4,normalize:true,
+          actors:[{id:'skelly',name:'Skelly',file:'assets/skelly-running-v2.png',width:1254,height:1254,heightRatio:.84,reference:4}],
+          frames:{running:[0,1,2,3,4,5,14,8,8,9,10,11,12,13,15,0]}},
+        moves:{columns:4,rows:8,normalize:true,
+          actors:[{id:'skelly',name:'Skelly',file:'assets/skelly-moves-v1.png',width:887,height:1774,heightRatio:.84,reference:0}],
+          frames:{spin:doubled(0),heeltoe:doubled(8),hands:doubled(16),charleston:doubled(24)}}}},
     motion:{kind:'shuffle',desktop:192,mobile:160,stride:1.1,speed:.68,acceleration:2.6,frames:16},
-    sheets:Object.fromEntries(['running','tstep','slide','spin','kicks','groove','poses'].map(sheet=>[sheet,{file:'assets/skelly-shuffle-v1.png',columns:4,rows:8}])),
+    sheets:Object.fromEntries(['running','tstep','slide','spin','kicks','groove','poses','heeltoe','hands','charleston'].map(sheet=>[sheet,{file:'assets/skelly-shuffle-v1.png',columns:4,rows:8}])),
     personality:{
       idle:['Ich habe den Rhythmus in den Knochen!','Meine Sneaker leuchten schon mal vor.','Keine Angst, ich bin nur zum Tanzen hier.','Ein Lächeln passt zu jedem Beat.','Mein Lieblingssport? Knochenlocker bleiben!','Heute lasse ich die gute Laune hüpfen.'],
       walk:['Ein T-Step nach links – und die Sorgen rutschen weiter.','Meine Schuhe wissen schon, wo der Beat wohnt.','Ich gleite kurz um die Ecke.','Kleine Schritte, ganz viel Groove!'],
@@ -204,7 +210,7 @@
   function frameFor(asset,state='idle',frame=0,details={}){
     if(asset.motion.kind==='shuffle'){
       if(details.selection&&Object.hasOwn(asset.sheets,details.selection.sheet))return {sheet:details.selection.sheet,index:wrap(details.selection.index,16),
-        ...(details.selection.atlas==='encore'?{atlas:'encore'}:{})};
+        ...(asset.master.variants[details.selection.atlas]?.frames[details.selection.sheet]?{atlas:details.selection.atlas}:{})};
       if(state==='walk')return {sheet:'slide',index:wrap(frame,16)};
       if(state==='idle')return {sheet:'groove',index:details.frozen?0:wrap(Math.max(0,details.elapsed||0)*8,16),atlas:'encore'};
       return {sheet:'poses',index:state==='jump'?[8,9,10,11][Math.min(3,Math.max(0,Math.floor(frame)))]:asset.poses[state]??0,atlas:'encore'};

@@ -4,7 +4,7 @@
   if (window.JimmyChatAvatar) return;
   const script = document.currentScript;
   const BASE = new URL('.', script.src).href;
-  const VERSION = 'skelly-playlist-23';
+  const VERSION = 'skelly-shuffle-flow-24';
   const deps = new Map();
   function loadScript(url) {
     if (!deps.has(url)) deps.set(url, new Promise((resolve, reject) => { const s = document.createElement('script'); s.src = url; s.onload = resolve; s.onerror = () => reject(Error('Datei konnte nicht geladen werden: ' + url)); document.head.append(s); }));
@@ -304,7 +304,8 @@
             this.position();
           }
         } else if((this.isSkater()||this.isDancer())&&this.state==='idle'&&now>=this.nextRoutine){
-          const mode=this.isSkater()&&this.asset.motion.encore&&this.lastProgramMode!=='feature'?'feature':'routine';
+          const mode=this.isDancer()?(this.lastProgramMode==='routine'?'freestyle':'routine'):
+            this.asset.motion.encore&&this.lastProgramMode!=='feature'?'feature':'routine';
           if(!this.perform(mode))this.nextRoutine=now+3000;
         } else if (!this.isSkater()&&!this.isDancer()&&this.state === 'idle' && now >= this.nextHop) {
           if (!this.hop()) this.nextHop = now + 5000;

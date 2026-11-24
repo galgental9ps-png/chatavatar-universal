@@ -37,6 +37,7 @@
     $('spiral-demo').hidden=!instance.isSkater()&&!dancer;
     $('routine-demo').hidden=!instance.isSkater()&&!dancer;
     $('jump-demo').hidden=!instance.isSkater();
+    for(const id of ['freestyle-demo','heeltoe-demo','charleston-demo','hands-demo'])$(id).hidden=!dancer;
     picker.value=asset.id;
   }
   for(const asset of Object.values(UniversalAvatarAssets.sets)){
@@ -83,6 +84,7 @@
   $('encore-demo').onclick=()=>{if(prepareDemo())instance.isDancer()?instance.perform('running-man'):instance.encore();};
   $('spiral-demo').onclick=()=>{if(!prepareDemo())return;if(instance.isDancer()){instance.perform('slides');return;}const max=Math.max(0,innerWidth-instance.size().width-8);instance.walkTo(instance.x>max/2?8:max,{style:'spiral'});};
   $('quip-demo').onclick = () => { if (prepareDemo(false)) instance.showQuip('idle', { replace: true, userInitiated: true }); };
+  for(const [id,mode] of [['freestyle-demo','freestyle'],['heeltoe-demo','heeltoe'],['charleston-demo','charleston'],['hands-demo','hands']])$(id).onclick=()=>{if(prepareDemo())instance.perform(mode);};
   function draw() {
     const results = K.search(pack, $('knowledge-search').value, { category: $('knowledge-category').value, limit: 1500 });
     $('question-grid').replaceChildren();

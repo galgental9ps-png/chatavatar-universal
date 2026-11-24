@@ -26,7 +26,7 @@ Die neue Schnittstelle ist `await JimmyChatAvatar.instance.setAsset('jimmy')` bz
 
 ## Melbourne-Shuffle-Skelett
 
-Skelly nutzt zwei transparente 4×8-Action-PNGs mit je 887×1774 Pixeln und ganzen Figuren. `perform()` startet eine vollständige Tanzfolge; `perform('running-man')`, `perform('t-step')`, `perform('slides')`, `spin()` und `hop()` starten einzelne Tanzteile. `walkTo(x)` verwendet seitliche Slides. Die eigene Zeitsteuerung in `shuffle-core.js` hält Running Man am selben Ort und seitliche Wege auf einer festen Bodenlinie. Details: [SHUFFLE-SKELETON.md](SHUFFLE-SKELETON.md).
+Skelly nutzt vier transparente Action-PNGs mit ganzen Figuren: drei 4×8-Atlanten mit 887×1774 Pixeln und eine größere 4×4-Running-Man-Bildfolge mit 1254×1254 Pixeln. `perform()` startet die ursprüngliche erste Tanzfolge unverändert; `perform('freestyle')` die zusätzliche zweite Folge. Beide wechseln automatisch ab; `perform('running-man')`, `perform('t-step')`, `perform('slides')`, `spin()` und `hop()` starten einzelne Tanzteile. `walkTo(x)` verwendet seitliche Slides. Die eigene Zeitsteuerung in `shuffle-core.js` kombiniert stationären Running Man, kleine Seitenwege, fünf ganze Drehungen, Heel-Toe, Charleston und Hand-Grooves auf einer festen Bodenlinie. Details: [SHUFFLE-SKELETON.md](SHUFFLE-SKELETON.md).
 
 ## Feiner Paarlauf mit zusätzlicher Bildfolge
 

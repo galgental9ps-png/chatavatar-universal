@@ -231,8 +231,10 @@ test('The skeleton automatically shuffles, freezes while reading and switches to
   const {avatar,advance,media,context}=await mascot('shuffle-skeleton');
   avatar.nextRoutine=0;advance(20);assert.equal(avatar.program.kind,'shuffle');assert.equal(avatar.state,'dance-performance');
   const duration=avatar.program.duration;advance(duration+40);assert.equal(avatar.program,null);assert.equal(avatar.y,10);
+  avatar.nextRoutine=0;advance(20);assert.equal(avatar.program.mode,'freestyle');advance(avatar.program.duration+40);assert.equal(avatar.program,null);
+  avatar.nextRoutine=0;advance(20);assert.equal(avatar.program.mode,'routine');avatar.cancelProgram();
   avatar.perform('running-man');advance(1400);assert.equal(avatar.programFrame.sheet,'running');const x=avatar.x;
-  advance(2000);assert.equal(avatar.x,x);avatar.open();assert.equal(avatar.program,null);assert.equal(avatar.opened,true);
+  advance(400);assert.equal(avatar.x,x);advance(2000);assert.ok(Math.abs(avatar.x-x)<60);avatar.open();assert.equal(avatar.program,null);assert.equal(avatar.opened,true);
   assert.equal(avatar.perform(),false);avatar.opened=false;assert.equal(avatar.spin(),true);
   context.document.hidden=true;const before=avatar.programElapsed;advance(1000);assert.equal(avatar.programElapsed,before);context.document.hidden=false;
   media.matches=true;avatar.onMotion();assert.equal(avatar.program,null);assert.equal(avatar.perform(),false);
