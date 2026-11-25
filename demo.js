@@ -6,6 +6,23 @@
   await instance.ready;
   if (!instance.pack) { $('knowledge-count').textContent = 'Parkwissen konnte nicht geladen werden'; $('question-grid').textContent = 'Bitte laden Sie die Seite erneut.'; return; }
   const picker=$('asset-set'),assetStatus=$('asset-status');
+  const requestedAsset=new URLSearchParams(location.search).get('asset');
+  if(requestedAsset&&Object.hasOwn(UniversalAvatarAssets.sets,requestedAsset)){
+    try{await instance.setAsset(requestedAsset);}
+    catch{assetStatus.textContent='Die gewünschte Figur konnte nicht geladen werden. Bitte im Figurenschalter erneut auswählen.';}
+  }
+  const example=$('jimmy-example'),exampleImage=$('jimmy-example-image'),exampleToggle=$('jimmy-example-toggle');
+  let animateExample=!instance.motion.matches;
+  function renderJimmyExample(){
+    const visible=instance.asset.id==='jimmy',playing=visible&&animateExample;
+    example.hidden=!visible;
+    const source='assets/jimmy-website-example-v1.'+(playing?'gif':'png');
+    if(exampleImage.getAttribute('src')!==source)exampleImage.src=source;
+    exampleToggle.textContent=playing?'Animation pausieren':'Animation abspielen';
+    exampleToggle.setAttribute('aria-pressed',String(playing));
+  }
+  exampleToggle.onclick=()=>{animateExample=!animateExample;renderJimmyExample();};
+  instance.motion.addEventListener('change',()=>{animateExample=!instance.motion.matches;renderJimmyExample();});
   let heroFigure,heroRenderer;
   const drawHero=()=>{if(heroFigure)heroRenderer.paint(heroFigure,'idle',0,1,heroRenderer.asset.motion.power?{selection:{sheet:'poses',index:0}}:{});};
   function renderAsset(){
@@ -41,6 +58,7 @@
     $('jump-demo').hidden=!instance.isSkater();
     for(const id of ['party-demo','freestyle-demo','heeltoe-demo','charleston-demo','hands-demo'])$(id).hidden=!dancer;
     picker.value=asset.id;
+    renderJimmyExample();
   }
   for(const asset of Object.values(UniversalAvatarAssets.sets)){
     const option=document.createElement('option');option.value=asset.id;option.textContent=asset.name+' · '+asset.role;picker.append(option);
@@ -104,4 +122,5 @@
     try { await navigator.clipboard.writeText($('embed-code').textContent); $('copy-code').textContent = 'Kopiert ✓'; clearTimeout(toastTimer); $('toast').textContent = 'Einbindungscode kopiert.'; $('toast').hidden = false; toastTimer = setTimeout(() => { $('toast').hidden = true; $('copy-code').textContent = 'Kopieren ⧉'; }, 3000); }
     catch { const range = document.createRange(); range.selectNodeContents($('embed-code')); getSelection().removeAllRanges(); getSelection().addRange(range); $('copy-code').textContent = 'Mit Strg+C kopieren'; }
   };
+  if(location.hash==='#jimmy-example'&&instance.asset.id==='jimmy')example.scrollIntoView({block:'start'});
 })();

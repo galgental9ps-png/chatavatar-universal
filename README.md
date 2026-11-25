@@ -116,3 +116,7 @@ node tools/build-site.cjs
 Eigene Instanz: Script mit `data-manual="true"` laden und `JimmyChatAvatar.create(...)` verwenden. Eigene Wissensquelle über `data-knowledge="https://…/firma.json"` angeben. Bei anderer Domain muss diese Quelle CORS erlauben. DOM-Ereignisse heißen `jimmy:ready`, `jimmy:answer` und `jimmy:error`.
 
 Jimmy verwendet eigene globale Namen und einen separaten Browserentwurf und kann neben Pinselio oder Pinselia eingebunden werden. Bewegungspause, Ausblenden, Escape, Tastaturfokus und reduzierte Bewegung werden unterstützt. Vorlesen wird erst auf Wunsch eingeschaltet; die verwendete Browserstimme kann einen Onlinedienst nutzen.
+
+## Jimmy auf einer Beispielseite
+
+`?asset=jimmy#jimmy-example` öffnet die Affen-Demo direkt bei der neuen Vorschau unten auf der Seite. Der bereitgestellte Screenshot bleibt der Hintergrund; darüber winkt Jimmy dezent am Seitenrand. Die Vorschau kann pausiert und als vollständiges GIF, PNG oder einzelne transparente GIF-Figur heruntergeladen werden. Bei reduzierter Bewegung startet sie als Standbild. Die Downloads sind `assets/jimmy-website-example-v1.gif` (1200×592, 16 Frames), `assets/jimmy-website-example-v1.png` und `assets/jimmy-email-greeting-v1.gif` (160×180). Die Beispielansicht wird nur bei Jimmy angezeigt.

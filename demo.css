@@ -139,3 +139,20 @@ h2 {font:normal 40px/1.15 var(--serif);letter-spacing:-1.3px;margin:0}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) {.page-head,.floating-note,.demo-toast{background:#faf9fd}}
 @media(prefers-reduced-motion:reduce) {html{scroll-behavior:auto}*,*:before,*:after{transition:none!important}}
 @media(forced-colors:active) {h1 em{background:none;color:CanvasText}.live-dot{background:CanvasText}.page-head,.stage,.journey,.question,.code-card,.invite-inner{border:1px solid CanvasText}.primary{background:ButtonFace;color:ButtonText}}
+
+/* Jimmy's small GIF shown in the context of the supplied park page. */
+.jimmy-example{padding-top:30px;padding-bottom:64px;scroll-margin-top:28px}
+.jimmy-example .section-heading{align-items:flex-end}
+.jimmy-example-intro{font-size:13px;line-height:1.8;color:var(--muted);max-width:540px;margin:16px 0 0}
+.jimmy-example-badge{font-size:9px;letter-spacing:1.2px;line-height:1.8;color:var(--purple);max-width:190px;text-align:right}
+.jimmy-example-card{overflow:hidden;border:1px solid var(--line);border-radius:24px;background:var(--panel-solid);box-shadow:var(--shadow)}
+.jimmy-example-bar{display:flex;align-items:center;gap:14px;padding:15px 20px;border-bottom:1px solid var(--line);font-size:11px;color:var(--muted)}
+.jimmy-example-dots{display:flex;gap:5px}.jimmy-example-dots i{width:7px;height:7px;border-radius:50%;background:#c9d6be}.jimmy-example-dots i:nth-child(2){background:#daca9d}.jimmy-example-dots i:nth-child(3){background:#a6c59c}
+.jimmy-example-bar button{margin-left:auto;flex-shrink:0;border:1px solid var(--line);border-radius:100px;padding:8px 12px;background:var(--panel);color:var(--purple);font:inherit;cursor:pointer}
+.jimmy-example-bar button:hover{background:var(--panel-solid);border-color:var(--purple)}
+.jimmy-example-picture{display:block;background:#f5f5df}.jimmy-example-picture img{display:block;width:100%;height:auto}
+.jimmy-example-footer{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:23px 25px;border-top:1px solid var(--line)}
+.jimmy-example-footer p{font-size:12px;line-height:1.8;margin:0;color:var(--ink)}.jimmy-example-footer p span{font-size:11px;color:var(--muted)}
+.jimmy-example-downloads{display:flex;align-items:center;justify-content:flex-end;gap:15px;flex-wrap:wrap;font-size:11px;color:var(--purple)}
+.jimmy-example-downloads .primary{padding:12px 17px;font-size:11px}.jimmy-example-downloads>a:not(.primary){text-decoration:underline;text-underline-offset:4px}
+@media(max-width:760px){.jimmy-example{padding-top:20px;padding-bottom:40px}.jimmy-example .section-heading{align-items:flex-start}.jimmy-example-badge{text-align:left;max-width:none;font-size:8px}.jimmy-example-intro{font-size:12px}.jimmy-example-card{border-radius:17px}.jimmy-example-bar{gap:8px;padding:12px 10px;font-size:9px}.jimmy-example-dots{gap:3px}.jimmy-example-dots i{width:5px;height:5px}.jimmy-example-bar button{font-size:9px;padding:7px 9px}.jimmy-example-footer{align-items:flex-start;flex-direction:column;padding:18px;gap:16px}.jimmy-example-downloads{justify-content:flex-start;gap:14px;font-size:10px}.jimmy-example-downloads .primary{font-size:10px;padding:11px 14px}}
